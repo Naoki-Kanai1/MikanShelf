@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
-import { BorrowedIcon, CheckIcon, RestrictedIcon } from '../components/icons';
+import { RestrictedIcon } from '../components/icons';
+import StatusChip from '../components/StatusChip';
 import '../styles/BookListPage.css';
 
 // GET /api/books が返す本1冊分のデータ（backend/src/index.ts の Book と同じ形）
@@ -15,21 +16,6 @@ type Book = {
   borrowed_at: string | null;
   created_at: string;
 };
-
-// 状態の印（棚にある／貸出中）
-function StatusChip({ status }: { status: Book['status'] }) {
-  return status === 'available' ? (
-    <span className="status-chip status-chip--available">
-      <CheckIcon />
-      棚にある
-    </span>
-  ) : (
-    <span className="status-chip status-chip--borrowed">
-      <BorrowedIcon />
-      貸出中
-    </span>
-  );
-}
 
 // 本一覧画面（画面設計書: docs/ap/BookListPage/Screen_design.md）
 export default function BookListPage() {
@@ -70,7 +56,7 @@ export default function BookListPage() {
                 <span className="book-row__title">{book.title}</span>
                 <span className="book-row__authors">{book.authors}</span>
                 <span className="book-row__badges">
-                  <StatusChip status={book.status} />
+                  <StatusChip status={book.status} className="book-row__status" />
                   {book.is_restricted === 1 && (
                     <span className="book-row__restricted">
                       <RestrictedIcon />

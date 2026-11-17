@@ -10,8 +10,6 @@
   --color-outline: #d7c3b8;
   --color-primary: #86521a;
   --color-on-primary: #ffffff;
-  --color-chip-available: #dfe8b8;
-  --color-chip-borrowed: #e2e2e2;
   --color-disabled: #d6d1ce;
   --color-on-disabled: #7a726d;
   --color-nav-bg: #f8e9df;
@@ -98,14 +96,6 @@
   padding: 4px 12px;
   border-radius: 8px;
   font-size: 14px;
-}
-
-.chip-available {
-  background: var(--color-chip-available);
-}
-
-.chip-borrowed {
-  background: var(--color-chip-borrowed);
 }
 
 /* ---- 借りるボタン ---- */
