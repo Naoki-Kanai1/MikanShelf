@@ -1,16 +1,10 @@
-import { Link, useParams } from 'react-router';
+import { useParams } from 'react-router';
+import LoanDetail from '../LoanDetail';
+import NotFoundPage from './NotFoundPage';
 
-// 貸出詳細画面（仮実装）
+// 貸出詳細画面
 export default function LoanDetailPage() {
-  const { loanId } = useParams();
-
-  return (
-    <main>
-      <h1>貸出詳細画面</h1>
-      <p>貸出ID: {loanId}</p>
-      <p>
-        <Link to="/">ホームへ戻る</Link>
-      </p>
-    </main>
-  );
+  const loanId = Number(useParams().loanId);
+  if (!Number.isInteger(loanId)) return <NotFoundPage />;
+  return <LoanDetail loanId={loanId} />;
 }
