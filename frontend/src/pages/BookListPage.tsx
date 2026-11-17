@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
-import AppShell from '../components/AppShell';
 import { BorrowedIcon, CheckIcon, RestrictedIcon } from '../components/icons';
 import '../styles/BookListPage.css';
 
@@ -49,43 +48,41 @@ export default function BookListPage() {
   }, []);
 
   return (
-    <AppShell>
-      <div className="book-list-page">
-        <header className="book-list-page__header">
-          <h1 className="book-list-page__title">本</h1>
-          {/* TODO: 絞り込み（題名・著者）は別のPBIで、ここに入力欄を置く */}
-        </header>
+    <div className="book-list-page">
+      <header className="book-list-page__header">
+        <h1 className="book-list-page__title">本</h1>
+        {/* TODO: 絞り込み（題名・著者）は別のPBIで、ここに入力欄を置く */}
+      </header>
 
-        {error ? (
-          <p className="book-list-page__message" role="alert">
-            本の一覧を読み込めませんでした。時間をおいて、もう一度開いてください。
-          </p>
-        ) : books === null ? (
-          <p className="book-list-page__message">読み込み中…</p>
-        ) : books.length === 0 ? (
-          <p className="book-list-page__message">登録されている本はまだありません。</p>
-        ) : (
-          <ul className="book-list">
-            {books.map((book) => (
-              <li key={book.id} className="book-list__item">
-                <Link to={`/books/${book.id}`} className="book-row">
-                  <span className="book-row__title">{book.title}</span>
-                  <span className="book-row__authors">{book.authors}</span>
-                  <span className="book-row__badges">
-                    <StatusChip status={book.status} />
-                    {book.is_restricted === 1 && (
-                      <span className="book-row__restricted">
-                        <RestrictedIcon />
-                        持ち出し禁止
-                      </span>
-                    )}
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-    </AppShell>
+      {error ? (
+        <p className="book-list-page__message" role="alert">
+          本の一覧を読み込めませんでした。時間をおいて、もう一度開いてください。
+        </p>
+      ) : books === null ? (
+        <p className="book-list-page__message">読み込み中…</p>
+      ) : books.length === 0 ? (
+        <p className="book-list-page__message">登録されている本はまだありません。</p>
+      ) : (
+        <ul className="book-list">
+          {books.map((book) => (
+            <li key={book.id} className="book-list__item">
+              <Link to={`/books/${book.id}`} className="book-row">
+                <span className="book-row__title">{book.title}</span>
+                <span className="book-row__authors">{book.authors}</span>
+                <span className="book-row__badges">
+                  <StatusChip status={book.status} />
+                  {book.is_restricted === 1 && (
+                    <span className="book-row__restricted">
+                      <RestrictedIcon />
+                      持ち出し禁止
+                    </span>
+                  )}
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }

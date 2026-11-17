@@ -97,7 +97,7 @@ export default function LoanDetail({ loanId }: Props) {
         <h1 className="app-bar-title">貸出の詳細</h1>
       </header>
 
-      <main className="content">
+      <div className="content">
         {loan && (
           <>
             <h2 className="book-title">{loan.title}</h2>
@@ -168,7 +168,7 @@ export default function LoanDetail({ loanId }: Props) {
           </>
         )}
         {error && <p className="error">{error}</p>}
-      </main>
+      </div>
 
       {/* 返す前の確認ダイアログ */}
       <dialog

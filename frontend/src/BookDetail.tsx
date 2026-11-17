@@ -85,7 +85,7 @@ export default function BookDetail({ bookId }: Props) {
         <h1 className="app-bar-title">本の詳細</h1>
       </header>
 
-      <main className="content">
+      <div className="content">
         {book && (
           <>
             <h2 className="book-title">{book.title}</h2>
@@ -141,29 +141,7 @@ export default function BookDetail({ bookId }: Props) {
           </>
         )}
         {error && <p className="error">{error}</p>}
-      </main>
-
-      {/* 見た目のみ。遷移は未実装 */}
-      <nav className="bottom-nav">
-        <button type="button" className="nav-item active">
-          <span className="nav-icon">
-            <BookIcon />
-          </span>
-          <span className="nav-label">本</span>
-        </button>
-        <button type="button" className="nav-item">
-          <span className="nav-icon">
-            <SwapIcon />
-          </span>
-          <span className="nav-label">貸出</span>
-        </button>
-        <button type="button" className="nav-item">
-          <span className="nav-icon">
-            <RequestIcon />
-          </span>
-          <span className="nav-label">蔵書リクエスト</span>
-        </button>
-      </nav>
+      </div>
     </div>
   );
 }
@@ -213,23 +191,6 @@ function CheckIcon() {
   return (
     <svg {...iconProps} width={18} height={18}>
       <path d="M5 12.5l4.5 4.5L19 7.5" />
-    </svg>
-  );
-}
-
-function SwapIcon() {
-  return (
-    <svg {...iconProps}>
-      <path d="M4 8h15M15 4l4 4-4 4M20 16H5M9 12l-4 4 4 4" />
-    </svg>
-  );
-}
-
-function RequestIcon() {
-  return (
-    <svg {...iconProps}>
-      <path d="M4 4h16v12H8l-4 4z" />
-      <path d="M12 7v6M9 10h6" />
     </svg>
   );
 }

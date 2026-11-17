@@ -1,5 +1,4 @@
-import type { ReactNode } from 'react';
-import { NavLink } from 'react-router';
+import { NavLink, Outlet } from 'react-router';
 import { BookIcon, LoanIcon, RequestIcon } from './icons';
 import './AppShell.css';
 
@@ -12,8 +11,9 @@ const navItems = [
   { to: '/requests', label: '蔵書リクエスト', icon: <RequestIcon /> },
 ];
 
-// 各画面の共通の枠。画面の中身（children）と、画面の下に固定したメニューを置く
-export default function AppShell({ children }: { children: ReactNode }) {
+// 全画面の共通の枠（App.tsx でレイアウトルートとして使う）。
+// 画面の中身（Outlet）と、画面の下に固定したメニューを置く
+export default function AppShell() {
   return (
     <div className="app-shell">
       <nav className="app-nav" aria-label="メニュー">
@@ -24,7 +24,9 @@ export default function AppShell({ children }: { children: ReactNode }) {
           </NavLink>
         ))}
       </nav>
-      <main className="app-shell__main">{children}</main>
+      <main className="app-shell__main">
+        <Outlet />
+      </main>
     </div>
   );
 }

@@ -1,9 +1,10 @@
 import { Link } from 'react-router';
+import '../styles/SimplePage.css';
 
 // 開発用の仮ホーム画面。分担開発中の各画面へ移動するためのリンク集。
 export default function HomePage() {
   return (
-    <main>
+    <div className="simple-page">
       <h1>MikanShelf</h1>
       <p>開発中の画面へのリンク</p>
       <ul>
@@ -17,6 +18,6 @@ export default function HomePage() {
           <Link to="/loans/1">貸出詳細画面（ID: 1）</Link>
         </li>
       </ul>
-    </main>
+    </div>
   );
 }
