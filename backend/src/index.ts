@@ -64,7 +64,29 @@ app.get('/api/books/:id', (req, res) => {
   res.json(book);
 });
 
-<<<<<<< HEAD
+type Loan = {
+  id: number;
+  book_id: number;
+  title: string;
+  authors: string;
+  status: 'borrowed' | 'returned';
+  borrower_name: string;
+  borrowed_at: string;
+  returned_at: string | null;
+};
+
+// 貸出の情報に、本の題名・著者と借りた人の名前を付けて取得する
+const selectLoan = db.prepare(`
+  SELECT
+    l.id, l.book_id, b.title, b.authors, l.status,
+    u.name AS borrower_name,
+    l.borrowed_at, l.returned_at
+  FROM loans l
+  JOIN books b ON b.id = l.book_id
+  JOIN users u ON u.id = l.user_id
+  WHERE l.id = ?
+`);
+
 // ある人がある本を借りた貸出のうち、いちばん新しいもの
 const selectLatestLoanOfUser = db.prepare(
   'SELECT id, status FROM loans WHERE book_id = ? AND user_id = ? ORDER BY id DESC LIMIT 1',
@@ -93,26 +115,26 @@ app.post('/api/books/:id/borrow', (req, res) => {
   }
   // TODO: 「持ち出し禁止（is_restricted）」の本を借りられるかは未決定。決まったらここで制御する
   // 同じ人が同じ本を以前借りて返却済みなら、その行（いちばん新しいもの）を貸出中に戻す。
-  // 行がなければ新しく追加する
-  const borrow = db.transaction((): 'ok' | 'already_borrowed' => {
+  // 行がなければ新しく追加する。戻り値は貸出中にした貸出の ID（すでに自分が貸出中なら null）
+  const borrow = db.transaction((): number | null => {
     const existing = selectLatestLoanOfUser.get(id, user.id) as
       { id: number; status: 'borrowed' | 'returned' } | undefined;
-    if (existing?.status === 'borrowed') return 'already_borrowed';
+    if (existing?.status === 'borrowed') return null;
     if (existing) {
       db.prepare(
         `UPDATE loans SET status = 'borrowed', borrowed_at = datetime('now'), returned_at = NULL
          WHERE id = ?`,
       ).run(existing.id);
-    } else {
-      db.prepare('INSERT INTO loans (book_id, user_id) VALUES (?, ?)').run(id, user.id);
+      return existing.id;
     }
-    return 'ok';
+    const result = db
+      .prepare('INSERT INTO loans (book_id, user_id) VALUES (?, ?)')
+      .run(id, user.id);
+    return Number(result.lastInsertRowid);
   });
+  let loanId: number | null;
   try {
-    if (borrow() === 'already_borrowed') {
-      res.status(409).json({ error: 'book is already borrowed' });
-      return;
-    }
+    loanId = borrow();
   } catch (e) {
     // 貸出中は1冊1件のユニークインデックスで、ほかの人が貸出中の本を二重に借りられないようにしている
     if ((e as { code?: string }).code === 'SQLITE_CONSTRAINT_UNIQUE') {
@@ -121,71 +143,11 @@ app.post('/api/books/:id/borrow', (req, res) => {
     }
     throw e;
   }
-  res.json(selectBookWithLoan.get(id) as Book);
-});
-
-=======
->>>>>>> 09cc39a (05 借りるボタンを押すと貸出詳細画面に遷移する)
-type Loan = {
-  id: number;
-  book_id: number;
-  title: string;
-  authors: string;
-  status: 'borrowed' | 'returned';
-  borrower_name: string;
-  borrowed_at: string;
-  returned_at: string | null;
-};
-
-// 貸出の情報に、本の題名・著者と借りた人の名前を付けて取得する
-const selectLoan = db.prepare(`
-  SELECT
-    l.id, l.book_id, b.title, b.authors, l.status,
-    u.name AS borrower_name,
-    l.borrowed_at, l.returned_at
-  FROM loans l
-  JOIN books b ON b.id = l.book_id
-  JOIN users u ON u.id = l.user_id
-  WHERE l.id = ?
-`);
-
-// 本を借りる（loans に「貸出中」の行を追加する）
-// TODO: ログイン機能ができたら、名前ではなくログイン中のユーザーIDで借りる人を決める
-app.post('/api/books/:id/borrow', (req, res) => {
-  const borrowerName: unknown = req.body?.borrowerName;
-  if (typeof borrowerName !== 'string' || !borrowerName.trim()) {
-    res.status(400).json({ error: 'borrowerName is required' });
+  if (loanId === null) {
+    res.status(409).json({ error: 'book is already borrowed' });
     return;
   }
-  const user = db.prepare('SELECT id FROM users WHERE name = ?').get(borrowerName.trim()) as
-    { id: number } | undefined;
-  if (!user) {
-    res.status(400).json({ error: 'user not found' });
-    return;
-  }
-
-  const id = Number(req.params.id);
-  const book = selectBookWithLoan.get(id) as Book | undefined;
-  if (!book) {
-    res.status(404).json({ error: 'book not found' });
-    return;
-  }
-  // TODO: 「持ち出し禁止（is_restricted）」の本を借りられるかは未決定。決まったらここで制御する
-  let loanId: number;
-  try {
-    const result = db
-      .prepare('INSERT INTO loans (book_id, user_id) VALUES (?, ?)')
-      .run(id, user.id);
-    loanId = Number(result.lastInsertRowid);
-  } catch (e) {
-    // 貸出中は1冊1件のユニークインデックスで、すでに貸出中の本を二重に借りられないようにしている
-    if ((e as { code?: string }).code === 'SQLITE_CONSTRAINT_UNIQUE') {
-      res.status(409).json({ error: 'book is already borrowed' });
-      return;
-    }
-    throw e;
-  }
-  // 借りたあとは貸出詳細画面へ遷移するため、作成した貸出の情報を返す
+  // 借りたあとは貸出詳細画面へ遷移するため、貸出の情報を返す
   res.status(201).json(selectLoan.get(loanId) as Loan);
 });
 

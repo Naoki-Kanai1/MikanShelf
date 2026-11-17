@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router';
 import './BookDetail.css';
 
 type Book = {
@@ -24,6 +25,7 @@ export default function BookDetail({ bookId }: Props) {
   const [submitting, setSubmitting] = useState(false);
   // state の更新は次の描画まで反映されないため、連打を確実に防ぐ目的で ref でも管理する
   const submittingRef = useRef(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     let ignore = false;
@@ -62,8 +64,9 @@ export default function BookDetail({ bookId }: Props) {
         throw new Error('この本はすでに貸出中です');
       }
       if (!res.ok) throw new Error('借りられませんでした');
-      setBook((await res.json()) as Book);
-      // TODO: 貸出詳細画面へ遷移する
+      // 借りたら、その貸出の詳細画面へ移動する
+      const loan = (await res.json()) as { id: number };
+      navigate(`/loans/${loan.id}`);
     } catch (e) {
       setError((e as Error).message);
     } finally {
