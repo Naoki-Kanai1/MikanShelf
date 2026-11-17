@@ -78,3 +78,12 @@ export function RestrictedIcon() {
     </Icon>
   );
 }
+
+// 戻るボタン「←」
+export function ArrowBackIcon() {
+  return (
+    <Icon>
+      <path d="M20 12H4M10 6l-6 6 6 6" />
+    </Icon>
+  );
+}

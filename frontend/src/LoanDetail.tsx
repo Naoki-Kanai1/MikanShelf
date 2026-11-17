@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router';
+import { Link } from 'react-router';
+import BackButton from './components/BackButton';
 import './BookDetail.css';
 import './LoanDetail.css';
 
@@ -33,7 +34,6 @@ async function fetchLoan(loanId: number): Promise<Loan> {
 }
 
 export default function LoanDetail({ loanId }: Props) {
-  const navigate = useNavigate();
   const [loan, setLoan] = useState<Loan | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -54,13 +54,6 @@ export default function LoanDetail({ loanId }: Props) {
       ignore = true;
     };
   }, [loanId]);
-
-  const handleBack = () => {
-    // 直接URLを開いた場合など、戻る先の履歴がないときはホームへ
-    const idx = (window.history.state as { idx?: number } | null)?.idx ?? 0;
-    if (idx > 0) navigate(-1);
-    else navigate('/');
-  };
 
   const openDialog = () => {
     setError(null);
@@ -99,9 +92,8 @@ export default function LoanDetail({ loanId }: Props) {
   return (
     <div className="screen">
       <header className="app-bar">
-        <button type="button" className="icon-button" aria-label="戻る" onClick={handleBack}>
-          <ArrowBackIcon />
-        </button>
+        {/* TODO: 貸出一覧画面（/loans）はまだ無いので、いまは「ページが見つかりません」が開く */}
+        <BackButton to="/loans" />
         <h1 className="app-bar-title">貸出の詳細</h1>
       </header>
 
@@ -217,14 +209,6 @@ const iconProps = {
   strokeLinejoin: 'round',
   'aria-hidden': true,
 } as const;
-
-function ArrowBackIcon() {
-  return (
-    <svg {...iconProps}>
-      <path d="M20 12H4M10 6l-6 6 6 6" />
-    </svg>
-  );
-}
 
 function ChevronRightIcon() {
   return (

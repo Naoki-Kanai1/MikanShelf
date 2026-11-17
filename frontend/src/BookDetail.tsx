@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
+import BackButton from './components/BackButton';
 import './BookDetail.css';
 
 type Book = {
@@ -80,9 +81,7 @@ export default function BookDetail({ bookId }: Props) {
   return (
     <div className="screen">
       <header className="app-bar">
-        <button type="button" className="icon-button" aria-label="戻る">
-          <ArrowBackIcon />
-        </button>
+        <BackButton to="/books" />
         <h1 className="app-bar-title">本の詳細</h1>
       </header>
 
@@ -182,14 +181,6 @@ const iconProps = {
   strokeLinejoin: 'round',
   'aria-hidden': true,
 } as const;
-
-function ArrowBackIcon() {
-  return (
-    <svg {...iconProps}>
-      <path d="M20 12H4M10 6l-6 6 6 6" />
-    </svg>
-  );
-}
 
 function LocationIcon() {
   return (
