@@ -36,6 +36,24 @@ const selectBookWithLoan = db.prepare(`
   WHERE b.id = ?
 `);
 
+// 全ての本を、いまの貸出状況を付けて取得する（登録順）
+const selectBooksWithLoan = db.prepare(`
+  SELECT
+    b.id, b.title, b.authors, b.location, b.is_restricted, b.created_at,
+    CASE WHEN l.id IS NULL THEN 'available' ELSE 'borrowed' END AS status,
+    u.name AS borrower_name,
+    l.borrowed_at
+  FROM books b
+  LEFT JOIN loans l ON l.book_id = b.id AND l.status = 'borrowed'
+  LEFT JOIN users u ON u.id = l.user_id
+  ORDER BY b.id
+`);
+
+// 本の一覧を取得する
+app.get('/api/books', (_req, res) => {
+  res.json(selectBooksWithLoan.all() as Book[]);
+});
+
 // 本の詳細を取得する
 app.get('/api/books/:id', (req, res) => {
   const book = selectBookWithLoan.get(Number(req.params.id)) as Book | undefined;
