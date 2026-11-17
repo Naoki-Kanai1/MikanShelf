@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
-import BackButton from './components/BackButton';
+import PageHeader from './components/PageHeader';
 import StatusChip from './components/StatusChip';
 import './BookDetail.css';
 
@@ -90,10 +90,7 @@ export default function BookDetail({ bookId }: Props) {
 
   return (
     <div className="screen">
-      <header className="app-bar">
-        <BackButton to="/books" />
-        <h1 className="app-bar-title">本の詳細</h1>
-      </header>
+      <PageHeader title="本の詳細" backTo="/books" />
 
       <div className="content">
         {book && (
