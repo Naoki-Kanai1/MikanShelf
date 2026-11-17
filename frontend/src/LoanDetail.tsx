@@ -9,6 +9,7 @@ type Loan = {
   book_id: number;
   title: string;
   authors: string;
+  location: string;
   status: 'borrowed' | 'returned';
   borrower_name: string;
   borrowed_at: string;
@@ -107,6 +108,16 @@ export default function LoanDetail({ loanId }: Props) {
             <div className="info-card">
               <div className="info-row">
                 <span className="info-icon">
+                  <LocationIcon />
+                </span>
+                <div>
+                  <div className="info-label">借りた場所</div>
+                  <div className="info-value">{loan.location}</div>
+                </div>
+              </div>
+
+              <div className="info-row">
+                <span className="info-icon">
                   <SwapIcon />
                 </span>
                 <div>
@@ -177,9 +188,13 @@ export default function LoanDetail({ loanId }: Props) {
         <h2 id="loan-dialog-title" className="loan-dialog-title">
           この本を返しますか？
         </h2>
-        <p id="loan-dialog-message" className="loan-dialog-message">
-          返すと元に戻せません。もう一度読むときは、本の詳細から借りられます。
-        </p>
+        <div id="loan-dialog-message" className="loan-dialog-message">
+          <ul className="loan-dialog-checklist">
+            <li>返却する本のタイトルに間違いはありませんか？</li>
+            <li>正しい書架の前に到着しましたか？</li>
+          </ul>
+          <p>返すと元に戻せません。もう一度読むときは、本の詳細から借りられます。</p>
+        </div>
         <div className="loan-dialog-actions">
           <button type="button" className="loan-text-button" onClick={closeDialog}>
             やめる
@@ -228,6 +243,15 @@ function CalendarIcon() {
     <svg {...iconProps}>
       <rect x="4" y="5" width="16" height="16" rx="2" />
       <path d="M4 10h16M8 3v4M16 3v4" />
+    </svg>
+  );
+}
+
+function LocationIcon() {
+  return (
+    <svg {...iconProps}>
+      <path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z" />
+      <circle cx="12" cy="9.5" r="2.5" />
     </svg>
   );
 }

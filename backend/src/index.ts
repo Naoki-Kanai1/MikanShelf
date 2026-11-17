@@ -69,16 +69,18 @@ type Loan = {
   book_id: number;
   title: string;
   authors: string;
+  location: string;
   status: 'borrowed' | 'returned';
   borrower_name: string;
   borrowed_at: string;
   returned_at: string | null;
 };
 
-// 貸出の情報に、本の題名・著者と借りた人の名前を付けて取得する
+// 貸出の情報に、本の題名・著者・置き場所と借りた人の名前を付けて取得する
+// 借りた場所は loans には持たず、本の置き場所（＝返す場所）を使う
 const selectLoan = db.prepare(`
   SELECT
-    l.id, l.book_id, b.title, b.authors, l.status,
+    l.id, l.book_id, b.title, b.authors, b.location, l.status,
     u.name AS borrower_name,
     l.borrowed_at, l.returned_at
   FROM loans l
