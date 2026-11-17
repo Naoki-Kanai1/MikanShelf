@@ -1,16 +1,10 @@
-import { Link, useParams } from 'react-router';
+import { useParams } from 'react-router';
+import BookDetail from '../BookDetail';
+import NotFoundPage from './NotFoundPage';
 
-// 本詳細画面（仮実装）
+// 本詳細画面
 export default function BookDetailPage() {
-  const { bookId } = useParams();
-
-  return (
-    <main>
-      <h1>本詳細画面</h1>
-      <p>本ID: {bookId}</p>
-      <p>
-        <Link to="/">ホームへ戻る</Link>
-      </p>
-    </main>
-  );
+  const bookId = Number(useParams().bookId);
+  if (!Number.isInteger(bookId)) return <NotFoundPage />;
+  return <BookDetail bookId={bookId} />;
 }
