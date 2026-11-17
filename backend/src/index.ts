@@ -46,7 +46,12 @@ app.get('/api/books/:id', (req, res) => {
   res.json(book);
 });
 
-// 本を借りる（loans に「貸出中」の行を追加する）
+// ある人がある本を借りた貸出のうち、いちばん新しいもの
+const selectLatestLoanOfUser = db.prepare(
+  'SELECT id, status FROM loans WHERE book_id = ? AND user_id = ? ORDER BY id DESC LIMIT 1',
+);
+
+// 本を借りる（loans の行を「貸出中」にする）
 // TODO: ログイン機能ができたら、名前ではなくログイン中のユーザーIDで借りる人を決める
 app.post('/api/books/:id/borrow', (req, res) => {
   const borrowerName: unknown = req.body?.borrowerName;
@@ -55,8 +60,7 @@ app.post('/api/books/:id/borrow', (req, res) => {
     return;
   }
   const user = db.prepare('SELECT id FROM users WHERE name = ?').get(borrowerName.trim()) as
-    | { id: number }
-    | undefined;
+    { id: number } | undefined;
   if (!user) {
     res.status(400).json({ error: 'user not found' });
     return;
@@ -69,10 +73,29 @@ app.post('/api/books/:id/borrow', (req, res) => {
     return;
   }
   // TODO: 「持ち出し禁止（is_restricted）」の本を借りられるかは未決定。決まったらここで制御する
+  // 同じ人が同じ本を以前借りて返却済みなら、その行（いちばん新しいもの）を貸出中に戻す。
+  // 行がなければ新しく追加する
+  const borrow = db.transaction((): 'ok' | 'already_borrowed' => {
+    const existing = selectLatestLoanOfUser.get(id, user.id) as
+      { id: number; status: 'borrowed' | 'returned' } | undefined;
+    if (existing?.status === 'borrowed') return 'already_borrowed';
+    if (existing) {
+      db.prepare(
+        `UPDATE loans SET status = 'borrowed', borrowed_at = datetime('now'), returned_at = NULL
+         WHERE id = ?`,
+      ).run(existing.id);
+    } else {
+      db.prepare('INSERT INTO loans (book_id, user_id) VALUES (?, ?)').run(id, user.id);
+    }
+    return 'ok';
+  });
   try {
-    db.prepare('INSERT INTO loans (book_id, user_id) VALUES (?, ?)').run(id, user.id);
+    if (borrow() === 'already_borrowed') {
+      res.status(409).json({ error: 'book is already borrowed' });
+      return;
+    }
   } catch (e) {
-    // 貸出中は1冊1件のユニークインデックスで、すでに貸出中の本を二重に借りられないようにしている
+    // 貸出中は1冊1件のユニークインデックスで、ほかの人が貸出中の本を二重に借りられないようにしている
     if ((e as { code?: string }).code === 'SQLITE_CONSTRAINT_UNIQUE') {
       res.status(409).json({ error: 'book is already borrowed' });
       return;
