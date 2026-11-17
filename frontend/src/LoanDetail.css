@@ -66,6 +66,8 @@
   margin: 0 0 16px;
   font-size: 24px;
   font-weight: 500;
+  /* 枠（.app-shell）から受け継ぐ行の高さ 24px のままだと、狭い画面で2行になったときに行どうしがくっつく */
+  line-height: 32px;
 }
 
 .loan-dialog-message {

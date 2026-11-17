@@ -32,6 +32,9 @@
   margin: 16px 0 12px;
   font-size: 30px;
   font-weight: 500;
+  /* 枠（.app-shell）から受け継ぐ行の高さ 24px のままだと、2行になったときに文字が重なる */
+  line-height: 38px;
+  overflow-wrap: anywhere;
 }
 
 .book-authors {
