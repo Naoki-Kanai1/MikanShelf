@@ -43,16 +43,6 @@ body {
   font-weight: 500;
 }
 
-.icon-button {
-  display: flex;
-  padding: 8px;
-  border: none;
-  border-radius: 50%;
-  background: none;
-  color: inherit;
-  cursor: pointer;
-}
-
 /* ---- 本文 ---- */
 .content {
   flex: 1;
