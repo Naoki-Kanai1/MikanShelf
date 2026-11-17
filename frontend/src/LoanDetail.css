@@ -1,0 +1,97 @@
+/* 貸出詳細画面だけで使う見た目。共通のクラス（.screen / .info-card など）は BookDetail.css を参照 */
+
+/* ---- 本の詳細へのリンク ---- */
+.loan-book-authors {
+  margin-bottom: 20px;
+}
+
+.loan-book-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 32px;
+  color: var(--color-text);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.loan-book-link svg {
+  color: var(--color-primary);
+}
+
+.loan-book-link:hover {
+  text-decoration: underline;
+}
+
+/* ---- 状態のチップ ---- */
+.loan-chip {
+  border: 1px solid #837469;
+}
+
+.loan-chip-borrowed {
+  background: #efe0d5;
+}
+
+.loan-chip-returned {
+  background: transparent;
+}
+
+/* ---- 返却済みの案内 ---- */
+.loan-notice {
+  margin: 40px 0 0;
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--color-nav-bg);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* ---- 返す前の確認ダイアログ ---- */
+.loan-dialog {
+  width: min(312px, calc(100vw - 48px));
+  box-sizing: border-box;
+  padding: 24px;
+  border: none;
+  border-radius: 28px;
+  background: #f4e5db;
+  color: var(--color-text);
+}
+
+.loan-dialog::backdrop {
+  background: rgba(33, 26, 20, 0.8);
+}
+
+.loan-dialog-title {
+  margin: 0 0 16px;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.loan-dialog-message {
+  margin: 0 0 24px;
+  color: var(--color-text-sub);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.loan-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.loan-text-button {
+  padding: 10px 12px;
+  border: none;
+  border-radius: 20px;
+  background: none;
+  color: var(--color-primary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.loan-text-button:hover {
+  background: rgba(134, 82, 26, 0.08);
+}

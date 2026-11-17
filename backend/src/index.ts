@@ -82,6 +82,61 @@ app.post('/api/books/:id/borrow', (req, res) => {
   res.json(selectBookWithLoan.get(id) as Book);
 });
 
+type Loan = {
+  id: number;
+  book_id: number;
+  title: string;
+  authors: string;
+  status: 'borrowed' | 'returned';
+  borrower_name: string;
+  borrowed_at: string;
+  returned_at: string | null;
+};
+
+// 貸出の情報に、本の題名・著者と借りた人の名前を付けて取得する
+const selectLoan = db.prepare(`
+  SELECT
+    l.id, l.book_id, b.title, b.authors, l.status,
+    u.name AS borrower_name,
+    l.borrowed_at, l.returned_at
+  FROM loans l
+  JOIN books b ON b.id = l.book_id
+  JOIN users u ON u.id = l.user_id
+  WHERE l.id = ?
+`);
+
+// 貸出の詳細を取得する
+app.get('/api/loans/:id', (req, res) => {
+  const loan = selectLoan.get(Number(req.params.id)) as Loan | undefined;
+  if (!loan) {
+    res.status(404).json({ error: 'loan not found' });
+    return;
+  }
+  res.json(loan);
+});
+
+// 本を返す（貸出中の loans を返却済みにする）
+// TODO: ログイン機能ができたら、借りている本人だけが返せるようにする
+app.post('/api/loans/:id/return', (req, res) => {
+  const id = Number(req.params.id);
+  const result = db
+    .prepare(
+      `UPDATE loans SET status = 'returned', returned_at = datetime('now')
+       WHERE id = ? AND status = 'borrowed'`,
+    )
+    .run(id);
+  if (result.changes === 0) {
+    // 更新できなかったのは、貸出が存在しないか、すでに返却済みのどちらか
+    if (!selectLoan.get(id)) {
+      res.status(404).json({ error: 'loan not found' });
+      return;
+    }
+    res.status(409).json({ error: 'loan is already returned' });
+    return;
+  }
+  res.json(selectLoan.get(id) as Loan);
+});
+
 app.listen(port, '0.0.0.0', () => {
   console.log(`Backend listening on http://localhost:${port}`);
 });
