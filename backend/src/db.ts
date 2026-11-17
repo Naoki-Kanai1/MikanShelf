@@ -97,9 +97,10 @@ db.exec(`
 `);
 
 // ---------------------------------------------------------------------------
-// 初期データ（users が空のとき＝初回起動時だけ入れる）
-// 貸出（loans）と予約（reservations）は空のまま。
-// つまり全ての本が「棚にある」状態で、順番待ちも誰もいない状態から始まる。
+// 初期データ
+// - 利用者・本・蔵書リクエストは、users が空のとき＝初回起動時だけ入れる
+// - 貸出（loans）と予約（reservations）のサンプルは、loans と reservations がどちらも空のときに入れる
+//   （初回起動後のDBにも入るよう、条件を分けている。自分で借りたり予約したりした後は入れない）
 // ---------------------------------------------------------------------------
 
 const seedUsers: [accountId: string, name: string, email: string][] = [
@@ -189,5 +190,63 @@ if (count === 0) {
     for (const b of seedBooks) insertBook.run(...b);
     // status は既定値の 'open'（受付中）
     for (const r of seedRequests) insertRequest.run(...r);
+  })();
+}
+
+// 貸出のサンプル（並び順が ID 順になる。/loans/1 が「貸出中」、/loans/2 が「返却済み」の例）
+// 日時は datetime('now') と同じく UTC。日本時間で日付がずれないよう 15:00 UTC より前の時刻にしている
+// [借りた人の account_id, 本の題名, 借りた日時, 返した日時（貸出中なら null）]
+const seedLoans: [
+  accountId: string,
+  title: string,
+  borrowedAt: string,
+  returnedAt: string | null,
+][] = [
+  ['emp0001', 'リーダブルコード', '2026-11-02 01:00:00', null],
+  ['emp0001', '達人プログラマー', '2026-10-05 02:30:00', '2026-11-13 06:00:00'],
+  ['emp0002', 'オブジェクト指向UIデザイン', '2026-11-06 03:15:00', null],
+  ['emp0003', 'テスト駆動開発', '2026-11-10 04:00:00', null],
+  ['emp0004', 'Clean Code', '2026-10-20 05:20:00', '2026-11-01 07:40:00'],
+  ['emp0005', 'SQLアンチパターン', '2026-11-12 00:45:00', null],
+  ['emp0001', 'イシューからはじめよ', '2026-09-01 02:00:00', '2026-09-20 08:10:00'],
+];
+
+// 予約（順番待ち）のサンプル。すべて waiting（順番待ち中）
+// [待っている人の account_id, 本の題名, 予約した日時]
+const seedReservations: [accountId: string, title: string, reservedAt: string][] = [
+  ['emp0001', 'オブジェクト指向UIデザイン', '2026-11-08 01:30:00'],
+  ['emp0006', 'オブジェクト指向UIデザイン', '2026-11-09 02:00:00'],
+  ['emp0007', 'リーダブルコード', '2026-11-05 03:00:00'],
+];
+
+const { loanCount } = db.prepare('SELECT COUNT(*) AS loanCount FROM loans').get() as {
+  loanCount: number;
+};
+const { reservationCount } = db
+  .prepare('SELECT COUNT(*) AS reservationCount FROM reservations')
+  .get() as { reservationCount: number };
+if (loanCount === 0 && reservationCount === 0) {
+  const insertLoan = db.prepare(
+    `INSERT INTO loans (book_id, user_id, status, borrowed_at, returned_at)
+     VALUES (
+       (SELECT id FROM books WHERE title = ?),
+       (SELECT id FROM users WHERE account_id = ?),
+       ?, ?, ?
+     )`,
+  );
+  const insertReservation = db.prepare(
+    `INSERT INTO reservations (book_id, user_id, reserved_at)
+     VALUES ((SELECT id FROM books WHERE title = ?), (SELECT id FROM users WHERE account_id = ?), ?)`,
+  );
+
+  db.transaction(() => {
+    for (const [accountId, title, borrowedAt, returnedAt] of seedLoans) {
+      const status = returnedAt === null ? 'borrowed' : 'returned';
+      insertLoan.run(title, accountId, status, borrowedAt, returnedAt);
+    }
+    // status は既定値の 'waiting'（順番待ち中）
+    for (const [accountId, title, reservedAt] of seedReservations) {
+      insertReservation.run(title, accountId, reservedAt);
+    }
   })();
 }
