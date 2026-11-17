@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import { RestrictedIcon } from '../components/icons';
+import PageHeader from '../components/PageHeader';
 import StatusChip from '../components/StatusChip';
 import '../styles/BookListPage.css';
 
@@ -35,10 +36,8 @@ export default function BookListPage() {
 
   return (
     <div className="book-list-page">
-      <header className="book-list-page__header">
-        <h1 className="book-list-page__title">本</h1>
-        {/* TODO: 絞り込み（題名・著者）は別のPBIで、ここに入力欄を置く */}
-      </header>
+      <PageHeader title="本" />
+      {/* TODO: 絞り込み（題名・著者）は別のPBIで、ここに入力欄を置く */}
 
       {error ? (
         <p className="book-list-page__message" role="alert">

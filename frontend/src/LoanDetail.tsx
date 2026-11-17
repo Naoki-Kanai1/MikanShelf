@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
-import BackButton from './components/BackButton';
+import PageHeader from './components/PageHeader';
 import './BookDetail.css';
 import './LoanDetail.css';
 
@@ -91,11 +91,8 @@ export default function LoanDetail({ loanId }: Props) {
 
   return (
     <div className="screen">
-      <header className="app-bar">
-        {/* TODO: 貸出一覧画面（/loans）はまだ無いので、いまは「ページが見つかりません」が開く */}
-        <BackButton to="/loans" />
-        <h1 className="app-bar-title">貸出の詳細</h1>
-      </header>
+      {/* TODO: 貸出一覧画面（/loans）はまだ無いので、いまは「ページが見つかりません」が開く */}
+      <PageHeader title="貸出の詳細" backTo="/loans" />
 
       <div className="content">
         {loan && (

@@ -22,20 +22,6 @@
   color: var(--color-text);
 }
 
-/* ---- 上部バー ---- */
-.app-bar {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 16px 12px;
-}
-
-.app-bar-title {
-  margin: 0;
-  font-size: 22px;
-  font-weight: 500;
-}
-
 /* ---- 本文 ---- */
 .content {
   flex: 1;

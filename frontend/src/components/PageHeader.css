@@ -1,0 +1,22 @@
+/*
+ * 画面の名前の帯（docs/UI_design.svg の各画面の一番上）。
+ * 戻るボタンがあってもなくても、高さと文字の大きさは同じ。
+ */
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 64px;
+  padding: 0 16px;
+}
+
+/* 戻るボタンは押せる範囲（まわりの 8px）を左の余白に重ね、「←」の位置を画面の名前と同じ 16px にそろえる */
+.page-header .back-button {
+  margin-left: -8px;
+}
+
+.page-header__title {
+  margin: 0;
+  font: var(--type-title-large);
+  overflow-wrap: anywhere;
+}
