@@ -1,0 +1,28 @@
+/* 本の貸出状態の印（棚にある／貸出中）。色は theme.css の変数を使う */
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  box-sizing: border-box;
+  padding: 0 10px;
+  border-radius: 8px;
+  font: var(--type-label-medium);
+  white-space: nowrap;
+}
+
+.status-chip .icon {
+  width: 14px;
+  height: 14px;
+}
+
+.status-chip--available {
+  background: var(--color-tertiary-container);
+  color: var(--color-on-tertiary-container);
+}
+
+.status-chip--borrowed {
+  border: 1px solid var(--color-outline);
+  background: var(--color-surface-container-highest);
+  color: var(--color-on-secondary-container);
+}

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import BackButton from './components/BackButton';
+import StatusChip from './components/StatusChip';
 import './BookDetail.css';
 
 type Book = {
@@ -108,14 +109,7 @@ export default function BookDetail({ bookId }: Props) {
                 </span>
                 <div>
                   <div className="info-label">状態</div>
-                  {isBorrowed ? (
-                    <span className="chip chip-borrowed">貸出中</span>
-                  ) : (
-                    <span className="chip chip-available">
-                      <CheckIcon />
-                      棚にある
-                    </span>
-                  )}
+                  <StatusChip status={book.status} />
                 </div>
               </div>
 
@@ -183,14 +177,6 @@ function PersonIcon() {
     <svg {...iconProps}>
       <circle cx="12" cy="8" r="3.5" />
       <path d="M5 20a7 7 0 0 1 14 0" />
-    </svg>
-  );
-}
-
-function CheckIcon() {
-  return (
-    <svg {...iconProps} width={18} height={18}>
-      <path d="M5 12.5l4.5 4.5L19 7.5" />
     </svg>
   );
 }
