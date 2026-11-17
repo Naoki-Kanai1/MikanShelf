@@ -1,0 +1,228 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1680" height="1110" viewBox="0 0 1680 1110" font-family="Hiragino Sans, Hiragino Kaku Gothic ProN, Noto Sans JP, sans-serif">
+<rect width="1680" height="1110" fill="#FFF8F4"/>
+<text x="30" y="46" font-size="24" font-weight="bold" fill="#382E27">ER図（社内図書アプリ）</text>
+<rect x="32" y="403" width="380" height="180" rx="10" fill="#000" opacity="0.06"/>
+<rect x="30" y="400" width="380" height="180" rx="10" fill="#FFFFFF" stroke="#D6C3B5"/>
+<path d="M30 440 V410 a10 10 0 0 1 10 -10 H400 a10 10 0 0 1 10 10 V440 Z" fill="#8B5000"/>
+<text x="44" y="426" font-size="16" font-weight="bold" fill="#FFF">users</text>
+<text x="396" y="426" font-size="14" fill="#FFDCBE" text-anchor="end">利用者</text>
+<rect x="40" y="446" width="28" height="16" rx="4" fill="#8B5000"/>
+<text x="54" y="458" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">PK</text>
+<text x="78" y="459" font-size="13" fill="#382E27" font-family="Menlo, monospace">id</text>
+<text x="220" y="459" font-size="13" fill="#5C4A3D">ID</text>
+<text x="398" y="459" font-size="11" fill="#8C7B70" text-anchor="end" font-family="Menlo, monospace">INTEGER</text>
+<rect x="31" y="468" width="378" height="28" fill="#FAF3EE"/>
+<rect x="40" y="474" width="28" height="16" rx="4" fill="#EFE0D5"/>
+<text x="54" y="486" font-size="10" font-weight="bold" fill="#5C4A3D" text-anchor="middle">UK</text>
+<text x="78" y="487" font-size="13" fill="#382E27" font-family="Menlo, monospace">account_id</text>
+<text x="220" y="487" font-size="13" fill="#5C4A3D">会社アカウントID</text>
+<text x="398" y="487" font-size="11" fill="#8C7B70" text-anchor="end" font-family="Menlo, monospace">TEXT</text>
+<text x="78" y="515" font-size="13" fill="#382E27" font-family="Menlo, monospace">name</text>
+<text x="220" y="515" font-size="13" fill="#5C4A3D">表示名</text>
+<text x="398" y="515" font-size="11" fill="#8C7B70" text-anchor="end" font-family="Menlo, monospace">TEXT</text>
+<rect x="31" y="524" width="378" height="28" fill="#FAF3EE"/>
+<rect x="40" y="530" width="28" height="16" rx="4" fill="#EFE0D5"/>
+<text x="54" y="542" font-size="10" font-weight="bold" fill="#5C4A3D" text-anchor="middle">UK</text>
+<text x="78" y="543" font-size="13" fill="#382E27" font-family="Menlo, monospace">email</text>
+<text x="220" y="543" font-size="13" fill="#5C4A3D">メール</text>
+<text x="398" y="543" font-size="11" fill="#8C7B70" text-anchor="end" font-family="Menlo, monospace">TEXT</text>
+<text x="78" y="571" font-size="13" fill="#382E27" font-family="Menlo, monospace">created_at</text>
+<text x="220" y="571" font-size="13" fill="#5C4A3D">登録日時</text>
+<text x="398" y="571" font-size="11" fill="#8C7B70" text-anchor="end" font-family="Menlo, monospace">TEXT</text>
+<rect x="642" y="83" width="400" height="236" rx="10" fill="#000" opacity="0.06"/>
+<rect x="640" y="80" width="400" height="236" rx="10" fill="#FFFFFF" stroke="#D6C3B5"/>
+<path d="M640 120 V90 a10 10 0 0 1 10 -10 H1030 a10 10 0 0 1 10 10 V120 Z" fill="#8B5000"/>
+<text x="654" y="106" font-size="16" font-weight="bold" fill="#FFF">loans</text>
+<text x="1026" y="106" font-size="14" fill="#FFDCBE" text-anchor="end">貸出</text>
+<rect x="650" y="126" width="28" height="16" rx="4" fill="#8B5000"/>
+<text x="664" y="138" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">PK</text>
+<text x="688" y="139" font-size="13" fill="#382E27" font-family="Menlo, monospace">id</text>
+<text x="830" y="139" font-size="13" fill="#5C4A3D">ID</text>
+<text x="1028" y="139" font-size="11" fill="#8C7B70" text-anchor="end" font-family="Menlo, monospace">INTEGER</text>
+<rect x="641" y="148" width="398" height="28" fill="#FAF3EE"/>
+<rect x="650" y="154" width="28" height="16" rx="4" fill="#DFE8B2"/>
+<text x="664" y="166" font-size="10" font-weight="bold" fill="#3A4114" text-anchor="middle">FK</text>
+<text x="688" y="167" font-size="13" fill="#382E27" font-family="Menlo, monospace">book_id</text>
+<text x="830" y="167" font-size="13" fill="#5C4A3D">本</text>
+<text x="1028" y="167" font-size="11" fill="#8C7B70" text-anchor="end" font-family="Menlo, monospace">INTEGER</text>
+<rect x="650" y="182" width="28" height="16" rx="4" fill="#DFE8B2"/>
+<text x="664" y="194" font-size="10" font-weight="bold" fill="#3A4114" text-anchor="middle">FK</text>
+<text x="688" y="195" font-size="13" fill="#382E27" font-family="Menlo, monospace">user_id</text>
+<text x="830" y="195" font-size="13" fill="#5C4A3D">借りている人</text>
+<text x="1028" y="195" font-size="11" fill="#8C7B70" text-anchor="end" font-family="Menlo, monospace">INTEGER</text>
+<rect x="641" y="204" width="398" height="28" fill="#FAF3EE"/>
+<text x="688" y="223" font-size="13" fill="#382E27" font-family="Menlo, monospace">status</text>
+<text x="830" y="223" font-size="13" fill="#5C4A3D">状態 ※1</text>
+<text x="1028" y="223" font-size="11" fill="#8C7B70" text-anchor="end" font-family="Menlo, monospace">TEXT</text>
+<text x="688" y="251" font-size="13" fill="#382E27" font-family="Menlo, monospace">borrowed_at</text>
+<text x="830" y="251" font-size="13" fill="#5C4A3D">借りた日</text>
+<text x="1028" y="251" font-size="11" fill="#8C7B70" text-anchor="end" font-family="Menlo, monospace">TEXT</text>
+<rect x="641" y="260" width="398" height="28" fill="#FAF3EE"/>
+<text x="688" y="279" font-size="13" fill="#382E27" font-family="Menlo, monospace">returned_at</text>
+<text x="830" y="279" font-size="13" fill="#5C4A3D">返した日</text>
+<text x="1028" y="279" font-size="11" fill="#8C7B70" text-anchor="end" font-family="Menlo, monospace">TEXT</text>
+<text x="688" y="307" font-size="13" fill="#382E27" font-family="Menlo, monospace">created_at</text>
+<text x="830" y="307" font-size="13" fill="#5C4A3D">登録日時</text>
+<text x="1028" y="307" font-size="11" fill="#8C7B70" text-anchor="end" font-family="Menlo, monospace">TEXT</text>
+<rect x="642" y="359" width="400" height="236" rx="10" fill="#000" opacity="0.06"/>
+<rect x="640" y="356" width="400" height="236" rx="10" fill="#FFFFFF" stroke="#D6C3B5"/>
+<path d="M640 396 V366 a10 10 0 0 1 10 -10 H1030 a10 10 0 0 1 10 10 V396 Z" fill="#8B5000"/>
+<text x="654" y="382" font-size="16" font-weight="bold" fill="#FFF">reservations</text>
+<text x="1026" y="382" font-size="14" fill="#FFDCBE" text-anchor="end">予約（順番待ち）</text>
+<rect x="650" y="402" width="28" height="16" rx="4" fill="#8B5000"/>
+<text x="664" y="414" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">PK</text>
+<text x="688" y="415" font-size="13" fill="#382E27" font-family="Menlo, monospace">id</text>
+<text x="830" y="415" font-size="13" fill="#5C4A3D">ID</text>
+<text x="1028" y="415" font-size="11" fill="#8C7B70" text-anchor="end" font-family="Menlo, monospace">INTEGER</text>
+<rect x="641" y="424" width="398" height="28" fill="#FAF3EE"/>
+<rect x="650" y="430" width="28" height="16" rx="4" fill="#DFE8B2"/>
+<text x="664" y="442" font-size="10" font-weight="bold" fill="#3A4114" text-anchor="middle">FK</text>
+<text x="688" y="443" font-size="13" fill="#382E27" font-family="Menlo, monospace">book_id</text>
+<text x="830" y="443" font-size="13" fill="#5C4A3D">本</text>
+<text x="1028" y="443" font-size="11" fill="#8C7B70" text-anchor="end" font-family="Menlo, monospace">INTEGER</text>
+<rect x="650" y="458" width="28" height="16" rx="4" fill="#DFE8B2"/>
+<text x="664" y="470" font-size="10" font-weight="bold" fill="#3A4114" text-anchor="middle">FK</text>
+<text x="688" y="471" font-size="13" fill="#382E27" font-family="Menlo, monospace">user_id</text>
+<text x="830" y="471" font-size="13" fill="#5C4A3D">待っている人</text>
+<text x="1028" y="471" font-size="11" fill="#8C7B70" text-anchor="end" font-family="Menlo, monospace">INTEGER</text>
+<rect x="641" y="480" width="398" height="28" fill="#FAF3EE"/>
+<text x="688" y="499" font-size="13" fill="#382E27" font-family="Menlo, monospace">status</text>
+<text x="830" y="499" font-size="13" fill="#5C4A3D">状態 ※2</text>
+<text x="1028" y="499" font-size="11" fill="#8C7B70" text-anchor="end" font-family="Menlo, monospace">TEXT</text>
+<text x="688" y="527" font-size="13" fill="#382E27" font-family="Menlo, monospace">reserved_at</text>
+<text x="830" y="527" font-size="13" fill="#5C4A3D">予約日時（順番）</text>
+<text x="1028" y="527" font-size="11" fill="#8C7B70" text-anchor="end" font-family="Menlo, monospace">TEXT</text>
+<rect x="641" y="536" width="398" height="28" fill="#FAF3EE"/>
+<text x="688" y="555" font-size="13" fill="#382E27" font-family="Menlo, monospace">resolved_at</text>
+<text x="830" y="555" font-size="13" fill="#5C4A3D">借りた／取消日時</text>
+<text x="1028" y="555" font-size="11" fill="#8C7B70" text-anchor="end" font-family="Menlo, monospace">TEXT</text>
+<text x="688" y="583" font-size="13" fill="#382E27" font-family="Menlo, monospace">created_at</text>
+<text x="830" y="583" font-size="13" fill="#5C4A3D">登録日時</text>
+<text x="1028" y="583" font-size="11" fill="#8C7B70" text-anchor="end" font-family="Menlo, monospace">TEXT</text>
+<rect x="642" y="635" width="400" height="264" rx="10" fill="#000" opacity="0.06"/>
+<rect x="640" y="632" width="400" height="264" rx="10" fill="#FFFFFF" stroke="#D6C3B5"/>
+<path d="M640 672 V642 a10 10 0 0 1 10 -10 H1030 a10 10 0 0 1 10 10 V672 Z" fill="#8B5000"/>
+<text x="654" y="658" font-size="16" font-weight="bold" fill="#FFF">book_requests</text>
+<text x="1026" y="658" font-size="14" fill="#FFDCBE" text-anchor="end">蔵書リクエスト</text>
+<rect x="650" y="678" width="28" height="16" rx="4" fill="#8B5000"/>
+<text x="664" y="690" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">PK</text>
+<text x="688" y="691" font-size="13" fill="#382E27" font-family="Menlo, monospace">id</text>
+<text x="830" y="691" font-size="13" fill="#5C4A3D">ID</text>
+<text x="1028" y="691" font-size="11" fill="#8C7B70" text-anchor="end" font-family="Menlo, monospace">INTEGER</text>
+<rect x="641" y="700" width="398" height="28" fill="#FAF3EE"/>
+<rect x="650" y="706" width="28" height="16" rx="4" fill="#DFE8B2"/>
+<text x="664" y="718" font-size="10" font-weight="bold" fill="#3A4114" text-anchor="middle">FK</text>
+<text x="688" y="719" font-size="13" fill="#382E27" font-family="Menlo, monospace">user_id</text>
+<text x="830" y="719" font-size="13" fill="#5C4A3D">リクエストした人</text>
+<text x="1028" y="719" font-size="11" fill="#8C7B70" text-anchor="end" font-family="Menlo, monospace">INTEGER</text>
+<text x="688" y="747" font-size="13" fill="#382E27" font-family="Menlo, monospace">title</text>
+<text x="830" y="747" font-size="13" fill="#5C4A3D">題名（必須）</text>
+<text x="1028" y="747" font-size="11" fill="#8C7B70" text-anchor="end" font-family="Menlo, monospace">TEXT</text>
+<rect x="641" y="756" width="398" height="28" fill="#FAF3EE"/>
+<text x="688" y="775" font-size="13" fill="#382E27" font-family="Menlo, monospace">authors</text>
+<text x="830" y="775" font-size="13" fill="#5C4A3D">著者（任意）</text>
+<text x="1028" y="775" font-size="11" fill="#8C7B70" text-anchor="end" font-family="Menlo, monospace">TEXT</text>
+<text x="688" y="803" font-size="13" fill="#382E27" font-family="Menlo, monospace">status</text>
+<text x="830" y="803" font-size="13" fill="#5C4A3D">状態 ※3</text>
+<text x="1028" y="803" font-size="11" fill="#8C7B70" text-anchor="end" font-family="Menlo, monospace">TEXT</text>
+<rect x="641" y="812" width="398" height="28" fill="#FAF3EE"/>
+<rect x="650" y="818" width="28" height="16" rx="4" fill="#DFE8B2"/>
+<text x="664" y="830" font-size="10" font-weight="bold" fill="#3A4114" text-anchor="middle">FK</text>
+<text x="688" y="831" font-size="13" fill="#382E27" font-family="Menlo, monospace">book_id</text>
+<text x="830" y="831" font-size="13" fill="#5C4A3D">登録された本（任意）</text>
+<text x="1028" y="831" font-size="11" fill="#8C7B70" text-anchor="end" font-family="Menlo, monospace">INTEGER</text>
+<text x="688" y="859" font-size="13" fill="#382E27" font-family="Menlo, monospace">requested_at</text>
+<text x="830" y="859" font-size="13" fill="#5C4A3D">リクエスト日</text>
+<text x="1028" y="859" font-size="11" fill="#8C7B70" text-anchor="end" font-family="Menlo, monospace">TEXT</text>
+<rect x="641" y="868" width="398" height="28" fill="#FAF3EE"/>
+<text x="688" y="887" font-size="13" fill="#382E27" font-family="Menlo, monospace">resolved_at</text>
+<text x="830" y="887" font-size="13" fill="#5C4A3D">対応日</text>
+<text x="1028" y="887" font-size="11" fill="#8C7B70" text-anchor="end" font-family="Menlo, monospace">TEXT</text>
+<rect x="1272" y="383" width="380" height="208" rx="10" fill="#000" opacity="0.06"/>
+<rect x="1270" y="380" width="380" height="208" rx="10" fill="#FFFFFF" stroke="#D6C3B5"/>
+<path d="M1270 420 V390 a10 10 0 0 1 10 -10 H1640 a10 10 0 0 1 10 10 V420 Z" fill="#8B5000"/>
+<text x="1284" y="406" font-size="16" font-weight="bold" fill="#FFF">books</text>
+<text x="1636" y="406" font-size="14" fill="#FFDCBE" text-anchor="end">本</text>
+<rect x="1280" y="426" width="28" height="16" rx="4" fill="#8B5000"/>
+<text x="1294" y="438" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">PK</text>
+<text x="1318" y="439" font-size="13" fill="#382E27" font-family="Menlo, monospace">id</text>
+<text x="1460" y="439" font-size="13" fill="#5C4A3D">ID</text>
+<text x="1638" y="439" font-size="11" fill="#8C7B70" text-anchor="end" font-family="Menlo, monospace">INTEGER</text>
+<rect x="1271" y="448" width="378" height="28" fill="#FAF3EE"/>
+<text x="1318" y="467" font-size="13" fill="#382E27" font-family="Menlo, monospace">title</text>
+<text x="1460" y="467" font-size="13" fill="#5C4A3D">題名</text>
+<text x="1638" y="467" font-size="11" fill="#8C7B70" text-anchor="end" font-family="Menlo, monospace">TEXT</text>
+<text x="1318" y="495" font-size="13" fill="#382E27" font-family="Menlo, monospace">authors</text>
+<text x="1460" y="495" font-size="13" fill="#5C4A3D">著者</text>
+<text x="1638" y="495" font-size="11" fill="#8C7B70" text-anchor="end" font-family="Menlo, monospace">TEXT</text>
+<rect x="1271" y="504" width="378" height="28" fill="#FAF3EE"/>
+<text x="1318" y="523" font-size="13" fill="#382E27" font-family="Menlo, monospace">location</text>
+<text x="1460" y="523" font-size="13" fill="#5C4A3D">置き場所</text>
+<text x="1638" y="523" font-size="11" fill="#8C7B70" text-anchor="end" font-family="Menlo, monospace">TEXT</text>
+<text x="1318" y="551" font-size="13" fill="#382E27" font-family="Menlo, monospace">is_restricted</text>
+<text x="1460" y="551" font-size="13" fill="#5C4A3D">持ち出し禁止</text>
+<text x="1638" y="551" font-size="11" fill="#8C7B70" text-anchor="end" font-family="Menlo, monospace">INTEGER</text>
+<rect x="1271" y="560" width="378" height="28" fill="#FAF3EE"/>
+<text x="1318" y="579" font-size="13" fill="#382E27" font-family="Menlo, monospace">created_at</text>
+<text x="1460" y="579" font-size="13" fill="#5C4A3D">登録日時</text>
+<text x="1638" y="579" font-size="11" fill="#8C7B70" text-anchor="end" font-family="Menlo, monospace">TEXT</text>
+<path d="M410 454 H440 M440 190 V714" stroke="#5C4A3D" stroke-width="2" fill="none"/>
+<line x1="418" y1="446" x2="418" y2="462" stroke="#5C4A3D" stroke-width="2"/><line x1="424" y1="446" x2="424" y2="462" stroke="#5C4A3D" stroke-width="2"/>
+<path d="M440 190 H640" stroke="#5C4A3D" stroke-width="2" fill="none"/>
+<path d="M626 190 L640 181 M626 190 L640 190 M626 190 L640 199" stroke="#5C4A3D" stroke-width="2" fill="none"/><circle cx="618" cy="190" r="6" fill="#FFF8F4" stroke="#5C4A3D" stroke-width="2"/>
+<rect x="501.0" y="177" width="58" height="26" rx="13" fill="#FFDCBE"/>
+<text x="530.0" y="195" font-size="13" fill="#5C3700" text-anchor="middle">借りる</text>
+<path d="M440 466 H640" stroke="#5C4A3D" stroke-width="2" fill="none"/>
+<path d="M626 466 L640 457 M626 466 L640 466 M626 466 L640 475" stroke="#5C4A3D" stroke-width="2" fill="none"/><circle cx="618" cy="466" r="6" fill="#FFF8F4" stroke="#5C4A3D" stroke-width="2"/>
+<rect x="494.0" y="453" width="72" height="26" rx="13" fill="#FFDCBE"/>
+<text x="530.0" y="471" font-size="13" fill="#5C3700" text-anchor="middle">予約する</text>
+<path d="M440 714 H640" stroke="#5C4A3D" stroke-width="2" fill="none"/>
+<path d="M626 714 L640 705 M626 714 L640 714 M626 714 L640 723" stroke="#5C4A3D" stroke-width="2" fill="none"/><circle cx="618" cy="714" r="6" fill="#FFF8F4" stroke="#5C4A3D" stroke-width="2"/>
+<rect x="466.0" y="701" width="128" height="26" rx="13" fill="#FFDCBE"/>
+<text x="530.0" y="719" font-size="13" fill="#5C3700" text-anchor="middle">リクエストを出す</text>
+<path d="M1270 434 H1240 M1240 162 V438" stroke="#5C4A3D" stroke-width="2" fill="none"/>
+<line x1="1262" y1="426" x2="1262" y2="442" stroke="#5C4A3D" stroke-width="2"/><line x1="1256" y1="426" x2="1256" y2="442" stroke="#5C4A3D" stroke-width="2"/>
+<path d="M1240 162 H1040" stroke="#5C4A3D" stroke-width="2" fill="none"/>
+<path d="M1054 162 L1040 153 M1054 162 L1040 162 M1054 162 L1040 171" stroke="#5C4A3D" stroke-width="2" fill="none"/><circle cx="1062" cy="162" r="6" fill="#FFF8F4" stroke="#5C4A3D" stroke-width="2"/>
+<rect x="1100.0" y="149" width="100" height="26" rx="13" fill="#FFDCBE"/>
+<text x="1150.0" y="167" font-size="13" fill="#5C3700" text-anchor="middle">貸し出される</text>
+<path d="M1240 438 H1040" stroke="#5C4A3D" stroke-width="2" fill="none"/>
+<path d="M1054 438 L1040 429 M1054 438 L1040 438 M1054 438 L1040 447" stroke="#5C4A3D" stroke-width="2" fill="none"/><circle cx="1062" cy="438" r="6" fill="#FFF8F4" stroke="#5C4A3D" stroke-width="2"/>
+<rect x="1107.0" y="425" width="86" height="26" rx="13" fill="#FFDCBE"/>
+<text x="1150.0" y="443" font-size="13" fill="#5C3700" text-anchor="middle">予約される</text>
+<path d="M1360 588 V826 H1040" stroke="#5C4A3D" stroke-width="2" fill="none"/>
+<g transform="translate(1360 588) rotate(90)"><line x1="8" y1="-8" x2="8" y2="8" stroke="#5C4A3D" stroke-width="2"/><circle cx="20" cy="0" r="6" fill="#FFF8F4" stroke="#5C4A3D" stroke-width="2"/></g>
+<path d="M1054 826 L1040 817 M1054 826 L1040 826 M1054 826 L1040 835" stroke="#5C4A3D" stroke-width="2" fill="none"/><circle cx="1062" cy="826" r="6" fill="#FFF8F4" stroke="#5C4A3D" stroke-width="2"/>
+<rect x="1157.0" y="813" width="86" height="26" rx="13" fill="#FFDCBE"/>
+<text x="1200.0" y="831" font-size="13" fill="#5C3700" text-anchor="middle">対応で登録</text>
+<line x1="30" y1="926" x2="1650" y2="926" stroke="#D6C3B5"/>
+<text x="30" y="950" font-size="14" font-weight="bold" fill="#382E27">凡例</text>
+<g transform="translate(30 972)">
+<line x1="8" y1="-8" x2="8" y2="8" stroke="#5C4A3D" stroke-width="2"/><line x1="14" y1="-8" x2="14" y2="8" stroke="#5C4A3D" stroke-width="2"/>
+<line x1="0" y1="0" x2="34" y2="0" stroke="#5C4A3D" stroke-width="2"/>
+<text x="44" y="5" font-size="13" fill="#5C4A3D">必ず1件</text>
+</g>
+<g transform="translate(170 972)">
+<line x1="8" y1="-8" x2="8" y2="8" stroke="#5C4A3D" stroke-width="2"/><circle cx="20" cy="0" r="6" fill="#FFF8F4" stroke="#5C4A3D" stroke-width="2"/>
+<line x1="0" y1="0" x2="34" y2="0" stroke="#5C4A3D" stroke-width="2"/>
+<text x="44" y="5" font-size="13" fill="#5C4A3D">0件か1件</text>
+</g>
+<g transform="translate(320 972)">
+<path d="M14 0 L0 -9 M14 0 L0 0 M14 0 L0 9" stroke="#5C4A3D" stroke-width="2" fill="none"/><circle cx="22" cy="0" r="6" fill="#FFF8F4" stroke="#5C4A3D" stroke-width="2"/>
+<line x1="14" y1="0" x2="34" y2="0" stroke="#5C4A3D" stroke-width="2"/>
+<text x="44" y="5" font-size="13" fill="#5C4A3D">0件以上</text>
+</g>
+<rect x="470" y="964" width="28" height="16" rx="4" fill="#8B5000"/>
+<text x="484" y="976" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">PK</text>
+<text x="506" y="977" font-size="13" fill="#5C4A3D">主キー</text>
+<rect x="580" y="964" width="28" height="16" rx="4" fill="#DFE8B2"/>
+<text x="594" y="976" font-size="10" font-weight="bold" fill="#3A4114" text-anchor="middle">FK</text>
+<text x="616" y="977" font-size="13" fill="#5C4A3D">外部キー</text>
+<rect x="690" y="964" width="28" height="16" rx="4" fill="#EFE0D5"/>
+<text x="704" y="976" font-size="10" font-weight="bold" fill="#5C4A3D" text-anchor="middle">UK</text>
+<text x="726" y="977" font-size="13" fill="#5C4A3D">重複不可</text>
+<text x="30" y="1016" font-size="13" fill="#5C4A3D">※1 loans.status：borrowed＝貸出中 / returned＝返却済み</text>
+<text x="30" y="1040" font-size="13" fill="#5C4A3D">※2 reservations.status：waiting＝順番待ち / fulfilled＝順番が来て借りた / canceled＝予約取消　（順番は waiting の reserved_at が古い順）</text>
+<text x="30" y="1064" font-size="13" fill="#5C4A3D">※3 book_requests.status：open＝受付中 / done＝対応済み / withdrawn＝取り下げ</text>
+<text x="30" y="1088" font-size="13" fill="#5C4A3D">本の「棚にある／貸出中」は books には持たず、loans に borrowed の行があるかで判定します。</text>
+</svg>
