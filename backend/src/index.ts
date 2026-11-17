@@ -64,6 +64,7 @@ app.get('/api/books/:id', (req, res) => {
   res.json(book);
 });
 
+<<<<<<< HEAD
 // ある人がある本を借りた貸出のうち、いちばん新しいもの
 const selectLatestLoanOfUser = db.prepare(
   'SELECT id, status FROM loans WHERE book_id = ? AND user_id = ? ORDER BY id DESC LIMIT 1',
@@ -123,6 +124,8 @@ app.post('/api/books/:id/borrow', (req, res) => {
   res.json(selectBookWithLoan.get(id) as Book);
 });
 
+=======
+>>>>>>> 09cc39a (05 借りるボタンを押すと貸出詳細画面に遷移する)
 type Loan = {
   id: number;
   book_id: number;
@@ -145,6 +148,46 @@ const selectLoan = db.prepare(`
   JOIN users u ON u.id = l.user_id
   WHERE l.id = ?
 `);
+
+// 本を借りる（loans に「貸出中」の行を追加する）
+// TODO: ログイン機能ができたら、名前ではなくログイン中のユーザーIDで借りる人を決める
+app.post('/api/books/:id/borrow', (req, res) => {
+  const borrowerName: unknown = req.body?.borrowerName;
+  if (typeof borrowerName !== 'string' || !borrowerName.trim()) {
+    res.status(400).json({ error: 'borrowerName is required' });
+    return;
+  }
+  const user = db.prepare('SELECT id FROM users WHERE name = ?').get(borrowerName.trim()) as
+    { id: number } | undefined;
+  if (!user) {
+    res.status(400).json({ error: 'user not found' });
+    return;
+  }
+
+  const id = Number(req.params.id);
+  const book = selectBookWithLoan.get(id) as Book | undefined;
+  if (!book) {
+    res.status(404).json({ error: 'book not found' });
+    return;
+  }
+  // TODO: 「持ち出し禁止（is_restricted）」の本を借りられるかは未決定。決まったらここで制御する
+  let loanId: number;
+  try {
+    const result = db
+      .prepare('INSERT INTO loans (book_id, user_id) VALUES (?, ?)')
+      .run(id, user.id);
+    loanId = Number(result.lastInsertRowid);
+  } catch (e) {
+    // 貸出中は1冊1件のユニークインデックスで、すでに貸出中の本を二重に借りられないようにしている
+    if ((e as { code?: string }).code === 'SQLITE_CONSTRAINT_UNIQUE') {
+      res.status(409).json({ error: 'book is already borrowed' });
+      return;
+    }
+    throw e;
+  }
+  // 借りたあとは貸出詳細画面へ遷移するため、作成した貸出の情報を返す
+  res.status(201).json(selectLoan.get(loanId) as Loan);
+});
 
 // 貸出の詳細を取得する
 app.get('/api/loans/:id', (req, res) => {
