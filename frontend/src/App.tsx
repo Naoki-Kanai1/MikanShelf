@@ -1,8 +1,18 @@
-import BookDetail from './BookDetail';
-
-// TODO: ルーティングを入れたら本一覧から遷移するようにする。いまは ?id=1 のように本のIDを指定する
-const bookId = Number(new URLSearchParams(window.location.search).get('id') ?? 1);
+import { Route, Routes } from 'react-router';
+import BookDetailPage from './pages/BookDetailPage';
+import BookListPage from './pages/BookListPage';
+import HomePage from './pages/HomePage';
+import LoanDetailPage from './pages/LoanDetailPage';
+import NotFoundPage from './pages/NotFoundPage';
 
 export default function App() {
-  return <BookDetail bookId={bookId} />;
+  return (
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/books" element={<BookListPage />} />
+      <Route path="/books/:bookId" element={<BookDetailPage />} />
+      <Route path="/loans/:loanId" element={<LoanDetailPage />} />
+      <Route path="*" element={<NotFoundPage />} />
+    </Routes>
+  );
 }

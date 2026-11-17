@@ -3,6 +3,10 @@
   "build": {
     "dockerfile": "Dockerfile"
   },
+  "features": {
+    // GitHub CLI (gh): PR の作成などに使用する
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
   "remoteUser": "node",
   "forwardPorts": [5173, 3000],
   "portsAttributes": {
