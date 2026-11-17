@@ -1,0 +1,124 @@
+/*
+ * 本一覧画面。
+ * スマホ向けのレイアウトだけを持つ（幅の広い画面でも同じ。幅は共通の枠 AppShell が決める）。
+ * 画面設計書: docs/ap/BookListPage/Screen_design.md
+ */
+
+.book-list-page {
+  padding-top: 20px;
+}
+
+/* ---- 画面の名前 ---- */
+
+.book-list-page__header {
+  padding: 0 16px 12px;
+}
+
+.book-list-page__title {
+  margin: 0;
+  font: var(--type-title-large);
+}
+
+/* ---- 読み込み中・エラー・0件のときの文 ---- */
+
+.book-list-page__message {
+  margin: 0;
+  padding: 16px;
+  color: var(--color-on-surface-variant);
+  font: var(--type-body-medium);
+}
+
+/* ---- 一覧 ---- */
+
+.book-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.book-list__item {
+  border-bottom: 1px solid var(--color-outline-variant);
+}
+
+/* 1冊分の行。行のどこを押しても本詳細画面へ移動する */
+.book-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 16px;
+  align-items: center;
+  padding: 12px 16px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.book-row:hover {
+  background: var(--color-surface-container);
+}
+
+.book-row:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+}
+
+.book-row__title {
+  grid-column: 1;
+  font: var(--type-body-large);
+  overflow-wrap: anywhere;
+}
+
+.book-row__authors {
+  grid-column: 1;
+  margin-top: 4px;
+  color: var(--color-on-surface-variant);
+  font: var(--type-body-medium);
+  overflow-wrap: anywhere;
+}
+
+/* 「状態の印」と「持ち出し禁止」を別々の位置に置くため、まとめの箱は無いものとして扱う */
+.book-row__badges {
+  display: contents;
+}
+
+/* 状態の印は、行の右側の上下中央
+   （本詳細画面の .chip と混ざらないよう、クラス名を分けている） */
+.status-chip {
+  grid-column: 2;
+  grid-row: 1 / span 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  box-sizing: border-box;
+  padding: 0 10px;
+  border-radius: 8px;
+  font: var(--type-label-medium);
+  white-space: nowrap;
+}
+
+.status-chip .icon,
+.book-row__restricted .icon {
+  width: 14px;
+  height: 14px;
+}
+
+.status-chip--available {
+  background: var(--color-tertiary-container);
+  color: var(--color-on-tertiary-container);
+}
+
+.status-chip--borrowed {
+  border: 1px solid var(--color-outline);
+  background: var(--color-surface-container-highest);
+  color: var(--color-on-secondary-container);
+}
+
+/* 「持ち出し禁止」は著者の下に小さく出す */
+.book-row__restricted {
+  grid-column: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  font: var(--type-label-medium);
+  white-space: nowrap;
+}
