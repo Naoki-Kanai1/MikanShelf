@@ -1,4 +1,9 @@
-:root {
+/*
+ * 本詳細・貸出詳細画面の色。共通の枠（.app-shell）の中では theme.css が同じ名前の変数
+ * （--color-primary など）を別の値で定義しているため、ここでは .screen に置いて上書きし、
+ * これまでの見た目を保つ。色を theme.css にそろえたら、この定義は消す。
+ */
+.screen {
   --color-bg: #fff8f3;
   --color-text: #221a15;
   --color-text-sub: #52443c;
@@ -13,20 +18,10 @@
   --color-nav-active: #fdd9bd;
 }
 
-body {
-  margin: 0;
+/* 幅・高さ・下のメニューは共通の枠（AppShell）が持つ */
+.screen {
   background: var(--color-bg);
   color: var(--color-text);
-  font-family: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', sans-serif;
-}
-
-.screen {
-  min-height: 100vh;
-  max-width: 480px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  background: var(--color-bg);
 }
 
 /* ---- 上部バー ---- */
@@ -136,48 +131,4 @@ body {
 .error {
   margin-top: 16px;
   color: #ba1a1a;
-}
-
-/* ---- 下部ナビゲーション ---- */
-.bottom-nav {
-  position: sticky;
-  bottom: 0;
-  display: flex;
-  justify-content: space-around;
-  padding: 12px 0 16px;
-  background: var(--color-nav-bg);
-}
-
-.nav-item {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  border: none;
-  background: none;
-  color: var(--color-text-sub);
-  cursor: pointer;
-}
-
-.nav-icon {
-  display: flex;
-  justify-content: center;
-  width: 64px;
-  padding: 4px 0;
-  border-radius: 16px;
-}
-
-.nav-item.active .nav-icon {
-  background: var(--color-nav-active);
-  color: var(--color-text);
-}
-
-.nav-label {
-  font-size: 14px;
-}
-
-.nav-item.active .nav-label {
-  color: var(--color-text);
-  font-weight: 700;
 }
