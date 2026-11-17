@@ -113,7 +113,11 @@ app.post('/api/books/:id/borrow', (req, res) => {
     res.status(404).json({ error: 'book not found' });
     return;
   }
-  // TODO: 「持ち出し禁止（is_restricted）」の本を借りられるかは未決定。決まったらここで制御する
+  // 持ち出し禁止の本は借りられない
+  if (book.is_restricted === 1) {
+    res.status(403).json({ error: 'book is restricted' });
+    return;
+  }
   // 同じ人が同じ本を以前借りて返却済みなら、その行（いちばん新しいもの）を貸出中に戻す。
   // 行がなければ新しく追加する。戻り値は貸出中にした貸出の ID（すでに自分が貸出中なら null）
   const borrow = db.transaction((): number | null => {
