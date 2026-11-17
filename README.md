@@ -31,24 +31,23 @@
 
 ### Express（バックエンド）とは
 
-Express は「リクエストを受け取って、レスポンスを返す」サーバーを作るための仕組みです。たとえば `backend/src/index.ts` の次のコードは、「`GET /api/items` にアクセスされたら、DB からアイテム一覧を取り出して JSON で返す」という意味です。
+Express は「リクエストを受け取って、レスポンスを返す」サーバーを作るための仕組みです。たとえば `backend/src/index.ts` の次のコードは、「`GET /api/health` にアクセスされたら、`{"status":"ok"}` という JSON を返す」という意味です。
 
 ```ts
-app.get('/api/items', (_req, res) => {
-  const items = db.prepare('SELECT * FROM items ORDER BY id DESC').all();
-  res.json(items);
+app.get('/api/health', (_req, res) => {
+  res.json({ status: 'ok' });
 });
 ```
 
 今ある API は次の 3 つです。
 
-| メソッド | URL           | 内容                                                         |
-| -------- | ------------- | ------------------------------------------------------------ |
-| GET      | `/api/health` | サーバーが動いているかを確認する（`{"status":"ok"}` が返る） |
-| GET      | `/api/items`  | アイテムの一覧を取得する                                     |
-| POST     | `/api/items`  | アイテムを追加する（`{"name": "..."}` を送る）               |
+| メソッド | URL                    | 内容                                                                     |
+| -------- | ---------------------- | ------------------------------------------------------------------------ |
+| GET      | `/api/health`          | サーバーが動いているかを確認する（`{"status":"ok"}` が返る）             |
+| GET      | `/api/books/:id`       | 本の詳細（置き場所・貸出中かどうか・借りている人）を取得する             |
+| POST     | `/api/books/:id/borrow` | 本を借りる（`{"borrowerName": "田中"}` のように、借りる人の名前を送る） |
 
-> **補足：** フロントエンド（5173 番）からバックエンド（3000 番）へは、Vite が `/api` で始まるリクエストを自動で転送しています（`frontend/vite.config.ts` の `proxy` 設定）。そのため、フロントエンドのコードでは `fetch('/api/items')` のように書くだけで済みます。
+> **補足：** フロントエンド（5173 番）からバックエンド（3000 番）へは、Vite が `/api` で始まるリクエストを自動で転送しています（`frontend/vite.config.ts` の `proxy` 設定）。そのため、フロントエンドのコードでは `fetch('/api/books/1')` のように書くだけで済みます。
 
 ---
 
@@ -190,7 +189,7 @@ sqlite3 backend/data/app.db
 
 ```sql
 .tables                 -- テーブルの一覧
-SELECT * FROM items;    -- items テーブルの中身
+SELECT * FROM books;    -- books テーブルの中身
 .quit                   -- 終了
 ```
 
