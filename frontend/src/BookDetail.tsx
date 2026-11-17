@@ -8,6 +8,8 @@ type Book = {
   title: string;
   authors: string;
   location: string;
+  // 持ち出し禁止なら 1（借りられない）
+  is_restricted: 0 | 1;
   status: 'available' | 'borrowed';
   // 貸出中でなければ null
   borrower_name: string | null;
@@ -47,7 +49,8 @@ export default function BookDetail({ bookId }: Props) {
   }, [bookId]);
 
   const handleBorrow = async () => {
-    if (submittingRef.current || !book || book.status === 'borrowed') return;
+    if (submittingRef.current || !book || book.status === 'borrowed' || book.is_restricted === 1)
+      return;
     submittingRef.current = true;
     setSubmitting(true);
     setError(null);
@@ -64,6 +67,11 @@ export default function BookDetail({ bookId }: Props) {
         else setBook({ ...book, status: 'borrowed', borrower_name: null });
         throw new Error('この本はすでに貸出中です');
       }
+      if (res.status === 403) {
+        // 持ち出し禁止の本だった場合は、ボタンを「貸出できません」に切り替える
+        setBook({ ...book, is_restricted: 1 });
+        throw new Error('この本は持ち出し禁止のため貸出できません');
+      }
       if (!res.ok) throw new Error('借りられませんでした');
       // 借りたら、その貸出の詳細画面へ移動する
       const loan = (await res.json()) as { id: number };
@@ -77,6 +85,7 @@ export default function BookDetail({ bookId }: Props) {
   };
 
   const isBorrowed = book?.status === 'borrowed';
+  const isRestricted = book?.is_restricted === 1;
 
   return (
     <div className="screen">
@@ -134,9 +143,9 @@ export default function BookDetail({ bookId }: Props) {
               type="button"
               className="primary-button"
               onClick={handleBorrow}
-              disabled={submitting || isBorrowed}
+              disabled={submitting || isBorrowed || isRestricted}
             >
-              {submitting ? '読み込み中' : '借りる'}
+              {isRestricted ? 'この本は持ち出し禁止です' : submitting ? '読み込み中' : '借りる'}
             </button>
           </>
         )}
