@@ -7,6 +7,8 @@ type Book = {
   authors: string;
   location: string;
   status: 'available' | 'borrowed';
+  // 貸出中でなければ null
+  borrower_name: string | null;
 };
 
 // TODO: ログイン機能ができたら、ログイン中のユーザーで借りるようにする
@@ -53,8 +55,10 @@ export default function BookDetail({ bookId }: Props) {
         body: JSON.stringify({ borrowerName: TEMP_BORROWER_NAME }),
       });
       if (res.status === 409) {
-        // ほかの人が先に借りていた場合は、貸出中の表示に切り替える
-        setBook({ ...book, status: 'borrowed' });
+        // ほかの人が先に借りていた場合は、最新の情報（借りている人を含む）を取り直して表示を切り替える
+        const latest = await fetch(`/api/books/${book.id}`);
+        if (latest.ok) setBook((await latest.json()) as Book);
+        else setBook({ ...book, status: 'borrowed', borrower_name: null });
         throw new Error('この本はすでに貸出中です');
       }
       if (!res.ok) throw new Error('借りられませんでした');
@@ -119,8 +123,7 @@ export default function BookDetail({ bookId }: Props) {
                 </span>
                 <div>
                   <div className="info-label">いま借りている人</div>
-                  {/* TODO: 借りている人の表示は未実装。いまは固定で「いません」と表示する */}
-                  <div className="info-value">いません</div>
+                  <div className="info-value">{book.borrower_name ?? 'いません'}</div>
                 </div>
               </div>
             </div>
