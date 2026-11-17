@@ -1,0 +1,45 @@
+/*
+ * 共通の枠（AppShell）を使う画面の、色と文字の定義。
+ * 値は docs/UI_design.svg（末尾の「配色と文字」と、各画面で使われている色）から取っている。
+ * 画面ごとの CSS では色コードを直接書かず、ここの変数を使う。
+ *
+ * 本詳細画面（BookDetail.css）は別の色の変数を :root に持っていて、同じ名前で値が違うものがある
+ * （--color-primary など）。色をそろえるまでは互いに影響しないよう、ここの変数は
+ * :root ではなく .app-shell の中だけで有効にしている。
+ */
+.app-shell {
+  /* 配色（Material Design 3 の役割） */
+  --color-primary: #8b5000;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #ffdcbe;
+  --color-on-primary-container: #2c1600;
+  --color-secondary: #735943;
+  --color-secondary-container: #ffdcc2;
+  --color-on-secondary-container: #291806;
+  --color-tertiary: #5b6237;
+  --color-tertiary-container: #dfe8b2;
+  --color-on-tertiary-container: #181e00;
+  --color-error: #ba1a1a;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #410002;
+  --color-surface: #fff8f4;
+  --color-on-surface: #211a14;
+  --color-on-surface-variant: #51443a;
+  --color-surface-container: #faebe0;
+  --color-surface-container-high: #f4e5db;
+  --color-surface-container-highest: #efe0d5;
+  --color-inverse-surface: #382e27;
+  --color-outline: #837469;
+  --color-outline-variant: #d5c3b5;
+
+  /* 文字（Noto Sans JP）。値は「太さ 大きさ/行の高さ」 */
+  /* 並びは本詳細画面（BookDetail.css の body）と同じにしている */
+  --font-family: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+  --type-headline-medium: 400 28px/36px var(--font-family);
+  --type-headline-small: 400 24px/32px var(--font-family);
+  --type-title-large: 400 22px/28px var(--font-family);
+  --type-body-large: 400 16px/24px var(--font-family);
+  --type-body-medium: 400 14px/20px var(--font-family);
+  --type-label-large: 500 14px/20px var(--font-family);
+  --type-label-medium: 500 12px/16px var(--font-family);
+}
