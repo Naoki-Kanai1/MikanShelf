@@ -1,0 +1,88 @@
+/*
+ * 共通の枠（メニュー＋画面の中身）。
+ * スマホ向けのレイアウト（メニューは画面の下）だけを持つ。
+ * PCなど幅の広い画面でも同じレイアウトのまま、幅 480px で中央に置く（本詳細画面と同じ）。
+ */
+
+/* この枠を使う画面だけ、ブラウザ標準の余白をなくす（まだ枠を使っていない画面には影響させない） */
+body:has(.app-shell) {
+  margin: 0;
+}
+
+.app-shell {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  min-height: 100dvh;
+  box-sizing: border-box;
+  /* 下に固定したメニュー（80px）に中身が隠れないようにする */
+  padding-bottom: 80px;
+  background: var(--color-surface);
+  color: var(--color-on-surface);
+  font: var(--type-body-large);
+}
+
+.app-shell .icon {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+
+/* ---- メニュー ---- */
+
+.app-nav {
+  /* 画面の下に固定し、枠と同じ幅（最大 480px）で中央に置く */
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  z-index: 10;
+  display: flex;
+  width: 100%;
+  max-width: 480px;
+  height: 80px;
+  transform: translateX(-50%);
+  background: var(--color-surface-container);
+}
+
+.app-nav__item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding-top: 14px;
+  color: var(--color-on-surface-variant);
+  font: var(--type-label-medium);
+  text-align: center;
+  text-decoration: none;
+}
+
+/* アイコンのまわりの丸い印。選択中の項目だけ色が付く */
+.app-nav__indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 32px;
+  border-radius: 16px;
+}
+
+.app-nav__item:hover .app-nav__indicator {
+  background: var(--color-surface-container-highest);
+}
+
+.app-nav__item.active {
+  color: var(--color-on-surface);
+  font-weight: 700;
+}
+
+.app-nav__item.active .app-nav__indicator {
+  background: var(--color-secondary-container);
+  color: var(--color-on-secondary-container);
+}
+
+.app-nav__item:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -4px;
+  border-radius: 12px;
+}
