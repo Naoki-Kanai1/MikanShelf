@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
+import ConfirmDialog from './components/ConfirmDialog';
 import PageHeader from './components/PageHeader';
 import StatusChip from './components/StatusChip';
 import './BookDetail.css';
@@ -29,6 +30,7 @@ export default function BookDetail({ bookId }: Props) {
   const [submitting, setSubmitting] = useState(false);
   // state の更新は次の描画まで反映されないため、連打を確実に防ぐ目的で ref でも管理する
   const submittingRef = useRef(false);
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -49,12 +51,22 @@ export default function BookDetail({ bookId }: Props) {
     };
   }, [bookId]);
 
+  const openDialog = () => {
+    setError(null);
+    dialogRef.current?.showModal();
+  };
+
+  const closeDialog = () => {
+    dialogRef.current?.close();
+  };
+
   const handleBorrow = async () => {
     if (submittingRef.current || !book || book.status === 'borrowed' || book.is_restricted === 1)
       return;
     submittingRef.current = true;
     setSubmitting(true);
     setError(null);
+    closeDialog();
     try {
       const res = await fetch(`/api/books/${book.id}/borrow`, {
         method: 'POST',
@@ -133,7 +145,7 @@ export default function BookDetail({ bookId }: Props) {
             <button
               type="button"
               className="primary-button"
-              onClick={handleBorrow}
+              onClick={openDialog}
               disabled={submitting || isBorrowed || isRestricted}
             >
               {isRestricted ? 'この本は持ち出し禁止です' : submitting ? '読み込み中' : '借りる'}
@@ -142,6 +154,21 @@ export default function BookDetail({ bookId }: Props) {
         )}
         {error && <p className="error">{error}</p>}
       </div>
+
+      {/* 借りる前の確認ダイアログ（返す前の確認と同じ形） */}
+      <ConfirmDialog
+        ref={dialogRef}
+        title="この本を借りますか？"
+        confirmLabel="借りる"
+        onConfirm={handleBorrow}
+        onCancel={closeDialog}
+      >
+        <ul>
+          <li>借りる本のタイトルに間違いはありませんか？</li>
+          <li>本を書架から取り出しましたか？</li>
+        </ul>
+        <p>読み終わったら、貸出の詳細から返してください。</p>
+      </ConfirmDialog>
     </div>
   );
 }

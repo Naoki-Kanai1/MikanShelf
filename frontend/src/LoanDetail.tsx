@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
+import ConfirmDialog from './components/ConfirmDialog';
 import LoanStatusChip from './components/LoanStatusChip';
 import PageHeader from './components/PageHeader';
 import { formatDate } from './utils/formatDate';
@@ -163,31 +164,19 @@ export default function LoanDetail({ loanId }: Props) {
       </div>
 
       {/* 返す前の確認ダイアログ */}
-      <dialog
+      <ConfirmDialog
         ref={dialogRef}
-        className="loan-dialog"
-        aria-labelledby="loan-dialog-title"
-        aria-describedby="loan-dialog-message"
+        title="この本を返しますか？"
+        confirmLabel="返す"
+        onConfirm={handleReturn}
+        onCancel={closeDialog}
       >
-        <h2 id="loan-dialog-title" className="loan-dialog-title">
-          この本を返しますか？
-        </h2>
-        <div id="loan-dialog-message" className="loan-dialog-message">
-          <ul className="loan-dialog-checklist">
-            <li>返却する本のタイトルに間違いはありませんか？</li>
-            <li>正しい書架の前に到着しましたか？</li>
-          </ul>
-          <p>返すと元に戻せません。もう一度読むときは、本の詳細から借りられます。</p>
-        </div>
-        <div className="loan-dialog-actions">
-          <button type="button" className="loan-text-button" onClick={closeDialog}>
-            やめる
-          </button>
-          <button type="button" className="loan-text-button" onClick={handleReturn}>
-            返す
-          </button>
-        </div>
-      </dialog>
+        <ul>
+          <li>返却する本のタイトルに間違いはありませんか？</li>
+          <li>正しい書架の前に到着しましたか？</li>
+        </ul>
+        <p>返すと元に戻せません。もう一度読むときは、本の詳細から借りられます。</p>
+      </ConfirmDialog>
     </div>
   );
 }
