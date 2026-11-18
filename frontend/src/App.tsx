@@ -4,6 +4,7 @@ import BookDetailPage from './pages/BookDetailPage';
 import BookListPage from './pages/BookListPage';
 import HomePage from './pages/HomePage';
 import LoanDetailPage from './pages/LoanDetailPage';
+import LoanListPage from './pages/LoanListPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 export default function App() {
@@ -14,6 +15,7 @@ export default function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/books" element={<BookListPage />} />
         <Route path="/books/:bookId" element={<BookDetailPage />} />
+        <Route path="/loans" element={<LoanListPage />} />
         <Route path="/loans/:loanId" element={<LoanDetailPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>

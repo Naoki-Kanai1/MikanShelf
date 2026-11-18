@@ -1,0 +1,15 @@
+/* 貸出の状態の印（貸出中／返却済み）。共通の見た目は StatusChip.css の .status-chip */
+
+/* 貸出中は本の「貸出中」と同じ見た目 */
+.loan-status-chip--borrowed {
+  border: 1px solid var(--color-outline);
+  background: var(--color-surface-container-highest);
+  color: var(--color-on-secondary-container);
+}
+
+/* 返却済みは枠だけで背景なし */
+.loan-status-chip--returned {
+  border: 1px solid var(--color-outline);
+  background: transparent;
+  color: var(--color-on-surface-variant);
+}

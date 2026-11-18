@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
+import LoanStatusChip from './components/LoanStatusChip';
 import PageHeader from './components/PageHeader';
+import { formatDate } from './utils/formatDate';
 import './BookDetail.css';
 import './LoanDetail.css';
 
@@ -19,13 +21,6 @@ type Loan = {
 type Props = {
   loanId: number;
 };
-
-// SQLite の datetime('now') は UTC の「YYYY-MM-DD HH:MM:SS」なので、ローカル時刻の「2026年11月2日」に変換する
-function formatDate(value: string): string {
-  const date = new Date(`${value.replace(' ', 'T')}Z`);
-  if (Number.isNaN(date.getTime())) return value;
-  return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
-}
 
 async function fetchLoan(loanId: number): Promise<Loan> {
   const res = await fetch(`/api/loans/${loanId}`);
@@ -92,7 +87,6 @@ export default function LoanDetail({ loanId }: Props) {
 
   return (
     <div className="screen">
-      {/* TODO: 貸出一覧画面（/loans）はまだ無いので、いまは「ページが見つかりません」が開く */}
       <PageHeader title="貸出の詳細" backTo="/loans" />
 
       <div className="content">
@@ -122,17 +116,7 @@ export default function LoanDetail({ loanId }: Props) {
                 </span>
                 <div>
                   <div className="info-label">状態</div>
-                  {isBorrowed ? (
-                    <span className="chip loan-chip loan-chip-borrowed">
-                      <LogoutIcon />
-                      貸出中
-                    </span>
-                  ) : (
-                    <span className="chip loan-chip loan-chip-returned">
-                      <CheckIcon />
-                      返却済み
-                    </span>
-                  )}
+                  <LoanStatusChip status={loan.status} />
                 </div>
               </div>
 
@@ -260,14 +244,6 @@ function CheckIcon({ size = 18 }: { size?: number }) {
   return (
     <svg {...iconProps} width={size} height={size}>
       <path d="M5 12.5l4.5 4.5L19 7.5" />
-    </svg>
-  );
-}
-
-function LogoutIcon() {
-  return (
-    <svg {...iconProps} width={18} height={18}>
-      <path d="M10 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4M15 8l4 4-4 4M19 12H9" />
     </svg>
   );
 }
