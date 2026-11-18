@@ -78,15 +78,6 @@
   font-size: 18px;
 }
 
-.chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 12px;
-  border-radius: 8px;
-  font-size: 14px;
-}
-
 /* ---- 借りるボタン ---- */
 .primary-button {
   width: 100%;

@@ -24,19 +24,6 @@
   text-decoration: underline;
 }
 
-/* ---- 状態のチップ ---- */
-.loan-chip {
-  border: 1px solid #837469;
-}
-
-.loan-chip-borrowed {
-  background: #efe0d5;
-}
-
-.loan-chip-returned {
-  background: transparent;
-}
-
 /* ---- 返却済みの案内 ---- */
 .loan-notice {
   margin: 40px 0 0;

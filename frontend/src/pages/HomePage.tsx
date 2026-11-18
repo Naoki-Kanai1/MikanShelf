@@ -17,6 +17,9 @@ export default function HomePage() {
             <Link to="/books/1">本詳細画面（ID: 1）</Link>
           </li>
           <li>
+            <Link to="/loans">貸出一覧画面</Link>
+          </li>
+          <li>
             <Link to="/loans/1">貸出詳細画面（ID: 1）</Link>
           </li>
         </ul>

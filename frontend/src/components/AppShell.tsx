@@ -3,7 +3,7 @@ import { BookIcon, LoanIcon, RequestIcon } from './icons';
 import './AppShell.css';
 
 // メニューの項目。to で始まるURLを開いているあいだ、その項目が選択中の見た目になる
-// TODO: 貸出一覧（/loans）と蔵書リクエスト（/requests）の画面はまだ無いので、
+// TODO: 蔵書リクエスト（/requests）の画面はまだ無いので、
 //       いまは「ページが見つかりません」が開く。画面ができたらURLを合わせる
 const navItems = [
   { to: '/books', label: '本', icon: <BookIcon /> },

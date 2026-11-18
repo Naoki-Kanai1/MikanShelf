@@ -4,6 +4,10 @@ import { db } from './db.js';
 const app = express();
 const port = Number(process.env.PORT ?? 3000);
 
+// ログイン中の人の account_id。名前は同じ人がいるかもしれないので account_id で決める
+// TODO: ログイン機能ができたら、ログイン中のユーザーに置き換える（いまは「田中」さんで固定）
+const CURRENT_USER_ACCOUNT_ID = 'emp0001';
+
 app.use(express.json());
 
 app.get('/api/health', (_req, res) => {
@@ -89,6 +93,19 @@ const selectLoan = db.prepare(`
   WHERE l.id = ?
 `);
 
+// ログイン中の人の貸出を取得する（貸出中を先に、その中は借りた日が新しい順）
+const selectLoansOfUser = db.prepare(`
+  SELECT
+    l.id, l.book_id, b.title, b.authors, b.location, l.status,
+    u.name AS borrower_name,
+    l.borrowed_at, l.returned_at
+  FROM loans l
+  JOIN books b ON b.id = l.book_id
+  JOIN users u ON u.id = l.user_id
+  WHERE u.account_id = ?
+  ORDER BY (l.status = 'borrowed') DESC, l.borrowed_at DESC, l.id DESC
+`);
+
 // ある人がある本を借りた貸出のうち、いちばん新しいもの
 const selectLatestLoanOfUser = db.prepare(
   'SELECT id, status FROM loans WHERE book_id = ? AND user_id = ? ORDER BY id DESC LIMIT 1',
@@ -155,6 +172,11 @@ app.post('/api/books/:id/borrow', (req, res) => {
   }
   // 借りたあとは貸出詳細画面へ遷移するため、貸出の情報を返す
   res.status(201).json(selectLoan.get(loanId) as Loan);
+});
+
+// ログイン中の人の貸出の一覧を取得する
+app.get('/api/loans', (_req, res) => {
+  res.json(selectLoansOfUser.all(CURRENT_USER_ACCOUNT_ID) as Loan[]);
 });
 
 // 貸出の詳細を取得する
