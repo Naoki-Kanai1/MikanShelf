@@ -19,6 +19,7 @@ const BORROWED_LOAN = {
   borrower_name: '田中',
   borrowed_at: '2026-11-10 01:00:00',
   returned_at: null,
+  on_shelf_count: 1,
 };
 const RETURNED_LOAN = {
   ...BORROWED_LOAN,

@@ -15,6 +15,8 @@ type Book = {
   status: 'available' | 'borrowed';
   // 貸出中でなければ null
   borrower_name: string | null;
+  // 同じ題名の本のうち、棚にある（貸出中でない）冊数。この本自体も棚にあれば含む
+  on_shelf_count: number;
 };
 
 // TODO: ログイン機能ができたら、ログイン中のユーザーで借りるようにする
@@ -134,6 +136,16 @@ export default function BookDetail({ bookId }: Props) {
 
               <div className="info-row">
                 <span className="info-icon">
+                  <ShelfIcon />
+                </span>
+                <div>
+                  <div className="info-label">棚にある冊数</div>
+                  <div className="info-value">{book.on_shelf_count}冊</div>
+                </div>
+              </div>
+
+              <div className="info-row">
+                <span className="info-icon">
                   <PersonIcon />
                 </span>
                 <div>
@@ -203,6 +215,14 @@ function PersonIcon() {
     <svg {...iconProps}>
       <circle cx="12" cy="8" r="3.5" />
       <path d="M5 20a7 7 0 0 1 14 0" />
+    </svg>
+  );
+}
+
+function ShelfIcon() {
+  return (
+    <svg {...iconProps}>
+      <path d="M3 21h18M5 21V5h3v16M10 21V3h3v18M15.5 7.5l2.9-.8 2.6 14.3" />
     </svg>
   );
 }

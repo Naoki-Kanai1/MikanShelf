@@ -1,4 +1,5 @@
 import express from 'express';
+import { countBooksOnShelf } from './bookStock.js';
 import { db } from './db.js';
 
 const app = express();
@@ -26,6 +27,9 @@ type Book = {
   borrowed_at: string | null;
   created_at: string;
 };
+
+// 本詳細・貸出詳細で返す、同じ題名の本のうち棚にある冊数
+type WithShelfCount<T> = T & { on_shelf_count: number };
 
 // 本の情報に、いまの貸出状況（貸出中の loans があるか）を付けて取得する
 const selectBookWithLoan = db.prepare(`
@@ -65,7 +69,8 @@ app.get('/api/books/:id', (req, res) => {
     res.status(404).json({ error: 'book not found' });
     return;
   }
-  res.json(book);
+  const detail: WithShelfCount<Book> = { ...book, on_shelf_count: countBooksOnShelf(book.title) };
+  res.json(detail);
 });
 
 type Loan = {
@@ -92,6 +97,13 @@ const selectLoan = db.prepare(`
   JOIN users u ON u.id = l.user_id
   WHERE l.id = ?
 `);
+
+// 貸出1件を、同じ題名の本のうち棚にある冊数を付けて取得する（貸出詳細で使う）
+function getLoanDetail(id: number): WithShelfCount<Loan> | undefined {
+  const loan = selectLoan.get(id) as Loan | undefined;
+  if (!loan) return undefined;
+  return { ...loan, on_shelf_count: countBooksOnShelf(loan.title) };
+}
 
 // ログイン中の人の貸出を取得する（貸出中を先に、その中は借りた日が新しい順）
 const selectLoansOfUser = db.prepare(`
@@ -171,7 +183,7 @@ app.post('/api/books/:id/borrow', (req, res) => {
     return;
   }
   // 借りたあとは貸出詳細画面へ遷移するため、貸出の情報を返す
-  res.status(201).json(selectLoan.get(loanId) as Loan);
+  res.status(201).json(getLoanDetail(loanId));
 });
 
 // ログイン中の人の貸出の一覧を取得する
@@ -181,7 +193,7 @@ app.get('/api/loans', (_req, res) => {
 
 // 貸出の詳細を取得する
 app.get('/api/loans/:id', (req, res) => {
-  const loan = selectLoan.get(Number(req.params.id)) as Loan | undefined;
+  const loan = getLoanDetail(Number(req.params.id));
   if (!loan) {
     res.status(404).json({ error: 'loan not found' });
     return;
@@ -208,7 +220,7 @@ app.post('/api/loans/:id/return', (req, res) => {
     res.status(409).json({ error: 'loan is already returned' });
     return;
   }
-  res.json(selectLoan.get(id) as Loan);
+  res.json(getLoanDetail(id));
 });
 
 app.listen(port, '0.0.0.0', () => {

@@ -17,6 +17,7 @@ const BOOK = {
   is_restricted: 0,
   status: 'available',
   borrower_name: null,
+  on_shelf_count: 1,
 };
 
 // fetch を作り物に差し替える。本の取得には BOOK を返し、借りる API には borrowResponse を返す

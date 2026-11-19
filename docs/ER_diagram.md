@@ -71,6 +71,7 @@ erDiagram
 | 会社のアカウントでログイン | `users.account_id` |
 | 本一覧：題名で絞り込む | `books.title` |
 | 本一覧・本詳細：棚にある／貸出中 | `loans` に `status='borrowed'` の行があるかで判定（`books` には持たない） |
+| 本詳細・貸出詳細：棚にある冊数 | 同じ `books.title` の本のうち、`loans` に `status='borrowed'` の行がないものを数える（持ち出し禁止の本も数える） |
 | 本詳細：いま借りている人 | `status='borrowed'` の `loans.user_id` → `users.name` |
 | 本一覧：持ち出し禁止 | `books.is_restricted` |
 | 本詳細：持ち出し禁止の本は借りられない（「この本は貸出できません」） | `books.is_restricted = 1` なら貸出不可（APIも 403 を返す） |
