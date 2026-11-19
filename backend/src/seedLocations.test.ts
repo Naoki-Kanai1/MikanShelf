@@ -62,8 +62,8 @@ describe('seedBooks（初期データ）', () => {
     const byLocation = Object.fromEntries(rows.map((r) => [r.location, [r.total, r.restricted]]));
     expect(byLocation).toEqual({
       [LOC_13F]: [10, 10],
-      [LOC_14F]: [33, 3],
-      [LOC_TORANOMON]: [14, 6],
+      [LOC_14F]: [35, 4],
+      [LOC_TORANOMON]: [12, 5],
       [LOC_SHINKAWA]: [13, 6],
     });
     expect(allBooks()).toHaveLength(70);
@@ -92,7 +92,7 @@ describe('seedBooks（初期データ）', () => {
     expect(mixed('リファクタリング', LOC_SHINKAWA)).toEqual(new Set([0, 1]));
   });
 
-  it('SL-05: 初期データで貸出中の本は、すべて 14F の貸出可能な本', () => {
+  it('SL-05: 初期データで貸出中の本は、すべて貸出可能な本', () => {
     const borrowed = db
       .prepare(
         `SELECT b.id, b.title, b.location, b.is_restricted FROM loans l
@@ -101,7 +101,6 @@ describe('seedBooks（初期データ）', () => {
       .all() as Book[];
     expect(borrowed.length).toBeGreaterThan(0);
     for (const b of borrowed) {
-      expect(b.location).toBe(LOC_14F);
       expect(b.is_restricted).toBe(0);
     }
   });
@@ -115,6 +114,171 @@ describe('seedBooks（初期データ）', () => {
       expect(n).toBeGreaterThanOrEqual(1);
       expect(n).toBeLessThanOrEqual(5);
     }
+  });
+});
+
+// 題名と置き場所ごとの冊数・持ち出し禁止の冊数・貸出中の冊数・返却済みの記録がある冊数
+type Group = {
+  title: string;
+  location: string;
+  total: number;
+  restricted: number;
+  borrowed: number;
+  returned: number;
+};
+const groups = () =>
+  db
+    .prepare(
+      `SELECT b.title, b.location, COUNT(*) AS total, SUM(b.is_restricted) AS restricted,
+         SUM(EXISTS(SELECT 1 FROM loans l WHERE l.book_id = b.id AND l.status = 'borrowed')) AS borrowed,
+         SUM(EXISTS(SELECT 1 FROM loans l WHERE l.book_id = b.id AND l.status = 'returned')) AS returned
+       FROM books b GROUP BY b.title, b.location`,
+    )
+    .all() as Group[];
+const group = (title: string, location: string) =>
+  groups().find((g) => g.title === title && g.location === location);
+// 題名全体で、棚にある貸出可能な本の冊数
+const lendableOnShelf = (title: string) =>
+  (
+    db
+      .prepare(
+        `SELECT COUNT(*) AS n FROM books b WHERE b.title = ? AND b.is_restricted = 0
+         AND NOT EXISTS (SELECT 1 FROM loans l WHERE l.book_id = b.id AND l.status = 'borrowed')`,
+      )
+      .get(title) as { n: number }
+  ).n;
+const locationsOf = (title: string) => groups().filter((g) => g.title === title);
+const reservedTitles = () =>
+  (
+    db
+      .prepare(
+        `SELECT DISTINCT b.title FROM reservations r JOIN books b ON b.id = r.book_id
+         WHERE r.status = 'waiting'`,
+      )
+      .all() as { title: string }[]
+  ).map((r) => r.title);
+
+describe('置き換え後のデータの状態のパターン', () => {
+  it('SL-13: P1 置き場所に1冊だけで、貸出可能で、棚にある', () => {
+    expect(group('誰のためのデザイン？', LOC_SHINKAWA)).toMatchObject({
+      total: 1,
+      restricted: 0,
+      borrowed: 0,
+    });
+  });
+
+  it('SL-14: P2 置き場所に1冊だけで、貸出可能で、貸出中（その場所の棚は0冊）', () => {
+    expect(group('テスト駆動開発', LOC_14F)).toMatchObject({
+      total: 1,
+      restricted: 0,
+      borrowed: 1,
+    });
+  });
+
+  it('SL-15: P3 置き場所に1冊だけで、持ち出し禁止', () => {
+    expect(group('人月の神話', LOC_14F)).toMatchObject({ total: 1, restricted: 1, borrowed: 0 });
+  });
+
+  it('SL-16: P4 複数冊で、すべて貸出可能で、一部が貸出中', () => {
+    expect(group('リーダブルコード', LOC_14F)).toMatchObject({
+      total: 2,
+      restricted: 0,
+      borrowed: 1,
+    });
+  });
+
+  it('SL-17: P5 複数冊で、すべて貸出可能で、すべて貸出中', () => {
+    expect(group('チーム・ジャーニー', LOC_14F)).toMatchObject({
+      total: 2,
+      restricted: 0,
+      borrowed: 2,
+    });
+  });
+
+  it('SL-18: P6 複数冊で、持ち出し禁止と貸出可能が混在し、貸出なし', () => {
+    expect(group('リファクタリング', LOC_SHINKAWA)).toMatchObject({
+      total: 2,
+      restricted: 1,
+      borrowed: 0,
+    });
+  });
+
+  it('SL-19: P7 複数冊で、混在し、貸出可能な本が貸出中（棚には禁止の本だけ）', () => {
+    expect(group('イシューからはじめよ', LOC_TORANOMON)).toMatchObject({
+      total: 2,
+      restricted: 1,
+      borrowed: 1,
+    });
+  });
+
+  it('SL-20: P8 複数冊で、すべて持ち出し禁止', () => {
+    expect(group('データ指向アプリケーションデザイン', LOC_14F)).toMatchObject({
+      total: 2,
+      restricted: 2,
+    });
+  });
+
+  it('SL-21: P9 題名が1か所にしかなく、持ち出し禁止', () => {
+    expect(locationsOf('人月の神話')).toHaveLength(1);
+    expect(locationsOf('データ指向アプリケーションデザイン')).toHaveLength(1);
+    expect(locationsOf('Software Design 2026年11月号')).toMatchObject([
+      { location: LOC_13F, total: 1, restricted: 1 },
+    ]);
+  });
+
+  it('SL-22: P10 題名が1か所にしかなく、貸出可能', () => {
+    expect(locationsOf('チーム・ジャーニー')).toMatchObject([
+      { location: LOC_14F, total: 2, restricted: 0 },
+    ]);
+  });
+
+  it('SL-23: P11 題名が3か所にある', () => {
+    for (const title of [
+      'リーダブルコード',
+      'オブジェクト指向UIデザイン',
+      'Clean Code',
+      'イシューからはじめよ',
+    ]) {
+      expect(
+        locationsOf(title)
+          .map((g) => g.location)
+          .sort(),
+      ).toEqual([LOC_14F, LOC_TORANOMON, LOC_SHINKAWA].sort());
+    }
+  });
+
+  it('SL-24: P12 題名全体で、貸出可能な本が全部貸出中（全フロアの残り0）', () => {
+    expect(lendableOnShelf('チーム・ジャーニー')).toBe(0);
+    // 0 になるのはこの題名だけ（持ち出し禁止の本しかない題名は除く）
+    const titles = [
+      ...new Set(
+        groups()
+          .filter((g) => g.total > g.restricted)
+          .map((g) => g.title),
+      ),
+    ];
+    expect(titles.filter((t) => lendableOnShelf(t) === 0)).toEqual(['チーム・ジャーニー']);
+  });
+
+  it('SL-25: P13 14F 以外の本に、貸出中・返却済みの記録がある', () => {
+    expect(group('イシューからはじめよ', LOC_TORANOMON)?.borrowed).toBe(1);
+    expect(group('誰のためのデザイン？', LOC_SHINKAWA)?.returned).toBe(1);
+  });
+
+  it('SL-26: P14 予約ありで、ほかの場所の棚に本がある', () => {
+    expect(reservedTitles()).toContain('オブジェクト指向UIデザイン');
+    expect(lendableOnShelf('オブジェクト指向UIデザイン')).toBeGreaterThan(0);
+  });
+
+  it('SL-27: P15 予約ありで、全フロアの残りが0', () => {
+    expect(reservedTitles()).toContain('チーム・ジャーニー');
+    expect(lendableOnShelf('チーム・ジャーニー')).toBe(0);
+  });
+
+  it('SL-28: P16 置き場所の本が全部持ち出し禁止', () => {
+    const at13F = groups().filter((g) => g.location === LOC_13F);
+    expect(at13F.length).toBeGreaterThan(0);
+    expect(at13F.every((g) => g.restricted === g.total)).toBe(true);
   });
 });
 

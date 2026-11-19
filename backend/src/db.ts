@@ -158,7 +158,9 @@ const firstCopies: [title: string, authors: string, location: string, isRestrict
 ];
 
 // 同じ題名の本（2冊目以降）。「棚にある冊数」を確かめるためのもの。著者は1冊目と同じ
-// - 初期状態で貸出中の本（seedLoans で返した日が null の本）は、合わせて3冊以上にする
+// - 初期状態で貸出中の本（seedLoans で返した日が null の本）は、合わせて3冊以上にする。
+//   ただしチーム・ジャーニーは、全フロアの残りが0になる例として、2冊とも貸出中にする
+// - 状態のパターン（1か所にしかない本、全部持ち出し禁止の置き場所など）は tests/seedLocations/cases.md を参照
 // - ほかの本も合わせて1〜5冊（平均で3冊くらい）にする
 // - 横浜 14F SD部・虎ノ門 20F 共用・新川 777F 共用に振り分ける。14F はほとんど貸出可能、
 //   虎ノ門と新川は持ち出し禁止と貸出可能を混ぜる（同じ置き場所に同じ題名の両方がある本も作る）
@@ -189,7 +191,7 @@ const extraCopies: [title: string, location: string, isRestricted: 0 | 1][] = [
   ['Clean Code', LOC_SHINKAWA_777F, 1],
   ['エンジニアリング組織論への招待', LOC_YOKOHAMA_14F, 0],
   ['エンジニアリング組織論への招待', LOC_SHINKAWA_777F, 0],
-  ['チーム・ジャーニー', LOC_TORANOMON_20F, 0],
+  ['チーム・ジャーニー', LOC_YOKOHAMA_14F, 0],
   ['アジャイルサムライ', LOC_YOKOHAMA_14F, 0],
   ['アジャイルサムライ', LOC_SHINKAWA_777F, 1],
   ['プログラミング言語Go', LOC_YOKOHAMA_14F, 0],
@@ -201,7 +203,7 @@ const extraCopies: [title: string, location: string, isRestricted: 0 | 1][] = [
   ['イシューからはじめよ', LOC_TORANOMON_20F, 0],
   ['イシューからはじめよ', LOC_SHINKAWA_777F, 0],
   ['ユーザーインタフェースデザインの教科書', LOC_SHINKAWA_777F, 0],
-  ['データ指向アプリケーションデザイン', LOC_TORANOMON_20F, 1],
+  ['データ指向アプリケーションデザイン', LOC_YOKOHAMA_14F, 1],
   ['ソフトウェアアーキテクチャの基礎', LOC_YOKOHAMA_14F, 0],
   ['ソフトウェアアーキテクチャの基礎', LOC_SHINKAWA_777F, 1],
 ];
@@ -347,20 +349,41 @@ migrateOldLocations(db, seedBooks);
 
 // 貸出のサンプル（並び順が ID 順になる。/loans/1 が「貸出中」、/loans/2 が「返却済み」の例）
 // 日時は datetime('now') と同じく UTC。日本時間で日付がずれないよう 15:00 UTC より前の時刻にしている
-// [借りた人の account_id, 本の題名, 借りた日時, 返した日時（貸出中なら null）]
+// [借りた人の account_id, 本の題名, 置き場所, 借りた日時, 返した日時（貸出中なら null）]
+// 本は、題名と置き場所が同じで、貸出可能で、今貸出中でない本のうち ID が一番小さい本を選ぶ
 const seedLoans: [
   accountId: string,
   title: string,
+  location: string,
   borrowedAt: string,
   returnedAt: string | null,
 ][] = [
-  ['emp0001', 'リーダブルコード', '2026-11-02 01:00:00', null],
-  ['emp0001', '達人プログラマー', '2026-10-05 02:30:00', '2026-11-13 06:00:00'],
-  ['emp0002', 'オブジェクト指向UIデザイン', '2026-11-06 03:15:00', null],
-  ['emp0003', 'テスト駆動開発', '2026-11-10 04:00:00', null],
-  ['emp0004', 'Clean Code', '2026-10-20 05:20:00', '2026-11-01 07:40:00'],
-  ['emp0005', 'SQLアンチパターン', '2026-11-12 00:45:00', null],
-  ['emp0001', 'イシューからはじめよ', '2026-09-01 02:00:00', '2026-09-20 08:10:00'],
+  ['emp0001', 'リーダブルコード', LOC_YOKOHAMA_14F, '2026-11-02 01:00:00', null],
+  ['emp0001', '達人プログラマー', LOC_YOKOHAMA_14F, '2026-10-05 02:30:00', '2026-11-13 06:00:00'],
+  ['emp0002', 'オブジェクト指向UIデザイン', LOC_YOKOHAMA_14F, '2026-11-06 03:15:00', null],
+  ['emp0003', 'テスト駆動開発', LOC_YOKOHAMA_14F, '2026-11-10 04:00:00', null],
+  ['emp0004', 'Clean Code', LOC_YOKOHAMA_14F, '2026-10-20 05:20:00', '2026-11-01 07:40:00'],
+  ['emp0005', 'SQLアンチパターン', LOC_YOKOHAMA_14F, '2026-11-12 00:45:00', null],
+  [
+    'emp0001',
+    'イシューからはじめよ',
+    LOC_YOKOHAMA_14F,
+    '2026-09-01 02:00:00',
+    '2026-09-20 08:10:00',
+  ],
+  // 同じ置き場所の本が全部貸出中（全フロアの残りも0）になる例
+  ['emp0008', 'チーム・ジャーニー', LOC_YOKOHAMA_14F, '2026-11-11 01:20:00', null],
+  ['emp0009', 'チーム・ジャーニー', LOC_YOKOHAMA_14F, '2026-11-13 02:40:00', null],
+  // 持ち出し禁止の本と混在する置き場所で、貸出可能な本が貸出中になる例（棚には禁止の本だけ残る）
+  ['emp0010', 'イシューからはじめよ', LOC_TORANOMON_20F, '2026-11-14 03:10:00', null],
+  // 14F 以外の置き場所での返却済みの例
+  [
+    'emp0011',
+    '誰のためのデザイン？',
+    LOC_SHINKAWA_777F,
+    '2026-10-15 04:30:00',
+    '2026-11-05 05:50:00',
+  ],
 ];
 
 // 予約（順番待ち）のサンプル。すべて waiting（順番待ち中）
@@ -369,6 +392,8 @@ const seedReservations: [accountId: string, title: string, reservedAt: string][]
   ['emp0001', 'オブジェクト指向UIデザイン', '2026-11-08 01:30:00'],
   ['emp0006', 'オブジェクト指向UIデザイン', '2026-11-09 02:00:00'],
   ['emp0007', 'リーダブルコード', '2026-11-05 03:00:00'],
+  // 全フロアの残りが0の本に、順番待ちがある例
+  ['emp0012', 'チーム・ジャーニー', '2026-11-14 06:00:00'],
 ];
 
 const { loanCount } = db.prepare('SELECT COUNT(*) AS loanCount FROM loans').get() as {
@@ -381,7 +406,10 @@ if (loanCount === 0 && reservationCount === 0) {
   const insertLoan = db.prepare(
     `INSERT INTO loans (book_id, user_id, status, borrowed_at, returned_at)
      VALUES (
-       (SELECT id FROM books WHERE title = ? ORDER BY id LIMIT 1),
+       (SELECT b.id FROM books b
+        WHERE b.title = ? AND b.location = ? AND b.is_restricted = 0
+          AND NOT EXISTS (SELECT 1 FROM loans l WHERE l.book_id = b.id AND l.status = 'borrowed')
+        ORDER BY b.id LIMIT 1),
        (SELECT id FROM users WHERE account_id = ?),
        ?, ?, ?
      )`,
@@ -392,9 +420,9 @@ if (loanCount === 0 && reservationCount === 0) {
   );
 
   db.transaction(() => {
-    for (const [accountId, title, borrowedAt, returnedAt] of seedLoans) {
+    for (const [accountId, title, location, borrowedAt, returnedAt] of seedLoans) {
       const status = returnedAt === null ? 'borrowed' : 'returned';
-      insertLoan.run(title, accountId, status, borrowedAt, returnedAt);
+      insertLoan.run(title, location, accountId, status, borrowedAt, returnedAt);
     }
     // status は既定値の 'waiting'（順番待ち中）
     for (const [accountId, title, reservedAt] of seedReservations) {
