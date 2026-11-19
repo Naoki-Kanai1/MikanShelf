@@ -168,6 +168,18 @@ describe('BookListPage', () => {
     expect(await screen.findByText(title)).toBeTruthy();
     expect(screen.getByText(authors)).toBeTruthy();
   });
+
+  it('BL-17: 1冊だけの本は、著者の下に置き場所を出す（どの幅でも）', async () => {
+    respondWith([
+      makeBook({ id: 1, title: 'SQLアンチパターン', location: '3階 書架D' }),
+      makeBook({ id: 2, title: 'イシューからはじめよ', location: '4階 書架B' }),
+    ]);
+    renderPage();
+    const first = await findRow('SQLアンチパターン');
+    const second = await findRow('イシューからはじめよ');
+    expect(first.querySelector('.book-row__place')?.textContent).toBe('置き場所：3階 書架D');
+    expect(second.querySelector('.book-row__place')?.textContent).toBe('置き場所：4階 書架B');
+  });
 });
 
 // 絞り込みの入力欄のテスト。テストケースの一覧は tests/searchBooks/cases.md
@@ -280,7 +292,8 @@ describe('BookListPage の同じ本のまとまり', () => {
     expect(within(group).getByText('3冊')).toBeTruthy();
     expect(group.getAttribute('aria-expanded')).toBe('false');
     expect(queryCopies()).toBeNull();
-    expect(screen.queryByText(/置き場所/)).toBeNull();
+    // 閉じたまとまりの行には、置き場所を出さない（1冊だけの本の行は、著者の下に置き場所を出す）
+    expect(within(group).queryByText(/置き場所/)).toBeNull();
   });
 
   it('SB-40: まとまりの行を押すと開き、1冊ずつの置き場所と状態の印を行ごとに表示する', async () => {

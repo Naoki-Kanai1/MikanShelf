@@ -26,12 +26,12 @@
 
 /* ---- 返却済みの案内 ---- */
 .loan-notice {
-  margin: 40px 0 0;
+  box-sizing: border-box;
+  /* メインのボタンと同じ位置（情報のカードの 24px 下）に置く */
+  margin: 24px 0 0;
   padding: 16px;
   border-radius: 12px;
   background: var(--color-nav-bg);
   font-size: 14px;
   line-height: 1.5;
 }
-
-/* 返す前の確認ダイアログの見た目は components/ConfirmDialog.css */

@@ -91,7 +91,7 @@ export default function LoanDetail({ loanId }: Props) {
   const isBorrowed = loan?.status === 'borrowed';
 
   return (
-    <div className="screen">
+    <div className="screen loan-detail">
       <PageHeader title="貸出の詳細" backTo="/loans" />
 
       <div className="content">
