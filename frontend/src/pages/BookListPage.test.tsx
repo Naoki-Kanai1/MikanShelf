@@ -77,7 +77,7 @@ describe('BookListPage', () => {
     mockFetch(() => new Promise<Response>(() => {}));
     renderPage();
     expect(screen.getByText('読み込み中…')).toBeTruthy();
-    expect(screen.getByRole('heading', { name: '本' })).toBeTruthy();
+    expect(screen.getByRole('heading', { name: '本一覧' })).toBeTruthy();
     expect(screen.queryByRole('list')).toBeNull();
   });
 
@@ -139,7 +139,7 @@ describe('BookListPage', () => {
     respondWith([]);
     renderPage();
     expect(await screen.findByText('登録されている本はまだありません。')).toBeTruthy();
-    expect(screen.getByRole('heading', { name: '本' })).toBeTruthy();
+    expect(screen.getByRole('heading', { name: '本一覧' })).toBeTruthy();
     expect(screen.queryByRole('list')).toBeNull();
   });
 
@@ -147,7 +147,7 @@ describe('BookListPage', () => {
     mockFetch(async () => new Response('error', { status: 500 }));
     renderPage();
     expect((await screen.findByRole('alert')).textContent).toBe(ERROR_MESSAGE);
-    expect(screen.getByRole('heading', { name: '本' })).toBeTruthy();
+    expect(screen.getByRole('heading', { name: '本一覧' })).toBeTruthy();
     expect(screen.queryByRole('list')).toBeNull();
   });
 

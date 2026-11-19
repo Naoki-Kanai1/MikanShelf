@@ -23,8 +23,8 @@ type Loan = {
 type Filter = 'borrowed' | 'returned' | 'all';
 
 const FILTERS: { value: Filter; label: string; emptyMessage: string }[] = [
-  { value: 'borrowed', label: '貸出中のみ', emptyMessage: 'いま借りている本はありません。' },
-  { value: 'returned', label: '返却済みのみ', emptyMessage: '返却済みの本はまだありません。' },
+  { value: 'borrowed', label: 'いま借りている本', emptyMessage: 'いま借りている本はありません。' },
+  { value: 'returned', label: '返却済みの本', emptyMessage: '返却済みの本はまだありません。' },
   { value: 'all', label: 'すべて', emptyMessage: '借りた本はまだありません。' },
 ];
 
@@ -34,7 +34,7 @@ export default function LoanListPage() {
   // null は「まだ読み込み中」を表す
   const [loans, setLoans] = useState<Loan[] | null>(null);
   const [error, setError] = useState(false);
-  // 最初は「貸出中のみ」を表示する
+  // 最初は「いま借りている本」を表示する
   const [filter, setFilter] = useState<Filter>('borrowed');
 
   useEffect(() => {
@@ -53,7 +53,7 @@ export default function LoanListPage() {
 
   return (
     <div className="loan-list-page">
-      <PageHeader title="貸出" />
+      <PageHeader title="借りている本" />
       {/* TODO: 「自分の貸出／すべて」の絞り込みと、予約（予約中）の表示は別のPBIで作る */}
 
       <div className="loan-filter" role="group" aria-label="表示する貸出">
