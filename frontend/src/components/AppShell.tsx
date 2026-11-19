@@ -6,8 +6,8 @@ import './AppShell.css';
 // TODO: 蔵書リクエスト（/requests）の画面はまだ無いので、
 //       いまは「ページが見つかりません」が開く。画面ができたらURLを合わせる
 const navItems = [
-  { to: '/books', label: '本', icon: <BookIcon /> },
-  { to: '/loans', label: '貸出', icon: <LoanIcon /> },
+  { to: '/books', label: '本一覧', icon: <BookIcon /> },
+  { to: '/loans', label: '借りている本', icon: <LoanIcon /> },
   { to: '/requests', label: '蔵書リクエスト', icon: <RequestIcon /> },
 ];
 
