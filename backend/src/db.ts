@@ -127,91 +127,125 @@ const seedUsers: [accountId: string, name: string, email: string][] = [
   ['emp0020', '森', 'mori@example.com'],
 ];
 
-// 本（1冊目）。ID はこの順に 1〜20 になる
+// 置き場所
+const LOC_YOKOHAMA_13F = '横浜 13F 共用'; // IT関連の雑誌。すべて持ち出し禁止
+const LOC_YOKOHAMA_14F = '横浜 14F SD部'; // 技術書。ほとんど貸出可能
+const LOC_TORANOMON_20F = '虎ノ門 20F 共用'; // 技術書。持ち出し禁止と貸出可能が混在
+const LOC_SHINKAWA_777F = '新川 777F 共用'; // 技術書。持ち出し禁止と貸出可能が混在
+
+// 本（1冊目）。ID はこの順に 1〜20 になる。すべて横浜 14F SD部に置く
 const firstCopies: [title: string, authors: string, location: string, isRestricted: 0 | 1][] = [
-  ['リーダブルコード', 'Dustin Boswell、Trevor Foucher', '3階 書架A', 0],
-  ['オブジェクト指向UIデザイン', 'ソシオメディア株式会社', '3階 書架A', 0],
-  ['達人プログラマー', 'David Thomas、Andrew Hunt', '3階 書架B', 0],
-  ['誰のためのデザイン？', 'D. A. ノーマン', '3階 書架B', 0],
-  ['ノンデザイナーズ・デザインブック', 'Robin Williams', '3階 書架B', 0],
-  ['人月の神話', 'Frederick P. Brooks, Jr.', '3階 書架C', 1],
-  ['リファクタリング', 'Martin Fowler', '3階 書架A', 0],
-  ['テスト駆動開発', 'Kent Beck', '3階 書架A', 0],
-  ['ドメイン駆動設計', 'Eric Evans', '3階 書架C', 1],
-  ['Clean Code', 'Robert C. Martin', '3階 書架A', 0],
-  ['エンジニアリング組織論への招待', '広木大地', '4階 書架A', 0],
-  ['チーム・ジャーニー', '市谷聡啓', '4階 書架A', 0],
-  ['アジャイルサムライ', 'Jonathan Rasmusson', '4階 書架A', 0],
-  ['SQLアンチパターン', 'Bill Karwin', '3階 書架D', 0],
-  ['プログラミング言語Go', 'Alan A. A. Donovan、Brian W. Kernighan', '3階 書架D', 0],
-  ['Webを支える技術', '山本陽平', '3階 書架D', 0],
-  ['イシューからはじめよ', '安宅和人', '4階 書架B', 0],
-  ['ユーザーインタフェースデザインの教科書', '原田秀司', '3階 書架B', 0],
-  ['データ指向アプリケーションデザイン', 'Martin Kleppmann', '3階 書架C', 1],
-  ['ソフトウェアアーキテクチャの基礎', 'Mark Richards、Neal Ford', '3階 書架C', 0],
+  ['リーダブルコード', 'Dustin Boswell、Trevor Foucher', LOC_YOKOHAMA_14F, 0],
+  ['オブジェクト指向UIデザイン', 'ソシオメディア株式会社', LOC_YOKOHAMA_14F, 0],
+  ['達人プログラマー', 'David Thomas、Andrew Hunt', LOC_YOKOHAMA_14F, 0],
+  ['誰のためのデザイン？', 'D. A. ノーマン', LOC_YOKOHAMA_14F, 0],
+  ['ノンデザイナーズ・デザインブック', 'Robin Williams', LOC_YOKOHAMA_14F, 0],
+  ['人月の神話', 'Frederick P. Brooks, Jr.', LOC_YOKOHAMA_14F, 1],
+  ['リファクタリング', 'Martin Fowler', LOC_YOKOHAMA_14F, 0],
+  ['テスト駆動開発', 'Kent Beck', LOC_YOKOHAMA_14F, 0],
+  ['ドメイン駆動設計', 'Eric Evans', LOC_YOKOHAMA_14F, 1],
+  ['Clean Code', 'Robert C. Martin', LOC_YOKOHAMA_14F, 0],
+  ['エンジニアリング組織論への招待', '広木大地', LOC_YOKOHAMA_14F, 0],
+  ['チーム・ジャーニー', '市谷聡啓', LOC_YOKOHAMA_14F, 0],
+  ['アジャイルサムライ', 'Jonathan Rasmusson', LOC_YOKOHAMA_14F, 0],
+  ['SQLアンチパターン', 'Bill Karwin', LOC_YOKOHAMA_14F, 0],
+  ['プログラミング言語Go', 'Alan A. A. Donovan、Brian W. Kernighan', LOC_YOKOHAMA_14F, 0],
+  ['Webを支える技術', '山本陽平', LOC_YOKOHAMA_14F, 0],
+  ['イシューからはじめよ', '安宅和人', LOC_YOKOHAMA_14F, 0],
+  ['ユーザーインタフェースデザインの教科書', '原田秀司', LOC_YOKOHAMA_14F, 0],
+  ['データ指向アプリケーションデザイン', 'Martin Kleppmann', LOC_YOKOHAMA_14F, 1],
+  ['ソフトウェアアーキテクチャの基礎', 'Mark Richards、Neal Ford', LOC_YOKOHAMA_14F, 0],
 ];
 
 // 同じ題名の本（2冊目以降）。「棚にある冊数」を確かめるためのもの。著者は1冊目と同じ
 // - 初期状態で貸出中の本（seedLoans で返した日が null の本）は、合わせて3冊以上にする
 // - ほかの本も合わせて1〜5冊（平均で3冊くらい）にする
+// - 横浜 14F SD部・虎ノ門 20F 共用・新川 777F 共用に振り分ける。14F はほとんど貸出可能、
+//   虎ノ門と新川は持ち出し禁止と貸出可能を混ぜる（同じ置き場所に同じ題名の両方がある本も作る）
 // - 既存の DB に入った本と食い違わないよう、同じ題名の中の順番は変えずに、増やすときは後ろに足す
 const extraCopies: [title: string, location: string, isRestricted: 0 | 1][] = [
-  ['リーダブルコード', '3階 書架A', 0],
-  ['リーダブルコード', '4階 書架B', 0],
-  ['オブジェクト指向UIデザイン', '4階 書架B', 0],
-  ['テスト駆動開発', '3階 書架C', 1],
-  ['リーダブルコード', '3階 書架D', 0],
-  ['オブジェクト指向UIデザイン', '3階 書架B', 0],
-  ['テスト駆動開発', '4階 書架A', 0],
-  ['SQLアンチパターン', '3階 書架D', 0],
-  ['SQLアンチパターン', '4階 書架B', 0],
-  ['達人プログラマー', '3階 書架B', 0],
-  ['達人プログラマー', '4階 書架A', 0],
-  ['誰のためのデザイン？', '3階 書架B', 0],
-  ['誰のためのデザイン？', '4階 書架B', 0],
-  ['ノンデザイナーズ・デザインブック', '3階 書架B', 0],
-  ['ノンデザイナーズ・デザインブック', '4階 書架B', 0],
-  ['リファクタリング', '3階 書架A', 0],
-  ['リファクタリング', '3階 書架D', 0],
-  ['リファクタリング', '4階 書架A', 0],
-  ['ドメイン駆動設計', '3階 書架C', 1],
-  ['ドメイン駆動設計', '4階 書架A', 0],
-  ['Clean Code', '3階 書架A', 0],
-  ['Clean Code', '3階 書架D', 0],
-  ['Clean Code', '4階 書架A', 0],
-  ['エンジニアリング組織論への招待', '4階 書架A', 0],
-  ['エンジニアリング組織論への招待', '4階 書架B', 0],
-  ['チーム・ジャーニー', '4階 書架B', 0],
-  ['アジャイルサムライ', '4階 書架A', 0],
-  ['アジャイルサムライ', '4階 書架B', 0],
-  ['プログラミング言語Go', '3階 書架D', 0],
-  ['プログラミング言語Go', '4階 書架B', 0],
-  ['Webを支える技術', '3階 書架D', 0],
-  ['Webを支える技術', '4階 書架A', 0],
-  ['イシューからはじめよ', '4階 書架B', 0],
-  ['イシューからはじめよ', '4階 書架B', 0],
-  ['イシューからはじめよ', '4階 書架A', 0],
-  ['イシューからはじめよ', '3階 書架B', 0],
-  ['ユーザーインタフェースデザインの教科書', '4階 書架B', 0],
-  ['データ指向アプリケーションデザイン', '3階 書架C', 1],
-  ['ソフトウェアアーキテクチャの基礎', '3階 書架C', 0],
-  ['ソフトウェアアーキテクチャの基礎', '4階 書架A', 0],
+  ['リーダブルコード', LOC_YOKOHAMA_14F, 0],
+  ['リーダブルコード', LOC_TORANOMON_20F, 0],
+  ['オブジェクト指向UIデザイン', LOC_TORANOMON_20F, 0],
+  ['テスト駆動開発', LOC_TORANOMON_20F, 1],
+  ['リーダブルコード', LOC_SHINKAWA_777F, 1],
+  ['オブジェクト指向UIデザイン', LOC_SHINKAWA_777F, 0],
+  ['テスト駆動開発', LOC_TORANOMON_20F, 0],
+  ['SQLアンチパターン', LOC_YOKOHAMA_14F, 0],
+  ['SQLアンチパターン', LOC_SHINKAWA_777F, 1],
+  ['達人プログラマー', LOC_YOKOHAMA_14F, 0],
+  ['達人プログラマー', LOC_TORANOMON_20F, 1],
+  ['誰のためのデザイン？', LOC_YOKOHAMA_14F, 0],
+  ['誰のためのデザイン？', LOC_SHINKAWA_777F, 0],
+  ['ノンデザイナーズ・デザインブック', LOC_YOKOHAMA_14F, 0],
+  ['ノンデザイナーズ・デザインブック', LOC_TORANOMON_20F, 0],
+  ['リファクタリング', LOC_YOKOHAMA_14F, 0],
+  ['リファクタリング', LOC_SHINKAWA_777F, 1],
+  ['リファクタリング', LOC_SHINKAWA_777F, 0],
+  ['ドメイン駆動設計', LOC_TORANOMON_20F, 1],
+  ['ドメイン駆動設計', LOC_TORANOMON_20F, 0],
+  ['Clean Code', LOC_YOKOHAMA_14F, 0],
+  ['Clean Code', LOC_TORANOMON_20F, 0],
+  ['Clean Code', LOC_SHINKAWA_777F, 1],
+  ['エンジニアリング組織論への招待', LOC_YOKOHAMA_14F, 0],
+  ['エンジニアリング組織論への招待', LOC_SHINKAWA_777F, 0],
+  ['チーム・ジャーニー', LOC_TORANOMON_20F, 0],
+  ['アジャイルサムライ', LOC_YOKOHAMA_14F, 0],
+  ['アジャイルサムライ', LOC_SHINKAWA_777F, 1],
+  ['プログラミング言語Go', LOC_YOKOHAMA_14F, 0],
+  ['プログラミング言語Go', LOC_TORANOMON_20F, 1],
+  ['Webを支える技術', LOC_YOKOHAMA_14F, 0],
+  ['Webを支える技術', LOC_SHINKAWA_777F, 0],
+  ['イシューからはじめよ', LOC_YOKOHAMA_14F, 0],
+  ['イシューからはじめよ', LOC_TORANOMON_20F, 1],
+  ['イシューからはじめよ', LOC_TORANOMON_20F, 0],
+  ['イシューからはじめよ', LOC_SHINKAWA_777F, 0],
+  ['ユーザーインタフェースデザインの教科書', LOC_SHINKAWA_777F, 0],
+  ['データ指向アプリケーションデザイン', LOC_TORANOMON_20F, 1],
+  ['ソフトウェアアーキテクチャの基礎', LOC_YOKOHAMA_14F, 0],
+  ['ソフトウェアアーキテクチャの基礎', LOC_SHINKAWA_777F, 1],
 ];
 
-// 入れる本の全部。2冊目以降は、既存の本の ID を変えないよう1冊目の後ろに並べる
-const authorsByTitle = new Map(firstCopies.map(([title, authors]) => [title, authors]));
-const seedBooks: [title: string, authors: string, location: string, isRestricted: 0 | 1][] = [
-  ...firstCopies,
-  ...extraCopies.map(([title, location, isRestricted]): (typeof firstCopies)[number] => {
-    const authors = authorsByTitle.get(title);
-    if (authors === undefined)
-      throw new Error(`extraCopies の「${title}」が firstCopies にありません`);
-    return [title, authors, location, isRestricted];
-  }),
+// 雑誌（横浜 13F 共用）。1タイトル1冊で、すべて持ち出し禁止。著者の欄には出版社を入れる
+const magazines: [title: string, publisher: string][] = [
+  ['Software Design 2026年11月号', '技術評論社'],
+  ['Software Design 2026年10月号', '技術評論社'],
+  ['日経コンピュータ 2026年11月13日号', '日経BP'],
+  ['日経コンピュータ 2026年10月30日号', '日経BP'],
+  ['日経ソフトウエア 2026年11月号', '日経BP'],
+  ['日経ソフトウエア 2026年9月号', '日経BP'],
+  ['日経NETWORK 2026年11月号', '日経BP'],
+  ['日経NETWORK 2026年10月号', '日経BP'],
+  ['Interface 2026年12月号', 'CQ出版社'],
+  ['Interface 2026年11月号', 'CQ出版社'],
 ];
+
+// 入れる本の全部。既存の本の ID を変えないよう、1冊目 → 2冊目以降 → 雑誌の順に並べる
+const authorsByTitle = new Map(firstCopies.map(([title, authors]) => [title, authors]));
+export const seedBooks: [title: string, authors: string, location: string, isRestricted: 0 | 1][] =
+  [
+    ...firstCopies,
+    ...extraCopies.map(([title, location, isRestricted]): (typeof firstCopies)[number] => {
+      const authors = authorsByTitle.get(title);
+      if (authors === undefined)
+        throw new Error(`extraCopies の「${title}」が firstCopies にありません`);
+      return [title, authors, location, isRestricted];
+    }),
+    ...magazines.map(([title, publisher]): (typeof firstCopies)[number] => [
+      title,
+      publisher,
+      LOC_YOKOHAMA_13F,
+      1,
+    ]),
+  ];
 
 // [リクエストした人の account_id, 題名, 著者（わからなければ null）, リクエスト日時]
-const seedRequests: [accountId: string, title: string, authors: string | null, requestedAt: string][] = [
+const seedRequests: [
+  accountId: string,
+  title: string,
+  authors: string | null,
+  requestedAt: string,
+][] = [
   ['emp0001', 'Clean Architecture', 'Robert C. Martin', '2026-11-10 10:12:00'],
   ['emp0001', 'UXデザインの法則', 'Jon Yablonski', '2026-11-04 15:30:00'],
   ['emp0002', 'Team Geek', 'Brian W. Fitzpatrick、Ben Collins-Sussman', '2026-10-21 09:05:00'],
@@ -253,6 +287,45 @@ if (count === 0) {
     for (const r of seedRequests) insertRequest.run(...r);
   })();
 }
+
+// 古い置き場所の名前（「3階 書架A」など）が残っている DB を、新しい置き場所に書き換える。
+// 題名ごとに「n 冊目」（ID の小さい順）を books の n 冊目と対応させ、置き場所と持ち出し禁止を合わせる。
+// - 今貸出中の本は、持ち出し禁止にすると話が合わなくなるので、置き場所だけ書き換える
+// - 書き換えた本は古い名前ではなくなるので、何度呼んでも結果は変わらない
+// - books に対応する本がない本（自分で足した本など）は、そのままにする
+export function migrateOldLocations(
+  database: Database.Database,
+  books: readonly (readonly [
+    title: string,
+    authors: string,
+    location: string,
+    isRestricted: 0 | 1,
+  ])[],
+): void {
+  const copiesByTitle = database.prepare(
+    'SELECT id, location FROM books WHERE title = ? ORDER BY id',
+  );
+  const isBorrowed = database.prepare(
+    `SELECT 1 FROM loans WHERE book_id = ? AND status = 'borrowed'`,
+  );
+  const updateBook = database.prepare(
+    'UPDATE books SET location = ?, is_restricted = ? WHERE id = ?',
+  );
+  const updateLocation = database.prepare('UPDATE books SET location = ? WHERE id = ?');
+  const isOldLocation = (location: string) => /^.階 書架.$/.test(location);
+  database.transaction(() => {
+    const seen = new Map<string, number>();
+    for (const [title, , location, isRestricted] of books) {
+      const nth = (seen.get(title) ?? 0) + 1; // この題名の何冊目か
+      seen.set(title, nth);
+      const copy = (copiesByTitle.all(title) as { id: number; location: string }[])[nth - 1];
+      if (copy === undefined || !isOldLocation(copy.location)) continue;
+      if (isBorrowed.get(copy.id)) updateLocation.run(location, copy.id);
+      else updateBook.run(location, isRestricted, copy.id);
+    }
+  })();
+}
+migrateOldLocations(db, seedBooks);
 
 // 初回起動より後に seedBooks へ足した本（同じ題名の2冊目以降など）を、既存の DB にも入れる。
 // 題名ごとに、DB の冊数が seedBooks の冊数より少なければ、足りない分だけ入れる（何度起動しても増え続けない）
