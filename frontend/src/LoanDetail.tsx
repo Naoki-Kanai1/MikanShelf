@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
-import ConfirmDialog from './components/ConfirmDialog';
+import CompletionDialog from './components/CompletionDialog';
 import LoanStatusChip from './components/LoanStatusChip';
 import PageHeader from './components/PageHeader';
 import { formatDate } from './utils/formatDate';
@@ -37,6 +37,8 @@ export default function LoanDetail({ loanId }: Props) {
   // state の更新は次の描画まで反映されないため、連打を確実に防ぐ目的で ref でも管理する
   const submittingRef = useRef(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
+  // 返したあとの最新の貸出。完了ダイアログで OK を押したら画面に反映する
+  const returnedLoanRef = useRef<Loan | null>(null);
 
   useEffect(() => {
     let ignore = false;
@@ -52,13 +54,12 @@ export default function LoanDetail({ loanId }: Props) {
     };
   }, [loanId]);
 
-  const openDialog = () => {
-    setError(null);
-    dialogRef.current?.showModal();
-  };
-
-  const closeDialog = () => {
-    dialogRef.current?.close();
+  // 完了ダイアログを閉じたら、返却済みの表示に切り替える
+  const handleCompletionClose = () => {
+    const returned = returnedLoanRef.current;
+    if (!returned) return;
+    returnedLoanRef.current = null;
+    setLoan(returned);
   };
 
   const handleReturn = async () => {
@@ -66,7 +67,6 @@ export default function LoanDetail({ loanId }: Props) {
     submittingRef.current = true;
     setSubmitting(true);
     setError(null);
-    closeDialog();
     try {
       const res = await fetch(`/api/loans/${loan.id}/return`, { method: 'POST' });
       if (res.status === 409) {
@@ -75,7 +75,9 @@ export default function LoanDetail({ loanId }: Props) {
         throw new Error('この本はすでに返却済みです');
       }
       if (!res.ok) throw new Error('返却できませんでした');
-      setLoan((await res.json()) as Loan);
+      // 返したら完了ダイアログを出す。OK を押すと、返却済みの表示に切り替わる
+      returnedLoanRef.current = (await res.json()) as Loan;
+      dialogRef.current?.showModal();
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -148,7 +150,7 @@ export default function LoanDetail({ loanId }: Props) {
               <button
                 type="button"
                 className="primary-button"
-                onClick={openDialog}
+                onClick={handleReturn}
                 disabled={submitting}
               >
                 {submitting ? '読み込み中' : '返す'}
@@ -163,20 +165,12 @@ export default function LoanDetail({ loanId }: Props) {
         {error && <p className="error">{error}</p>}
       </div>
 
-      {/* 返す前の確認ダイアログ */}
-      <ConfirmDialog
+      {/* 返したあとの完了ダイアログ */}
+      <CompletionDialog
         ref={dialogRef}
-        title="この本を返しますか？"
-        confirmLabel="返す"
-        onConfirm={handleReturn}
-        onCancel={closeDialog}
-      >
-        <ul>
-          <li>返却する本のタイトルに間違いはありませんか？</li>
-          <li>正しい書架の前に到着しましたか？</li>
-        </ul>
-        <p>返すと元に戻せません。もう一度読むときは、本の詳細から借りられます。</p>
-      </ConfirmDialog>
+        message="本を返しました！"
+        onClose={handleCompletionClose}
+      />
     </div>
   );
 }

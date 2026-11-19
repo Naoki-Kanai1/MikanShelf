@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
-import ConfirmDialog from './components/ConfirmDialog';
+import CompletionDialog from './components/CompletionDialog';
 import PageHeader from './components/PageHeader';
 import StatusChip from './components/StatusChip';
 import './BookDetail.css';
@@ -31,6 +31,8 @@ export default function BookDetail({ bookId }: Props) {
   // state の更新は次の描画まで反映されないため、連打を確実に防ぐ目的で ref でも管理する
   const submittingRef = useRef(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
+  // 借りられた貸出の ID。完了ダイアログで OK を押したら、この貸出の詳細画面へ移動する
+  const borrowedLoanIdRef = useRef<number | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -51,13 +53,12 @@ export default function BookDetail({ bookId }: Props) {
     };
   }, [bookId]);
 
-  const openDialog = () => {
-    setError(null);
-    dialogRef.current?.showModal();
-  };
-
-  const closeDialog = () => {
-    dialogRef.current?.close();
+  // 完了ダイアログを閉じたら、借りた貸出の詳細画面へ移動する
+  const handleCompletionClose = () => {
+    const loanId = borrowedLoanIdRef.current;
+    if (loanId === null) return;
+    borrowedLoanIdRef.current = null;
+    navigate(`/loans/${loanId}`);
   };
 
   const handleBorrow = async () => {
@@ -66,7 +67,6 @@ export default function BookDetail({ bookId }: Props) {
     submittingRef.current = true;
     setSubmitting(true);
     setError(null);
-    closeDialog();
     try {
       const res = await fetch(`/api/books/${book.id}/borrow`, {
         method: 'POST',
@@ -86,9 +86,10 @@ export default function BookDetail({ bookId }: Props) {
         throw new Error('この本は持ち出し禁止のため貸出できません');
       }
       if (!res.ok) throw new Error('借りられませんでした');
-      // 借りたら、その貸出の詳細画面へ移動する
+      // 借りたら完了ダイアログを出す。OK を押すと、その貸出の詳細画面へ移動する
       const loan = (await res.json()) as { id: number };
-      navigate(`/loans/${loan.id}`);
+      borrowedLoanIdRef.current = loan.id;
+      dialogRef.current?.showModal();
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -145,7 +146,7 @@ export default function BookDetail({ bookId }: Props) {
             <button
               type="button"
               className="primary-button"
-              onClick={openDialog}
+              onClick={handleBorrow}
               disabled={submitting || isBorrowed || isRestricted}
             >
               {isRestricted ? 'この本は持ち出し禁止です' : submitting ? '読み込み中' : '借りる'}
@@ -155,20 +156,12 @@ export default function BookDetail({ bookId }: Props) {
         {error && <p className="error">{error}</p>}
       </div>
 
-      {/* 借りる前の確認ダイアログ（返す前の確認と同じ形） */}
-      <ConfirmDialog
+      {/* 借りたあとの完了ダイアログ */}
+      <CompletionDialog
         ref={dialogRef}
-        title="この本を借りますか？"
-        confirmLabel="借りる"
-        onConfirm={handleBorrow}
-        onCancel={closeDialog}
-      >
-        <ul>
-          <li>借りる本のタイトルに間違いはありませんか？</li>
-          <li>本を書架から取り出しましたか？</li>
-        </ul>
-        <p>読み終わったら、貸出の詳細から返してください。</p>
-      </ConfirmDialog>
+        message="本を借りました！"
+        onClose={handleCompletionClose}
+      />
     </div>
   );
 }
