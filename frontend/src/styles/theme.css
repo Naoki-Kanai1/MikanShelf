@@ -22,6 +22,8 @@
   --color-error: #ba1a1a;
   --color-error-container: #ffdad6;
   --color-on-error-container: #410002;
+  /* 「持ち出し禁止」の印の文字。on-error-container より明るく、error より落ち着いた赤 */
+  --color-on-error-container-variant: #93000a;
   --color-surface: #fff8f4;
   --color-on-surface: #211a14;
   --color-on-surface-variant: #51443a;
