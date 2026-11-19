@@ -97,3 +97,22 @@ export function ArrowBackIcon() {
     </Icon>
   );
 }
+
+// 検索の入力欄の虫めがね
+export function SearchIcon() {
+  return (
+    <Icon>
+      <circle cx="11" cy="11" r="6.5" />
+      <path d="M16 16l4.5 4.5" />
+    </Icon>
+  );
+}
+
+// まとめた本を開く・閉じるボタンの「∨」。開いているときは CSS で上下を返す
+export function ExpandIcon() {
+  return (
+    <Icon>
+      <path d="M6 9l6 6 6-6" />
+    </Icon>
+  );
+}

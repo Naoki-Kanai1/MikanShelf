@@ -1,5 +1,5 @@
 import express from 'express';
-import { countBooksOnShelf } from './bookStock.js';
+import { countBooksOnShelf, countBooksOnShelfAtLocation } from './bookStock.js';
 import { db } from './db.js';
 
 const app = express();
@@ -28,7 +28,7 @@ type Book = {
   created_at: string;
 };
 
-// 本詳細・貸出詳細で返す、同じ題名の本のうち棚にある冊数
+// 本詳細・貸出詳細で返す、同じ題名の本のうち棚にある冊数（本詳細は同じ置き場所の分だけ、貸出詳細は全ての置き場所の分）
 type WithShelfCount<T> = T & { on_shelf_count: number };
 
 // 本の情報に、いまの貸出状況（貸出中の loans があるか）を付けて取得する
@@ -69,7 +69,11 @@ app.get('/api/books/:id', (req, res) => {
     res.status(404).json({ error: 'book not found' });
     return;
   }
-  const detail: WithShelfCount<Book> = { ...book, on_shelf_count: countBooksOnShelf(book.title) };
+  // 本詳細の「棚にある冊数」は、この本と同じ置き場所の冊数
+  const detail: WithShelfCount<Book> = {
+    ...book,
+    on_shelf_count: countBooksOnShelfAtLocation(book.title, book.location),
+  };
   res.json(detail);
 });
 

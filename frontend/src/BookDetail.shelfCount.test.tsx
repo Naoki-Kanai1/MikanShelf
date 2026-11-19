@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-// 本詳細画面の「棚にある冊数」の単体テスト。テストケースの一覧は tests/bookStock/cases.md
+// 本詳細画面の「この棚にある冊数」の単体テスト。テストケースの一覧は tests/bookStock/cases.md
 import { cleanup, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -64,24 +64,24 @@ afterEach(() => {
 });
 
 describe('BookDetail', () => {
-  it('BS-09: on_shelf_count が 2 なら、「棚にある冊数」に「2冊」と表示する', async () => {
+  it('BS-09: on_shelf_count が 2 なら、「この棚にある冊数」に「2冊」と表示する', async () => {
     respondWith(makeBook({ on_shelf_count: 2 }));
     renderPage();
-    expect(await screen.findByText('棚にある冊数')).toBeTruthy();
-    expect(valueOf('棚にある冊数')).toBe('2冊');
+    expect(await screen.findByText('この棚にある冊数')).toBeTruthy();
+    expect(valueOf('この棚にある冊数')).toBe('2冊');
   });
 
   it('BS-10: on_shelf_count が 0 なら「0冊」と表示する', async () => {
     respondWith(makeBook({ status: 'borrowed', borrower_name: '佐藤', on_shelf_count: 0 }));
     renderPage();
-    await screen.findByText('棚にある冊数');
-    expect(valueOf('棚にある冊数')).toBe('0冊');
+    await screen.findByText('この棚にある冊数');
+    expect(valueOf('この棚にある冊数')).toBe('0冊');
   });
 
-  it('BS-11: 「棚にある冊数」は「状態」のすぐ下に並ぶ', async () => {
+  it('BS-11: 「この棚にある冊数」は「状態」のすぐ下に並ぶ', async () => {
     respondWith(makeBook());
     renderPage();
-    await screen.findByText('棚にある冊数');
-    expect(labels()).toEqual(['置き場所', '状態', '棚にある冊数', 'いま借りている人']);
+    await screen.findByText('この棚にある冊数');
+    expect(labels()).toEqual(['置き場所', '状態', 'この棚にある冊数', 'いま借りている人']);
   });
 });

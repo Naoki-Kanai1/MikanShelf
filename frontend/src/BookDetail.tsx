@@ -15,7 +15,7 @@ type Book = {
   status: 'available' | 'borrowed';
   // 貸出中でなければ null
   borrower_name: string | null;
-  // 同じ題名の本のうち、棚にある（貸出中でない）冊数。この本自体も棚にあれば含む
+  // 同じ題名で、この本と置き場所も同じ本のうち、棚にある（貸出中でない）冊数。この本自体も棚にあれば含む
   on_shelf_count: number;
 };
 
@@ -139,7 +139,7 @@ export default function BookDetail({ bookId }: Props) {
                   <ShelfIcon />
                 </span>
                 <div>
-                  <div className="info-label">棚にある冊数</div>
+                  <div className="info-label">この棚にある冊数</div>
                   <div className="info-value">{book.on_shelf_count}冊</div>
                 </div>
               </div>
