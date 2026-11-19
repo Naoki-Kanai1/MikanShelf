@@ -9,7 +9,7 @@ export default defineConfig({
   test: {
     include: ['frontend/src/**/*.test.{ts,tsx}', 'backend/src/**/*.test.ts'],
     // 画面の部品（React）をテストするときは、そのテストファイルの先頭に
-    // `// @vitest-environment jsdom` と書く（jsdom のインストールが必要）
+    // `// @vitest-environment jsdom` と書く
     environment: 'node',
     env: {
       // テスト中に backend/src/db.ts を読み込んでしまっても、本物の DB（backend/data/app.db）を

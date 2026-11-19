@@ -68,7 +68,8 @@ backend/src/**/xxx.test.ts
   DB が使われる。この設定は消さない。
 - 日付・時刻はタイムゾーンを日本時間に固定している（`vitest.config.ts`）。いまの時刻に頼るテストは
   `vi.useFakeTimers()` と `vi.setSystemTime()` で時刻を決める。
-- 画面の部品（React）をテストするときは、テストファイルの先頭に `// @vitest-environment jsdom` と書く
-  （`jsdom` と `@testing-library/react` を、最初に使う人がインストールする）。
+- 画面の部品（React）をテストするときは、テストファイルの先頭に `// @vitest-environment jsdom` と書き、
+  `@testing-library/react` で表示して確かめる。API は `vi.stubGlobal('fetch', ...)` で作り物に差し替える
+  （見本: `frontend/src/pages/BookListPage.test.tsx`）。テストの最後に `cleanup()` を呼ぶ。
 - バックエンドの処理は、いまは API（`backend/src/index.ts`）の中に直接書かれている。関数ごとにテストする
   ときは、処理を関数に分けて別のファイルに移し、その関数をテストする。

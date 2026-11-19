@@ -8,6 +8,15 @@ description: MikanShelf の機能の単体テストを、関数ごとに書い�
 MikanShelf の単体テストの手順。ルールの本体は [tests/README.md](../../../tests/README.md)。
 始める前に必ず読み、そこに書かれた決まり（フォルダの形、ID の形、書き方）に従う。
 
+## 0. 準備
+
+テストに使うライブラリ（Vitest など）は、pull しただけでは入らない。次のどれかに当てはまるときは、
+テストを書き始める前に、リポジトリのルートで `npm install` を実行する。
+
+- `node_modules/vitest` のフォルダがない
+- pull した直後などで、`package.json` や `package-lock.json` が変わっている
+- テストを実行して `Cannot find module` や `vitest/package.json` が見つからないというエラーが出た（`npm install` してからやり直す）
+
 ## 1. テストする関数を決める
 
 - ユーザーが機能や関数を指定していれば、それを使う。
