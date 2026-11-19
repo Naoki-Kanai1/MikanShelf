@@ -1,7 +1,7 @@
 # テストケース: formatDate
 
 - ID の略号: `FD`
-- PBI: #00（単体テストの仕組みを作るときの見本）
+- PBI: #20（単体テストの仕組みを作るときの見本）
 - 書いた人: Sho Nakata
 
 ## formatDate（`frontend/src/utils/formatDate.ts`）

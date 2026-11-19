@@ -1,7 +1,7 @@
 # テストケース: bookList（本一覧画面）
 
 - ID の略号: `BL`
-- PBI: #00（単体テストの見本。画面の部品のテストの例）
+- PBI: #20（単体テストの見本。画面の部品のテストの例）
 - 書いた人: Sho Nakata
 - もとにした資料: [画面設計書](../../docs/ap/BookListPage/Screen_design.md)
 
