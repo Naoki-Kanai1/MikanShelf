@@ -12,6 +12,9 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "typecheck": "npm run typecheck -w backend && npm run typecheck -w frontend",
+    "test": "node scripts/vitest.mjs run",
+    "test:watch": "node scripts/vitest.mjs",
+    "test:report": "node scripts/test-report.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
@@ -25,6 +28,7 @@
     "globals": "^17.14.0",
     "prettier": "^3.10.1",
     "typescript": "~6.0.3",
-    "typescript-eslint": "^8.72.2"
+    "typescript-eslint": "^8.72.2",
+    "vitest": "^5.1.1"
   }
 }
