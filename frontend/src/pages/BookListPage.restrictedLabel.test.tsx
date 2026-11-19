@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-// 本一覧画面の「持ち出し禁止」の位置の単体テスト。テストケースの一覧は tests/bookListRestrictedLabel/cases.md
+// 本一覧画面の「持ち出し禁止」の印の単体テスト。テストケースの一覧は tests/bookListRestrictedLabel/cases.md
 import { cleanup, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -45,54 +45,35 @@ function renderWith(books: Book[]) {
   );
 }
 
-// 題名から行（リンク）を探し、右側の箱（状態の印と持ち出し禁止を入れる箱）も返す
-async function findRowParts(title: string) {
+// 題名から行（リンク）を探し、その行の状態の印をすべて返す
+async function findChips(title: string) {
   const row = await screen.findByRole('link', { name: new RegExp(title) });
-  const badges = row.querySelector('.book-row__badges');
-  if (!badges) throw new Error('右側の箱（.book-row__badges）がありません');
-  return { row, badges };
+  return { row, chips: Array.from(row.querySelectorAll('.status-chip')) };
 }
-
-// 箱の中の、直下の要素の文字を順に並べる
-const childTexts = (el: Element) => Array.from(el.children).map((c) => c.textContent?.trim());
 
 afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();
 });
 
-describe('BookListPage（持ち出し禁止の位置）', () => {
-  it('RL-01: 持ち出し禁止の本（棚にある）では、右側の箱に「棚にある」「持ち出し禁止」の順で並ぶ', async () => {
+describe('BookListPage（持ち出し禁止の印）', () => {
+  it('RL-05: 持ち出し禁止の本の行では、状態の印は1つだけで「持ち出し禁止」になり、「棚にある」は無い', async () => {
     renderWith([makeBook({ id: 1, title: '禁止の本', is_restricted: 1, status: 'available' })]);
-    const { badges } = await findRowParts('禁止の本');
-    expect(childTexts(badges)).toEqual(['棚にある', '持ち出し禁止']);
+    const { row, chips } = await findChips('禁止の本');
+    expect(chips.map((c) => c.textContent)).toEqual(['持ち出し禁止']);
+    expect(row.textContent).not.toContain('棚にある');
   });
 
-  it('RL-02: 持ち出し禁止の本（貸出中）では、右側の箱に「貸出中」「持ち出し禁止」の順で並ぶ', async () => {
+  it('RL-06: 持ち出し禁止でない本の行では「棚にある」「貸出中」を出し、「持ち出し禁止」は無い', async () => {
     renderWith([
-      makeBook({ id: 2, title: '貸出中の禁止の本', is_restricted: 1, status: 'borrowed' }),
+      makeBook({ id: 2, title: '棚の本', status: 'available' }),
+      makeBook({ id: 3, title: '貸出中の本', status: 'borrowed' }),
     ]);
-    const { badges } = await findRowParts('貸出中の禁止の本');
-    expect(childTexts(badges)).toEqual(['貸出中', '持ち出し禁止']);
-  });
-
-  it('RL-03: 「持ち出し禁止」は題名・著者と同じ並び（右側の箱の外）には置かれない', async () => {
-    renderWith([makeBook({ id: 3, title: '禁止の本', is_restricted: 1 })]);
-    const { row, badges } = await findRowParts('禁止の本');
-    const restricted = row.querySelector('.book-row__restricted');
-    expect(restricted?.parentElement).toBe(badges);
-    // 行の直下にあるのは、題名・著者・右側の箱の3つだけ
-    expect(Array.from(row.children).map((c) => c.className)).toEqual([
-      'book-row__title',
-      'book-row__authors',
-      'book-row__badges',
-    ]);
-  });
-
-  it('RL-04: 持ち出し禁止でない本では、右側の箱に状態の印だけがあり、「持ち出し禁止」は無い', async () => {
-    renderWith([makeBook({ id: 4, title: 'ふつうの本', is_restricted: 0 })]);
-    const { row, badges } = await findRowParts('ふつうの本');
-    expect(childTexts(badges)).toEqual(['棚にある']);
-    expect(row.textContent).not.toContain('持ち出し禁止');
+    const shelf = await findChips('棚の本');
+    const lent = await findChips('貸出中の本');
+    expect(shelf.chips.map((c) => c.textContent)).toEqual(['棚にある']);
+    expect(lent.chips.map((c) => c.textContent)).toEqual(['貸出中']);
+    expect(shelf.row.textContent).not.toContain('持ち出し禁止');
+    expect(lent.row.textContent).not.toContain('持ち出し禁止');
   });
 });

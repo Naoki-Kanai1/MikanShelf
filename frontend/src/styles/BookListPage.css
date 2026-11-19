@@ -59,26 +59,8 @@
   overflow-wrap: anywhere;
 }
 
-/* 状態の印と「持ち出し禁止」を、行の右側の上下中央に縦に並べる */
-.book-row__badges {
+/* 状態の印（components/StatusChip。持ち出し禁止の本は「持ち出し禁止」）は、行の右側の上下中央 */
+.book-row__status {
   grid-column: 2;
   grid-row: 1 / span 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-
-.book-row__restricted .icon {
-  width: 14px;
-  height: 14px;
-}
-
-/* 「持ち出し禁止」は状態の印（components/StatusChip）の下に小さく出す */
-.book-row__restricted {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font: var(--type-label-medium);
-  white-space: nowrap;
 }

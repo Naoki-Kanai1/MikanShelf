@@ -21,6 +21,12 @@
   color: var(--color-on-tertiary-container);
 }
 
+/* 持ち出し禁止。赤系だが目立ちすぎないよう、淡い背景に濃い赤の文字で、枠は付けない */
+.status-chip--restricted {
+  background: var(--color-error-container);
+  color: var(--color-on-error-container-variant);
+}
+
 .status-chip--borrowed {
   border: 1px solid var(--color-outline);
   background: var(--color-surface-container-highest);

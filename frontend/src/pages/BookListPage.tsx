@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
-import { RestrictedIcon } from '../components/icons';
 import PageHeader from '../components/PageHeader';
 import StatusChip from '../components/StatusChip';
 import '../styles/BookListPage.css';
@@ -54,15 +53,11 @@ export default function BookListPage() {
               <Link to={`/books/${book.id}`} className="book-row">
                 <span className="book-row__title">{book.title}</span>
                 <span className="book-row__authors">{book.authors}</span>
-                <span className="book-row__badges">
-                  <StatusChip status={book.status} className="book-row__status" />
-                  {book.is_restricted === 1 && (
-                    <span className="book-row__restricted">
-                      <RestrictedIcon />
-                      持ち出し禁止
-                    </span>
-                  )}
-                </span>
+                <StatusChip
+                  status={book.status}
+                  restricted={book.is_restricted === 1}
+                  className="book-row__status"
+                />
               </Link>
             </li>
           ))}
