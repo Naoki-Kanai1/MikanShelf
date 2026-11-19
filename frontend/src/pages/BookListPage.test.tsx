@@ -169,3 +169,304 @@ describe('BookListPage', () => {
     expect(screen.getByText(authors)).toBeTruthy();
   });
 });
+
+// 絞り込みの入力欄のテスト。テストケースの一覧は tests/searchBooks/cases.md
+describe('BookListPage の絞り込み', () => {
+  const BOOKS = [
+    makeBook({ id: 1, title: 'リーダブルコード', authors: 'Dustin Boswell' }),
+    makeBook({ id: 2, title: '達人プログラマー', authors: 'David Thomas、Andrew Hunt' }),
+    makeBook({ id: 3, title: 'テスト駆動開発', authors: 'Kent Beck' }),
+  ];
+  const getSearchBox = () => screen.getByRole('searchbox', { name: '題名・著者で絞り込む' });
+  const rowTitles = () =>
+    screen.getAllByRole('link').map((row) => row.querySelector('.book-row__title')?.textContent);
+
+  it('SB-15: 画面を開くと、空の入力欄と全ての本を表示する', async () => {
+    respondWith(BOOKS);
+    renderPage();
+    await findRow('リーダブルコード');
+    expect((getSearchBox() as HTMLInputElement).value).toBe('');
+    expect(rowTitles()).toEqual(['リーダブルコード', '達人プログラマー', 'テスト駆動開発']);
+  });
+
+  it('SB-16: 題名の一部を入力すると、その文字を含む本だけを表示する', async () => {
+    respondWith(BOOKS);
+    renderPage();
+    await findRow('リーダブルコード');
+    await userEvent.type(getSearchBox(), 'プログラ');
+    expect(rowTitles()).toEqual(['達人プログラマー']);
+  });
+
+  it('SB-17: 著者の一部を入力すると、その文字を含む本だけを表示する', async () => {
+    respondWith(BOOKS);
+    renderPage();
+    await findRow('リーダブルコード');
+    await userEvent.type(getSearchBox(), 'beck');
+    expect(rowTitles()).toEqual(['テスト駆動開発']);
+  });
+
+  it('SB-18: どの本にも合わないときは、案内の文を表示し、一覧は表示しない', async () => {
+    respondWith(BOOKS);
+    renderPage();
+    await findRow('リーダブルコード');
+    await userEvent.type(getSearchBox(), '存在しない本');
+    expect(screen.getByText('条件に合う本は見つかりませんでした。')).toBeTruthy();
+    expect(screen.queryByRole('list')).toBeNull();
+  });
+
+  it('SB-19: 入力した文字を消すと、全ての本をもとの順で表示し直す', async () => {
+    respondWith(BOOKS);
+    renderPage();
+    await findRow('リーダブルコード');
+    await userEvent.type(getSearchBox(), '達人');
+    expect(rowTitles()).toEqual(['達人プログラマー']);
+    await userEvent.clear(getSearchBox());
+    expect(rowTitles()).toEqual(['リーダブルコード', '達人プログラマー', 'テスト駆動開発']);
+  });
+
+  it('SB-20: 入力しても、API は画面を開いたときの1回だけしか呼ばない', async () => {
+    const fetchMock = respondWith(BOOKS);
+    renderPage();
+    await findRow('リーダブルコード');
+    await userEvent.type(getSearchBox(), 'コード');
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('SB-21: 読み込み中・エラーのときも入力欄を表示し、案内の文・エラーの文は変わらない', async () => {
+    mockFetch(() => new Promise<Response>(() => {}));
+    renderPage();
+    expect(getSearchBox()).toBeTruthy();
+    expect(screen.getByText('読み込み中…')).toBeTruthy();
+    cleanup();
+
+    mockFetch(async () => new Response('error', { status: 500 }));
+    renderPage();
+    expect((await screen.findByRole('alert')).textContent).toBe(ERROR_MESSAGE);
+    await userEvent.type(getSearchBox(), '達人');
+    expect(screen.getByRole('alert').textContent).toBe(ERROR_MESSAGE);
+  });
+
+  it('SB-38: 姓と名の間に空白がある著者を、空白なしで入力しても表示する', async () => {
+    respondWith(BOOKS);
+    renderPage();
+    await findRow('リーダブルコード');
+    await userEvent.type(getSearchBox(), 'AndrewHunt');
+    expect(rowTitles()).toEqual(['達人プログラマー']);
+  });
+});
+
+// 同じ本のまとまりのテスト。テストケースの一覧は tests/searchBooks/cases.md
+describe('BookListPage の同じ本のまとまり', () => {
+  const READABLE = { title: 'リーダブルコード', authors: 'Dustin Boswell' };
+  const COPIES = [
+    makeBook({ id: 1, ...READABLE, location: '3階 書架A', status: 'borrowed' }),
+    makeBook({ id: 2, title: '達人プログラマー', authors: 'David Thomas' }),
+    makeBook({ id: 3, ...READABLE, location: '3階 書架B', status: 'available' }),
+    makeBook({ id: 4, ...READABLE, location: '5階 書架C', status: 'borrowed', is_restricted: 1 }),
+  ];
+  const findGroupButton = () => screen.findByRole('button', { name: /リーダブルコード/ });
+  const getSearchBox = () => screen.getByRole('searchbox', { name: '題名・著者で絞り込む' });
+  const queryCopies = () => screen.queryByRole('list', { name: 'リーダブルコードの3冊' });
+
+  it('SB-39: 同じ本が3冊あるときは1行にまとめ、「3冊」を出し、閉じた状態で表示する', async () => {
+    respondWith(COPIES);
+    renderPage();
+    const group = await findGroupButton();
+    expect(
+      screen
+        .getAllByRole('listitem')
+        .filter((li) => li.parentElement?.classList.contains('book-list')),
+    ).toHaveLength(2);
+    expect(within(group).getByText('3冊')).toBeTruthy();
+    expect(group.getAttribute('aria-expanded')).toBe('false');
+    expect(queryCopies()).toBeNull();
+    expect(screen.queryByText(/置き場所/)).toBeNull();
+  });
+
+  it('SB-40: まとまりの行を押すと開き、1冊ずつの置き場所と状態の印を行ごとに表示する', async () => {
+    respondWith(COPIES);
+    renderPage();
+    const group = await findGroupButton();
+    await userEvent.click(group);
+    expect(group.getAttribute('aria-expanded')).toBe('true');
+    const rows = within(queryCopies()!).getAllByRole('link');
+    expect(rows.map((row) => row.textContent)).toEqual([
+      expect.stringMatching(/置き場所：3階 書架A.*貸出中/),
+      expect.stringMatching(/置き場所：3階 書架B.*棚にある/),
+      expect.stringMatching(/置き場所：5階 書架C.*貸出中/),
+    ]);
+  });
+
+  it('SB-41: 開いた1冊の行は、その本の本詳細画面へのリンクで、押すと移動する', async () => {
+    respondWith(COPIES);
+    renderPage();
+    await userEvent.click(await findGroupButton());
+    const rows = within(queryCopies()!).getAllByRole('link');
+    expect(rows.map((row) => row.getAttribute('href'))).toEqual([
+      '/books/1',
+      '/books/3',
+      '/books/4',
+    ]);
+    await userEvent.click(rows[1]);
+    expect(await screen.findByText('本詳細画面（テスト用）')).toBeTruthy();
+  });
+
+  it('SB-42: 開いたまとまりの行をもう一度押すと閉じる', async () => {
+    respondWith(COPIES);
+    renderPage();
+    const group = await findGroupButton();
+    await userEvent.click(group);
+    await userEvent.click(group);
+    expect(group.getAttribute('aria-expanded')).toBe('false');
+    expect(queryCopies()).toBeNull();
+  });
+
+  it('SB-43: まとまりの行の印は、棚にある本があれば「棚にある」、全て貸出中なら「貸出中」', async () => {
+    respondWith([
+      ...COPIES,
+      makeBook({ id: 5, title: '人月の神話', authors: 'Frederick P. Brooks', status: 'borrowed' }),
+      makeBook({ id: 6, title: '人月の神話', authors: 'Frederick P. Brooks', status: 'borrowed' }),
+    ]);
+    renderPage();
+    const mixed = await findGroupButton();
+    const allBorrowed = await screen.findByRole('button', { name: /人月の神話/ });
+    expect(within(mixed).getByText('棚にある')).toBeTruthy();
+    expect(within(mixed).queryByText('貸出中')).toBeNull();
+    expect(within(allBorrowed).getByText('貸出中')).toBeTruthy();
+    expect(within(allBorrowed).queryByText('棚にある')).toBeNull();
+  });
+
+  it('SB-44: まとまりの行の「持ち出し禁止」は全て持ち出し禁止のときだけ。開いた行には1冊ごとに出す', async () => {
+    // 持ち出し禁止の本は借りられないので、棚にある状態にする（貸出中のときは「貸出中」を出す決まり）
+    respondWith([
+      ...COPIES.map((book) => (book.id === 4 ? { ...book, status: 'available' as const } : book)),
+      makeBook({ id: 5, title: '禁止の本', authors: 'X', is_restricted: 1 }),
+      makeBook({ id: 6, title: '禁止の本', authors: 'X', is_restricted: 1 }),
+    ]);
+    renderPage();
+    const partly = await findGroupButton();
+    const all = await screen.findByRole('button', { name: /禁止の本/ });
+    expect(within(partly).queryByText('持ち出し禁止')).toBeNull();
+    expect(within(all).getByText('持ち出し禁止')).toBeTruthy();
+
+    await userEvent.click(partly);
+    const rows = within(queryCopies()!).getAllByRole('link');
+    expect(rows.map((row) => within(row).queryByText('持ち出し禁止') !== null)).toEqual([
+      false,
+      false,
+      true,
+    ]);
+  });
+
+  it('SB-45: 1冊だけの本は、これまでどおりリンクの行で、冊数もボタンも出さない', async () => {
+    respondWith(COPIES);
+    renderPage();
+    const single = await findRow('達人プログラマー');
+    expect(single.getAttribute('href')).toBe('/books/2');
+    expect(within(single).queryByText(/冊$/)).toBeNull();
+    expect(screen.queryByRole('button', { name: /達人プログラマー/ })).toBeNull();
+  });
+
+  it('SB-46: まとまりの本を題名で絞り込んでも、まとまりのまま1行で表示する', async () => {
+    respondWith(COPIES);
+    renderPage();
+    await findGroupButton();
+    await userEvent.type(getSearchBox(), 'リーダブル');
+    expect(screen.queryByRole('link', { name: /達人プログラマー/ })).toBeNull();
+    expect(screen.getAllByRole('button', { name: /リーダブルコード/ })).toHaveLength(1);
+    expect(within(await findGroupButton()).getByText('3冊')).toBeTruthy();
+  });
+});
+
+// 開いたときの置き場所ごとの行のテスト。テストケースの一覧は tests/searchBooks/cases.md
+describe('BookListPage の置き場所ごとの行', () => {
+  const ISSUE = { title: 'イシューからはじめよ', authors: '安宅和人' };
+  // 4階 書架B に3冊（貸出中1・棚にある2）、3階 書架B に1冊、5階 書架A に2冊（どちらも貸出中）
+  const BOOKS = [
+    makeBook({ id: 11, ...ISSUE, location: '4階 書架B', status: 'borrowed' }),
+    makeBook({ id: 12, ...ISSUE, location: '3階 書架B', status: 'available' }),
+    makeBook({ id: 13, ...ISSUE, location: '4階 書架B', status: 'available' }),
+    makeBook({ id: 14, ...ISSUE, location: '4階 書架B', status: 'available' }),
+    makeBook({ id: 15, ...ISSUE, location: '5階 書架A', status: 'borrowed' }),
+    makeBook({ id: 16, ...ISSUE, location: '5階 書架A', status: 'borrowed' }),
+  ];
+
+  // まとまりを開いて、置き場所ごとの行を返す
+  async function openCopies() {
+    await userEvent.click(await screen.findByRole('button', { name: /イシューからはじめよ/ }));
+    const list = screen.getByRole('list', { name: 'イシューからはじめよの6冊' });
+    return within(list).getAllByRole('listitem');
+  }
+  const rowAt = (rows: HTMLElement[], location: string) =>
+    rows.find((row) => row.textContent?.includes(`置き場所：${location}`))!;
+
+  it('SB-52: 同じ置き場所の本は1行にまとめ、「棚にある」と「残り2冊」を出し、棚にある本へリンクする', async () => {
+    respondWith(BOOKS);
+    renderPage();
+    const rows = await openCopies();
+    expect(rows).toHaveLength(3);
+    const row = rowAt(rows, '4階 書架B');
+    expect(within(row).getByText('棚にある')).toBeTruthy();
+    expect(within(row).getByText('残り2冊')).toBeTruthy();
+    expect(within(row).getByRole('link').getAttribute('href')).toBe('/books/13');
+  });
+
+  it('SB-53: 同じ置き場所の本が全て貸出中なら「貸出中」と「残り0冊」を出す', async () => {
+    respondWith(BOOKS);
+    renderPage();
+    const row = rowAt(await openCopies(), '5階 書架A');
+    expect(within(row).getByText('貸出中')).toBeTruthy();
+    expect(within(row).getByText('残り0冊')).toBeTruthy();
+    expect(within(row).getByRole('link').getAttribute('href')).toBe('/books/15');
+  });
+
+  it('SB-54: 置き場所に1冊だけでも、棚にあれば「残り1冊」を出す', async () => {
+    respondWith(BOOKS);
+    renderPage();
+    const row = rowAt(await openCopies(), '3階 書架B');
+    expect(within(row).getByText('棚にある')).toBeTruthy();
+    expect(within(row).getByText('残り1冊')).toBeTruthy();
+    expect(within(row).getByRole('link').getAttribute('href')).toBe('/books/12');
+  });
+
+  it('SB-57: 置き場所に1冊だけで貸出中なら「貸出中」と「残り0冊」を出す', async () => {
+    respondWith([
+      makeBook({ id: 31, ...ISSUE, location: '3階 書架B', status: 'borrowed' }),
+      makeBook({ id: 32, ...ISSUE, location: '4階 書架B', status: 'available' }),
+    ]);
+    renderPage();
+    await userEvent.click(await screen.findByRole('button', { name: /イシューからはじめよ/ }));
+    const rows = within(
+      screen.getByRole('list', { name: 'イシューからはじめよの2冊' }),
+    ).getAllByRole('listitem');
+    const row = rowAt(rows, '3階 書架B');
+    expect(within(row).getByText('貸出中')).toBeTruthy();
+    expect(within(row).getByText('残り0冊')).toBeTruthy();
+  });
+
+  it('SB-55: 「残りn冊」のある行はトグルではなくリンクで、押すと棚にある本の本詳細画面へ移動する', async () => {
+    respondWith(BOOKS);
+    renderPage();
+    const row = rowAt(await openCopies(), '4階 書架B');
+    expect(within(row).queryByRole('button')).toBeNull();
+    expect(row.querySelector('[aria-expanded]')).toBeNull();
+    await userEvent.click(within(row).getByRole('link'));
+    expect(await screen.findByText('本詳細画面（テスト用）')).toBeTruthy();
+  });
+
+  it('SB-56: 同じ置き場所の本が全て持ち出し禁止のときだけ「持ち出し禁止」を出す', async () => {
+    respondWith([
+      makeBook({ id: 21, ...ISSUE, location: '3階 書架C', is_restricted: 1 }),
+      makeBook({ id: 22, ...ISSUE, location: '3階 書架C', is_restricted: 1 }),
+      makeBook({ id: 23, ...ISSUE, location: '4階 書架C', is_restricted: 1 }),
+      makeBook({ id: 24, ...ISSUE, location: '4階 書架C', is_restricted: 0 }),
+    ]);
+    renderPage();
+    await userEvent.click(await screen.findByRole('button', { name: /イシューからはじめよ/ }));
+    const rows = within(
+      screen.getByRole('list', { name: 'イシューからはじめよの4冊' }),
+    ).getAllByRole('listitem');
+    expect(within(rowAt(rows, '3階 書架C')).getByText('持ち出し禁止')).toBeTruthy();
+    expect(within(rowAt(rows, '4階 書架C')).queryByText('持ち出し禁止')).toBeNull();
+  });
+});

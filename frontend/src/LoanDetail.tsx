@@ -130,7 +130,7 @@ export default function LoanDetail({ loanId }: Props) {
                   <ShelfIcon />
                 </span>
                 <div>
-                  <div className="info-label">棚にある冊数</div>
+                  <div className="info-label">全フロアの残り冊数</div>
                   <div className="info-value">{loan.on_shelf_count}冊</div>
                 </div>
               </div>

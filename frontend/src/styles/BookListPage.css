@@ -4,6 +4,51 @@
  * 画面設計書: docs/ap/BookListPage/Screen_design.md
  */
 
+/* ---- 絞り込みの入力欄（画面の名前の下。docs/UI_design.svg の検索バー） ---- */
+
+.book-search {
+  padding: 0 16px 8px;
+}
+
+/* 角の丸い帯。帯のどこを押しても入力欄が選ばれる（label で包んでいる） */
+.book-search__field {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 56px;
+  padding: 0 16px;
+  border-radius: 28px;
+  background: var(--color-surface-container-high);
+  color: var(--color-on-surface-variant);
+  cursor: text;
+}
+
+.book-search__field:focus-within {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+}
+
+.book-search__field .icon {
+  flex: none;
+  width: 24px;
+  height: 24px;
+}
+
+.book-search__input {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-on-surface);
+  font: var(--type-body-large);
+  outline: none;
+}
+
+.book-search__input::placeholder {
+  color: var(--color-on-surface-variant);
+}
+
 /* ---- 読み込み中・エラー・0件のときの文 ---- */
 
 .book-list-page__message {
@@ -59,8 +104,106 @@
   overflow-wrap: anywhere;
 }
 
+/*
+ * 冊数・開く・閉じるの札（.book-row__toggle）の幅と、状態の印との間。
+ * 1冊だけの行は札が無いので、その分だけ状態の印を左に寄せ、まとまりの行の印と縦の位置をそろえる
+ */
+.book-list {
+  --book-toggle-width: 72px;
+  --book-trailing-gap: 8px;
+}
+
 /* 状態の印（components/StatusChip。持ち出し禁止の本は「持ち出し禁止」）は、行の右側の上下中央 */
 .book-row__status {
   grid-column: 2;
   grid-row: 1 / span 2;
+  margin-right: calc(var(--book-toggle-width) + var(--book-trailing-gap));
+}
+
+/* ---- 同じ本が何冊もあるときのまとまり ---- */
+
+/* まとまりの行は button。見た目は1冊の行（.book-row）とそろえる */
+.book-row--group {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+/* 右側の「状態の印」と、冊数・開く・閉じるの札 */
+.book-row__trailing {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--book-trailing-gap);
+}
+
+/* 冊数と「∨」を1つにした札。押せる場所だと分かるよう、塗りのある角丸にする */
+.book-row__toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  /* 冊数が3桁になっても切れないよう、決めた幅は最小の幅にする（そのときは少しずれる） */
+  min-width: var(--book-toggle-width);
+  gap: 2px;
+  height: 32px;
+  padding: 0 6px 0 12px;
+  border-radius: 16px;
+  background: var(--color-primary-container);
+  color: var(--color-on-primary-container);
+  white-space: nowrap;
+}
+
+/* 冊数は、まわりの印より一回り大きく太い字にする */
+.book-row__count {
+  font: var(--type-label-large);
+  font-weight: 700;
+}
+
+.book-row__toggle .icon {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.2s;
+}
+
+.book-row--group[aria-expanded='true'] .book-row__toggle .icon {
+  transform: rotate(180deg);
+}
+
+/* 開いたときの1冊ずつの行。まとまりの行より一段下げて、背景で区別する */
+.book-copies {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: var(--color-surface-container-high);
+}
+
+.book-copies__item + .book-copies__item {
+  border-top: 1px solid var(--color-outline-variant);
+}
+
+.book-row--copy {
+  padding-left: 32px;
+}
+
+.book-row--copy:hover {
+  background: var(--color-surface-container-highest);
+}
+
+.book-row__location {
+  grid-column: 1;
+  font: var(--type-body-medium);
+  overflow-wrap: anywhere;
+}
+
+/* 同じ置き場所に何冊もあるときの「残りn冊」。状態の印のすぐ右に、太字で出す（押せる札には見せない） */
+.book-row__remaining {
+  color: var(--color-on-surface);
+  font: var(--type-label-large);
+  font-weight: 700;
+  white-space: nowrap;
 }
