@@ -5,7 +5,7 @@
  * 画面設計書: docs/ap/LoanListPage/Screen_design.md
  */
 
-/* ---- 絞り込みのチップ（貸出中のみ／返却済みのみ／すべて） ---- */
+/* ---- 絞り込みのチップ（いま借りている本／返却済みの本／すべて） ---- */
 
 .loan-filter {
   display: flex;

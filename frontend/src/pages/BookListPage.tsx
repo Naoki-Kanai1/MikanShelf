@@ -35,7 +35,7 @@ export default function BookListPage() {
 
   return (
     <div className="book-list-page">
-      <PageHeader title="本" />
+      <PageHeader title="本一覧" />
       {/* TODO: 絞り込み（題名・著者）は別のPBIで、ここに入力欄を置く */}
 
       {error ? (
