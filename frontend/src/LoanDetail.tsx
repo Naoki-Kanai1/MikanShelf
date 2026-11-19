@@ -17,6 +17,8 @@ type Loan = {
   borrower_name: string;
   borrowed_at: string;
   returned_at: string | null;
+  // 同じ題名の本のうち、棚にある（貸出中でない）冊数
+  on_shelf_count: number;
 };
 
 type Props = {
@@ -125,6 +127,16 @@ export default function LoanDetail({ loanId }: Props) {
 
               <div className="info-row">
                 <span className="info-icon">
+                  <ShelfIcon />
+                </span>
+                <div>
+                  <div className="info-label">棚にある冊数</div>
+                  <div className="info-value">{loan.on_shelf_count}冊</div>
+                </div>
+              </div>
+
+              <div className="info-row">
+                <span className="info-icon">
                   <CalendarIcon />
                 </span>
                 <div>
@@ -227,6 +239,14 @@ function CheckIcon({ size = 18 }: { size?: number }) {
   return (
     <svg {...iconProps} width={size} height={size}>
       <path d="M5 12.5l4.5 4.5L19 7.5" />
+    </svg>
+  );
+}
+
+function ShelfIcon() {
+  return (
+    <svg {...iconProps}>
+      <path d="M3 21h18M5 21V5h3v16M10 21V3h3v18M15.5 7.5l2.9-.8 2.6 14.3" />
     </svg>
   );
 }

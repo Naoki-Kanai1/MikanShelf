@@ -101,6 +101,7 @@ db.exec(`
 // - 利用者・本・蔵書リクエストは、users が空のとき＝初回起動時だけ入れる
 // - 貸出（loans）と予約（reservations）のサンプルは、loans と reservations がどちらも空のときに入れる
 //   （初回起動後のDBにも入るよう、条件を分けている。自分で借りたり予約したりした後は入れない）
+// - 同じ題名の本が複数あるとき、貸出・予約のサンプルは最初に登録した本（ID が小さい方）に付ける
 // ---------------------------------------------------------------------------
 
 const seedUsers: [accountId: string, name: string, email: string][] = [
@@ -126,7 +127,8 @@ const seedUsers: [accountId: string, name: string, email: string][] = [
   ['emp0020', '森', 'mori@example.com'],
 ];
 
-const seedBooks: [title: string, authors: string, location: string, isRestricted: 0 | 1][] = [
+// 本（1冊目）。ID はこの順に 1〜20 になる
+const firstCopies: [title: string, authors: string, location: string, isRestricted: 0 | 1][] = [
   ['リーダブルコード', 'Dustin Boswell、Trevor Foucher', '3階 書架A', 0],
   ['オブジェクト指向UIデザイン', 'ソシオメディア株式会社', '3階 書架A', 0],
   ['達人プログラマー', 'David Thomas、Andrew Hunt', '3階 書架B', 0],
@@ -147,6 +149,65 @@ const seedBooks: [title: string, authors: string, location: string, isRestricted
   ['ユーザーインタフェースデザインの教科書', '原田秀司', '3階 書架B', 0],
   ['データ指向アプリケーションデザイン', 'Martin Kleppmann', '3階 書架C', 1],
   ['ソフトウェアアーキテクチャの基礎', 'Mark Richards、Neal Ford', '3階 書架C', 0],
+];
+
+// 同じ題名の本（2冊目以降）。「棚にある冊数」を確かめるためのもの。著者は1冊目と同じ
+// - 初期状態で貸出中の本（seedLoans で返した日が null の本）は、合わせて3冊以上にする
+// - ほかの本も合わせて1〜5冊（平均で3冊くらい）にする
+// - 既存の DB に入った本と食い違わないよう、同じ題名の中の順番は変えずに、増やすときは後ろに足す
+const extraCopies: [title: string, location: string, isRestricted: 0 | 1][] = [
+  ['リーダブルコード', '3階 書架A', 0],
+  ['リーダブルコード', '4階 書架B', 0],
+  ['オブジェクト指向UIデザイン', '4階 書架B', 0],
+  ['テスト駆動開発', '3階 書架C', 1],
+  ['リーダブルコード', '3階 書架D', 0],
+  ['オブジェクト指向UIデザイン', '3階 書架B', 0],
+  ['テスト駆動開発', '4階 書架A', 0],
+  ['SQLアンチパターン', '3階 書架D', 0],
+  ['SQLアンチパターン', '4階 書架B', 0],
+  ['達人プログラマー', '3階 書架B', 0],
+  ['達人プログラマー', '4階 書架A', 0],
+  ['誰のためのデザイン？', '3階 書架B', 0],
+  ['誰のためのデザイン？', '4階 書架B', 0],
+  ['ノンデザイナーズ・デザインブック', '3階 書架B', 0],
+  ['ノンデザイナーズ・デザインブック', '4階 書架B', 0],
+  ['リファクタリング', '3階 書架A', 0],
+  ['リファクタリング', '3階 書架D', 0],
+  ['リファクタリング', '4階 書架A', 0],
+  ['ドメイン駆動設計', '3階 書架C', 1],
+  ['ドメイン駆動設計', '4階 書架A', 0],
+  ['Clean Code', '3階 書架A', 0],
+  ['Clean Code', '3階 書架D', 0],
+  ['Clean Code', '4階 書架A', 0],
+  ['エンジニアリング組織論への招待', '4階 書架A', 0],
+  ['エンジニアリング組織論への招待', '4階 書架B', 0],
+  ['チーム・ジャーニー', '4階 書架B', 0],
+  ['アジャイルサムライ', '4階 書架A', 0],
+  ['アジャイルサムライ', '4階 書架B', 0],
+  ['プログラミング言語Go', '3階 書架D', 0],
+  ['プログラミング言語Go', '4階 書架B', 0],
+  ['Webを支える技術', '3階 書架D', 0],
+  ['Webを支える技術', '4階 書架A', 0],
+  ['イシューからはじめよ', '4階 書架B', 0],
+  ['イシューからはじめよ', '4階 書架B', 0],
+  ['イシューからはじめよ', '4階 書架A', 0],
+  ['イシューからはじめよ', '3階 書架B', 0],
+  ['ユーザーインタフェースデザインの教科書', '4階 書架B', 0],
+  ['データ指向アプリケーションデザイン', '3階 書架C', 1],
+  ['ソフトウェアアーキテクチャの基礎', '3階 書架C', 0],
+  ['ソフトウェアアーキテクチャの基礎', '4階 書架A', 0],
+];
+
+// 入れる本の全部。2冊目以降は、既存の本の ID を変えないよう1冊目の後ろに並べる
+const authorsByTitle = new Map(firstCopies.map(([title, authors]) => [title, authors]));
+const seedBooks: [title: string, authors: string, location: string, isRestricted: 0 | 1][] = [
+  ...firstCopies,
+  ...extraCopies.map(([title, location, isRestricted]): (typeof firstCopies)[number] => {
+    const authors = authorsByTitle.get(title);
+    if (authors === undefined)
+      throw new Error(`extraCopies の「${title}」が firstCopies にありません`);
+    return [title, authors, location, isRestricted];
+  }),
 ];
 
 // [リクエストした人の account_id, 題名, 著者（わからなければ null）, リクエスト日時]
@@ -193,6 +254,24 @@ if (count === 0) {
   })();
 }
 
+// 初回起動より後に seedBooks へ足した本（同じ題名の2冊目以降など）を、既存の DB にも入れる。
+// 題名ごとに、DB の冊数が seedBooks の冊数より少なければ、足りない分だけ入れる（何度起動しても増え続けない）
+{
+  const countByTitle = db.prepare('SELECT COUNT(*) AS count FROM books WHERE title = ?');
+  const insertBook = db.prepare(
+    'INSERT INTO books (title, authors, location, is_restricted) VALUES (?, ?, ?, ?)',
+  );
+  db.transaction(() => {
+    const seen = new Map<string, number>();
+    for (const b of seedBooks) {
+      const nth = (seen.get(b[0]) ?? 0) + 1; // この題名の何冊目か
+      seen.set(b[0], nth);
+      const { count } = countByTitle.get(b[0]) as { count: number };
+      if (count < nth) insertBook.run(...b);
+    }
+  })();
+}
+
 // 貸出のサンプル（並び順が ID 順になる。/loans/1 が「貸出中」、/loans/2 が「返却済み」の例）
 // 日時は datetime('now') と同じく UTC。日本時間で日付がずれないよう 15:00 UTC より前の時刻にしている
 // [借りた人の account_id, 本の題名, 借りた日時, 返した日時（貸出中なら null）]
@@ -229,14 +308,14 @@ if (loanCount === 0 && reservationCount === 0) {
   const insertLoan = db.prepare(
     `INSERT INTO loans (book_id, user_id, status, borrowed_at, returned_at)
      VALUES (
-       (SELECT id FROM books WHERE title = ?),
+       (SELECT id FROM books WHERE title = ? ORDER BY id LIMIT 1),
        (SELECT id FROM users WHERE account_id = ?),
        ?, ?, ?
      )`,
   );
   const insertReservation = db.prepare(
     `INSERT INTO reservations (book_id, user_id, reserved_at)
-     VALUES ((SELECT id FROM books WHERE title = ?), (SELECT id FROM users WHERE account_id = ?), ?)`,
+     VALUES ((SELECT id FROM books WHERE title = ? ORDER BY id LIMIT 1), (SELECT id FROM users WHERE account_id = ?), ?)`,
   );
 
   db.transaction(() => {
