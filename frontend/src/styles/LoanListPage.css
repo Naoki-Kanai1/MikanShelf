@@ -1,6 +1,9 @@
 /*
  * 貸出一覧画面。
- * スマホ向けのレイアウトだけを持つ（幅の広い画面でも同じ。幅は共通の枠 AppShell が決める）。
+ * 画面の幅による見た目（docs/Responsive_design.md）:
+ *   Compact（〜599px）   : 区切り線のある行
+ *   Medium（600〜839px）  : 行の形のまま、一覧を角の丸い枠で囲む
+ *   Expanded 以上（840px〜）: 絞り込みを画面の名前の横に置き、枠で囲んだ表の形にする（UI_design.svg の「PC：」の画面）
  * 行の作りは本一覧画面（BookListPage.css）に合わせている。
  * 画面設計書: docs/ap/LoanListPage/Screen_design.md
  */
@@ -11,7 +14,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  padding: 8px 16px;
+  padding: 8px var(--page-padding-inline);
 }
 
 .loan-filter__chip {
@@ -61,7 +64,7 @@
 
 .loan-list-page__message {
   margin: 0;
-  padding: 16px;
+  padding: 16px var(--page-padding-inline);
   color: var(--color-on-surface-variant);
   font: var(--type-body-medium);
 }
@@ -74,8 +77,9 @@
   list-style: none;
 }
 
-.loan-list__item {
-  border-bottom: 1px solid var(--color-outline-variant);
+/* 行と行の間に区切り線を引く（どの区分でも同じ。一覧を枠で囲むときは、枠の内側に引く） */
+.loan-list__item + .loan-list__item {
+  border-top: 1px solid var(--color-outline-variant);
 }
 
 /* 1件分の行。行のどこを押しても貸出詳細画面へ移動する */
@@ -84,7 +88,7 @@
   grid-template-columns: minmax(0, 1fr) auto;
   column-gap: 16px;
   align-items: center;
-  padding: 12px 16px;
+  padding: 12px var(--page-padding-inline);
   color: inherit;
   text-decoration: none;
 }
@@ -115,4 +119,63 @@
 .loan-row__status {
   grid-column: 2;
   grid-row: 1 / span 2;
+}
+
+/* ---- Medium 以上: 一覧を角の丸い枠で囲む ---- */
+@media (min-width: 600px) {
+  .loan-list {
+    max-width: var(--list-max-width);
+    margin: 0 var(--page-padding-inline) 24px;
+    border: 1px solid var(--color-outline-variant);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  /* 枠の内側の余白は 16px（枠の外側に、画面の左右の余白がある） */
+  .loan-row {
+    padding: 12px 16px;
+  }
+}
+
+/* ---- Expanded 以上: 絞り込みを画面の名前の横に置き、表の形にする ---- */
+@media (min-width: 840px) {
+  /* 画面の名前と絞り込みを横に並べ、その下に一覧などを置く */
+  .loan-list-page {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+  }
+
+  .loan-list-page > * {
+    grid-column: 1 / -1;
+  }
+
+  .loan-list-page > .page-header {
+    grid-column: 1;
+  }
+
+  .loan-list-page > .loan-filter {
+    grid-column: 2;
+    padding: 0 var(--page-padding-inline) 0 0;
+  }
+
+  /* 列: 題名 ／ 借りた日 ／ 状態の印 */
+  .loan-row {
+    grid-template-columns: minmax(0, 1fr) 200px 112px;
+    column-gap: 24px;
+    min-height: 72px;
+    box-sizing: border-box;
+  }
+
+  .loan-row__date {
+    grid-column: 2;
+    grid-row: 1;
+    margin-top: 0;
+  }
+
+  .loan-row__status {
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: start;
+  }
 }

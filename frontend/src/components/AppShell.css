@@ -1,7 +1,15 @@
 /*
- * 共通の枠（メニュー＋画面の中身）。
- * スマホ向けのレイアウト（メニューは画面の下）だけを持つ。
- * PCなど幅の広い画面でも同じレイアウトのまま、幅 480px で中央に置く（本詳細画面と同じ）。
+ * 共通の枠（メニュー＋画面の中身）。画面の幅で、Material Design 3 の「ウィンドウサイズクラス」の
+ * 5 つの区分に合わせて切り替える。区分ごとの見た目の決まりは docs/Responsive_design.md を参照。
+ *
+ *   Compact     （〜599px）     : スマホ。メニューは画面の下（NavigationBar）。中身は幅いっぱい
+ *   Medium      （600〜839px）  : タブレットの縦など。メニューは画面の左に縦に並ぶ（NavigationRail）
+ *   Expanded    （840〜1199px） : PC・タブレットの横。一覧を表の形にする（各画面の CSS）
+ *   Large       （1200〜1599px）: PC。docs/UI_design.svg の「PC：」の画面（幅 1280px）はここに入る
+ *   Extra-large （1600px〜）    : 広い画面。左のメニューを広げ、名前をアイコンの横に並べる
+ *
+ * この枠（メニューと余白）は 600px と 1600px で切り替える。各画面の CSS では、同じ幅で
+ * @media (min-width: 600px) / (min-width: 840px) を書く（CSS の変数は @media に使えないため、幅は数字で書く）。
  */
 
 /* この枠を使う画面だけ、ブラウザ標準の余白をなくす（まだ枠を使っていない画面には影響させない） */
@@ -9,14 +17,29 @@ body:has(.app-shell) {
   margin: 0;
 }
 
+/* 縦に長い画面（本一覧など）だけスクロールバーが出ると、中身の位置がその幅だけ横にずれる。
+   スクロールバーの場所を常に空けておき、どの画面でも中身の位置を同じにする */
+html:has(.app-shell) {
+  scrollbar-gutter: stable;
+}
+
 .app-shell {
-  max-width: 480px;
-  margin: 0 auto;
+  /* ---- レイアウトの値。画面ごとの CSS でも、左右の余白はこの変数を使う ---- */
+  /* 画面の左右の余白（画面の名前・本文・一覧の行の文字の位置）。M3 の margin（Compact 16、Medium 以上 24） */
+  --page-padding-inline: 16px;
+  /* 下のメニュー（NavigationBar）の高さ */
+  --nav-bar-height: 80px;
+  /* 左の縦メニュー（NavigationRail）の幅 */
+  --nav-rail-width: 80px;
+  /* 中身の幅の上限（どの区分でも同じ）。一覧は 720px、詳細画面（題名・情報のカード・ボタン・案内）は 560px */
+  --list-max-width: 720px;
+  --detail-max-width: 560px;
+
   min-height: 100vh;
   min-height: 100dvh;
   box-sizing: border-box;
-  /* 下に固定したメニュー（80px）に中身が隠れないようにする */
-  padding-bottom: 80px;
+  /* 下に固定したメニューに中身が隠れないようにする */
+  padding-bottom: var(--nav-bar-height);
   background: var(--color-surface);
   color: var(--color-on-surface);
   font: var(--type-body-large);
@@ -28,61 +51,33 @@ body:has(.app-shell) {
   height: 24px;
 }
 
-/* ---- メニュー ---- */
-
-.app-nav {
-  /* 画面の下に固定し、枠と同じ幅（最大 480px）で中央に置く */
-  position: fixed;
-  left: 50%;
-  bottom: 0;
-  z-index: 10;
-  display: flex;
-  width: 100%;
-  max-width: 480px;
-  height: 80px;
-  transform: translateX(-50%);
-  background: var(--color-surface-container);
+/* Compact では左の縦メニューを出さない */
+.app-shell .navigation-rail {
+  display: none;
 }
 
-.app-nav__item {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  padding-top: 14px;
-  color: var(--color-on-surface-variant);
-  font: var(--type-label-medium);
-  text-align: center;
-  text-decoration: none;
+/* ---- Medium 以上（タブレット・PC） ---- */
+@media (min-width: 600px) {
+  .app-shell {
+    --page-padding-inline: 24px;
+
+    /* 左に固定した縦メニューの分だけ、中身を右に寄せる */
+    padding-bottom: 0;
+    padding-left: var(--nav-rail-width);
+  }
+
+  .app-shell .navigation-rail {
+    display: flex;
+  }
+
+  .app-shell .navigation-bar {
+    display: none;
+  }
 }
 
-/* アイコンのまわりの丸い印。選択中の項目だけ色が付く */
-.app-nav__indicator {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 64px;
-  height: 32px;
-  border-radius: 16px;
-}
-
-.app-nav__item:hover .app-nav__indicator {
-  background: var(--color-surface-container-highest);
-}
-
-.app-nav__item.active {
-  color: var(--color-on-surface);
-  font-weight: 700;
-}
-
-.app-nav__item.active .app-nav__indicator {
-  background: var(--color-secondary-container);
-  color: var(--color-on-secondary-container);
-}
-
-.app-nav__item:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: -4px;
-  border-radius: 12px;
+/* ---- Extra-large（広い画面）: 縦メニューを広げ、名前をアイコンの横に並べる（NavigationRail.css） ---- */
+@media (min-width: 1600px) {
+  .app-shell {
+    --nav-rail-width: 240px;
+  }
 }

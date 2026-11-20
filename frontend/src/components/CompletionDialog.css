@@ -1,5 +1,5 @@
 /*
- * 完了ダイアログ（借りた・返したあと）。見た目は確認ダイアログ（ConfirmDialog.css）に合わせている。
+ * 完了ダイアログ（借りた・返したあと）。
  * 色は本詳細・貸出詳細画面（BookDetail.css の .screen）の変数を使う。
  */
 .completion-dialog {

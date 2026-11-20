@@ -26,6 +26,8 @@ function SingleBookRow({ book }: { book: Book }) {
     <Link to={`/books/${book.id}`} className="book-row">
       <span className="book-row__title">{book.title}</span>
       <span className="book-row__authors">{book.authors}</span>
+      {/* 1冊だけの本は開く行が無いので、どの幅でも著者の下に置き場所を出す（開いた行と同じ書き方） */}
+      <span className="book-row__place">置き場所：{book.location}</span>
       <StatusChip
         status={book.status}
         restricted={book.is_restricted === 1}

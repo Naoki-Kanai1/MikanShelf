@@ -25,7 +25,13 @@
 /* ---- 本文 ---- */
 .content {
   flex: 1;
-  padding: 8px 24px 24px;
+  /* 左右の余白は全画面で共通（AppShell.css の --page-padding-inline） */
+  padding: 8px var(--page-padding-inline) 24px;
+}
+
+/* 題名・情報のカード・ボタン・案内の幅は、どの区分でも 560px まで（AppShell.css の --detail-max-width） */
+.content > * {
+  max-width: var(--detail-max-width);
 }
 
 .book-title {
@@ -50,12 +56,13 @@
   overflow: hidden;
 }
 
+/* 行と行の間に区切り線を引く（一覧の行と同じ決まり） */
 .info-row {
   display: flex;
   align-items: center;
-  gap: 24px;
-  min-height: 110px;
-  padding: 0 24px;
+  gap: 16px;
+  min-height: 68px;
+  padding: 0 16px;
   box-sizing: border-box;
 }
 
@@ -69,26 +76,31 @@
 }
 
 .info-label {
-  margin-bottom: 6px;
-  font-size: 14px;
+  margin-bottom: 2px;
+  font-size: 12px;
+  line-height: 16px;
   color: var(--color-text-sub);
 }
 
 .info-value {
-  font-size: 18px;
+  font-size: 16px;
+  line-height: 24px;
 }
 
-/* ---- 借りるボタン ---- */
+/* ---- 画面のメインのボタン（借りる・返す） ----
+   高さ 48px・角は丸く、情報のカードの 24px 下に、カードと同じ幅で置く（どの区分でも同じ） */
 .primary-button {
   width: 100%;
-  height: 56px;
-  margin-top: 40px;
+  height: 48px;
+  margin-top: 24px;
+  padding: 0 32px;
   border: none;
-  border-radius: 28px;
+  border-radius: 24px;
   background: var(--color-primary);
   color: var(--color-on-primary);
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 500;
+  line-height: 20px;
   cursor: pointer;
 }
 

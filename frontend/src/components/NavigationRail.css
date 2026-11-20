@@ -1,0 +1,114 @@
+/* タブレット・PC 版のメニュー（幅 600px から。画面の左に縦に並べて固定）。docs/UI_design.svg の「PC：」の画面に合わせる。
+   1600px からは広げて、名前をアイコンの横に並べる（このファイルの末尾） */
+
+.navigation-rail {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 10;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: var(--nav-rail-width);
+  box-sizing: border-box;
+  padding-top: 22px;
+  background: var(--color-surface-container);
+}
+
+.navigation-rail__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  color: var(--color-on-surface-variant);
+  font: var(--type-label-medium);
+  text-align: center;
+  text-decoration: none;
+}
+
+/* アイコンのまわりの丸い印。選択中の項目だけ色が付く */
+.navigation-rail__indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 32px;
+  border-radius: 16px;
+}
+
+.navigation-rail__item:hover .navigation-rail__indicator {
+  background: var(--color-surface-container-highest);
+}
+
+.navigation-rail__item.active {
+  color: var(--color-on-surface);
+  font-weight: 700;
+}
+
+.navigation-rail__item.active .navigation-rail__indicator {
+  background: var(--color-secondary-container);
+  color: var(--color-on-secondary-container);
+}
+
+.navigation-rail__item:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+  border-radius: 12px;
+}
+
+/*
+ * ---- Extra-large（1600px から）: 広げた縦メニュー（M3 の expanded navigation rail） ----
+ * 名前をアイコンの横に1行で並べ、選択中の印は「アイコン＋名前」をまとめて囲む横長の形にする。
+ * 項目や順番は変えない（navItems.tsx）。
+ */
+@media (min-width: 1600px) {
+  .navigation-rail {
+    align-items: stretch;
+    gap: 4px;
+    padding: 22px 12px 0;
+  }
+
+  .navigation-rail__item {
+    position: relative;
+    flex-direction: row;
+    gap: 12px;
+    height: 56px;
+    padding: 0 16px;
+    box-sizing: border-box;
+    border-radius: 28px;
+    font: var(--type-label-large);
+    text-align: left;
+  }
+
+  /* アイコンだけの丸い印はやめ、項目全体を印にする */
+  .navigation-rail__indicator {
+    width: auto;
+    height: auto;
+    background: none;
+  }
+
+  .navigation-rail__item:hover .navigation-rail__indicator,
+  .navigation-rail__item.active .navigation-rail__indicator {
+    background: none;
+  }
+
+  .navigation-rail__item:hover {
+    background: var(--color-surface-container-highest);
+  }
+
+  .navigation-rail__item.active {
+    background: var(--color-secondary-container);
+    color: var(--color-on-secondary-container);
+  }
+
+  /* 「蔵書／リクエスト」の改行は、幅が足りないときだけのものなので、ここでは1行にする */
+  .navigation-rail__label br {
+    display: none;
+  }
+
+  .navigation-rail__item:focus-visible {
+    border-radius: 28px;
+  }
+}
