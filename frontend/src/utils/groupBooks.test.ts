@@ -2,7 +2,13 @@
 import { describe, expect, it } from 'vitest';
 import { groupBooks, groupByLocation } from './groupBooks';
 
-type TestBook = { id: number; title: string; authors: string; status: 'available' | 'borrowed' };
+type TestBook = {
+  id: number;
+  title: string;
+  authors: string;
+  status: 'available' | 'borrowed';
+  is_restricted: 0 | 1;
+};
 
 const book = (
   id: number,
@@ -14,6 +20,7 @@ const book = (
   title,
   authors,
   status,
+  is_restricted: 0,
 });
 
 // まとまりごとに、入っている本の id を並べる
@@ -78,11 +85,17 @@ describe('groupBooks', () => {
   });
 });
 
-type Copy = { id: number; location: string; status: 'available' | 'borrowed' };
+type Copy = {
+  id: number;
+  location: string;
+  status: 'available' | 'borrowed';
+  is_restricted: 0 | 1;
+};
 const copy = (id: number, location: string, status: Copy['status'] = 'available'): Copy => ({
   id,
   location,
   status,
+  is_restricted: 0,
 });
 
 describe('groupByLocation', () => {

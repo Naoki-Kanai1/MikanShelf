@@ -1,12 +1,27 @@
 // 本一覧で、同じ題名・同じ著者の本（同じ本が何冊もあるとき）を1つにまとめる。
 import { normalizeForSearch } from './filterBooks';
 
-type Groupable = { title: string; authors: string; status: 'available' | 'borrowed' };
+// 代表の1冊を選ぶのに使う項目
+type Representable = { status: 'available' | 'borrowed'; is_restricted: 0 | 1 };
+
+type Groupable = Representable & { title: string; authors: string };
+
+/**
+ * 何冊かの本から、代表（行を押したときに開く本）を1冊選ぶ。
+ * 状態の優先順は「棚にある（借りられる）→ 持ち出し禁止 → 誰かが借用中」。同じ順位の本が何冊もあれば、最初の1冊。
+ */
+function pickRepresentative<T extends Representable>(list: readonly T[]): T {
+  return (
+    list.find((book) => book.status === 'available' && book.is_restricted !== 1) ??
+    list.find((book) => book.status === 'available') ??
+    list[0]
+  );
+}
 
 export type BookGroup<T> = {
   // まとまりを見分ける文字（React の key にも使う）
   key: string;
-  // 一覧に代表として出す1冊。棚にある本があれば、そのうち最初の1冊。無ければ最初の1冊
+  // 一覧に代表として出す1冊。「棚にある（借りられる）→ 持ち出し禁止 → 誰かが借用中」の順で、最初の1冊
   representative: T;
   // まとまりに入る本。もとの順のまま
   books: T[];
@@ -30,17 +45,17 @@ export function groupBooks<T extends Groupable>(books: readonly T[]): BookGroup<
   }
   return [...groups].map(([key, list]) => ({
     key,
-    representative: list.find((book) => book.status === 'available') ?? list[0],
+    representative: pickRepresentative(list),
     books: list,
   }));
 }
 
-type Locatable = { location: string; status: 'available' | 'borrowed' };
+type Locatable = Representable & { location: string };
 
 export type LocationGroup<T> = {
   // 置き場所（この文字が全く同じ本を1つにまとめる）
   location: string;
-  // 行を押したときに開く1冊。棚にある本があれば、そのうち最初の1冊。無ければ最初の1冊
+  // 行を押したときに開く1冊。「棚にある（借りられる）→ 持ち出し禁止 → 誰かが借用中」の順で、最初の1冊
   representative: T;
   // この置き場所にある本。もとの順のまま
   books: T[];
@@ -63,7 +78,7 @@ export function groupByLocation<T extends Locatable>(books: readonly T[]): Locat
     const available = list.filter((book) => book.status === 'available');
     return {
       location,
-      representative: available[0] ?? list[0],
+      representative: pickRepresentative(list),
       books: list,
       availableCount: available.length,
     };
