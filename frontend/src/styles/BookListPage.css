@@ -9,15 +9,29 @@
 
 /* ---- 絞り込みの入力欄（画面の名前の下。docs/UI_design.svg の検索バー） ---- */
 
+/*
+ * スクロールしても画面の上の端に残す（sticky）。一覧の下の方からでも、上に戻らずに探し直せる。
+ * 下を流れる一覧が透けないよう、画面と同じ背景で塗る（貼り付いても色は変えない）。
+ * 上下の余白（8px）も帯に含め、貼り付いたときに入力欄が画面の端にくっつかないようにする。
+ * 広い画面で入力欄の下に並べる場所・ステータスの選択肢も帯の中にあるので、一緒に上に残る。
+ * 選んだ行が帯の下に隠れないよう、スクロールで止まる位置を帯の高さの分だけ下げる（pages/BookListPage.tsx で、帯の高さに合わせる）
+ */
 .book-search {
-  /* 入力欄の幅は、一覧の枠の幅（最大 720px）にそろえる */
-  max-width: calc(var(--list-max-width) + 2 * var(--page-padding-inline));
+  position: sticky;
+  top: 0;
+  z-index: 1;
   box-sizing: border-box;
-  padding: 0 var(--page-padding-inline) 8px;
+  padding: 8px var(--page-padding-inline);
+  /* 画面の名前の下は、もとの間（8px）と同じに見えるよう、上の余白の分だけ詰める */
+  margin-top: -8px;
+  background: var(--color-surface);
 }
 
 /* 角の丸い帯。右端に絞り込みのボタンを置く */
 .book-search__field {
+  /* 入力欄の幅は、一覧の枠の幅（最大 720px）にそろえる */
+  max-width: var(--list-max-width);
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   gap: 4px;
@@ -171,9 +185,11 @@
     padding-right: 16px;
   }
 
-  /* 選択肢の左端を、検索ボックスの虫めがねにそろえる */
+  /* 選択肢の左端を、検索ボックスの虫めがねにそろえる。幅は入力欄と同じ（最大 720px） */
   .book-filter-inline {
     display: block;
+    max-width: var(--list-max-width);
+    box-sizing: border-box;
     margin-top: 8px;
     padding: 0 16px;
   }
