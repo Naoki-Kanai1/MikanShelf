@@ -126,7 +126,7 @@ export default function BookDetail({ bookId }: Props) {
 
               <div className="info-row">
                 <span className="info-icon">
-                  <BookIcon />
+                  <OpenBookIcon />
                 </span>
                 <div>
                   <div className="info-label">状態</div>
@@ -201,11 +201,12 @@ function LocationIcon() {
   );
 }
 
-function BookIcon() {
+// 状態「開いた本」
+function OpenBookIcon() {
   return (
     <svg {...iconProps}>
-      <rect x="5" y="3" width="14" height="18" rx="2" />
-      <path d="M5 15h14" />
+      <path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z" />
+      <path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z" />
     </svg>
   );
 }
