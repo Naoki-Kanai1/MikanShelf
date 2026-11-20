@@ -4,6 +4,7 @@ import { cleanup, renderHook } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { useBookListState } from './BookListStateContext';
 import { BookListStateProvider } from './BookListStateProvider';
+import { initialBookListState } from './bookListState';
 
 afterEach(() => {
   cleanup();
@@ -23,7 +24,7 @@ describe('useBookListState', () => {
     const { result } = renderHook(() => useBookListState(), {
       wrapper: BookListStateProvider,
     });
-    expect(result.current.state).toEqual({ keyword: '', expandedKeys: [] });
+    expect(result.current.state).toEqual(initialBookListState);
     expect(result.current.scrollYRef.current).toBe(0);
     expect(typeof result.current.dispatch).toBe('function');
   });

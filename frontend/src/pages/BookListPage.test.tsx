@@ -116,7 +116,7 @@ describe('BookListPage', () => {
     expect(await screen.findByText('本詳細画面（テスト用）')).toBeTruthy();
   });
 
-  it('BL-06: 状態が available の本は「棚にある」、borrowed の本は「誰かが借用中」を表示する', async () => {
+  it('BL-06: 状態が available の本は「借りられる」、borrowed の本は「誰かが借用中」を表示する', async () => {
     respondWith([
       makeBook({ id: 1, title: '棚の本', status: 'available' }),
       makeBook({ id: 2, title: '貸出中の本', status: 'borrowed' }),
@@ -124,10 +124,10 @@ describe('BookListPage', () => {
     renderPage();
     const available = await findRow('棚の本');
     const borrowed = await findRow('貸出中の本');
-    expect(within(available).getByText('棚にある')).toBeTruthy();
+    expect(within(available).getByText('借りられる')).toBeTruthy();
     expect(within(available).queryByText('誰かが借用中')).toBeNull();
     expect(within(borrowed).getByText('誰かが借用中')).toBeTruthy();
-    expect(within(borrowed).queryByText('棚にある')).toBeNull();
+    expect(within(borrowed).queryByText('借りられる')).toBeNull();
   });
 
   it('BL-07: 持ち出し禁止（is_restricted が 1）の本にだけ「持ち出し禁止」を表示する', async () => {
@@ -285,7 +285,7 @@ describe('BookListPage の同じ本のまとまり', () => {
   const getSearchBox = () => screen.getByRole('searchbox', { name: '題名・著者で絞り込む' });
   const queryCopies = () => screen.queryByRole('list', { name: 'リーダブルコードの3冊' });
 
-  it('SB-39: 同じ本が3冊あるときは1行にまとめ、「3冊」を出し、閉じた状態で表示する', async () => {
+  it('SB-39: 同じ本が3冊あるときは1行にまとめ、「全3冊」を出し、閉じた状態で表示する', async () => {
     respondWith(COPIES);
     renderPage();
     const group = await findGroupButton();
@@ -294,7 +294,7 @@ describe('BookListPage の同じ本のまとまり', () => {
         .getAllByRole('listitem')
         .filter((li) => li.parentElement?.classList.contains('book-list')),
     ).toHaveLength(2);
-    expect(within(group).getByText('3冊')).toBeTruthy();
+    expect(within(group).getByText('全3冊')).toBeTruthy();
     expect(group.getAttribute('aria-expanded')).toBe('false');
     expect(queryCopies()).toBeNull();
     // 閉じたまとまりの行には、置き場所を出さない（1冊だけの本の行は、著者の下に置き場所を出す）
@@ -310,7 +310,7 @@ describe('BookListPage の同じ本のまとまり', () => {
     const rows = within(queryCopies()!).getAllByRole('link');
     expect(rows.map((row) => row.textContent)).toEqual([
       expect.stringMatching(/置き場所：3階 書架A.*誰かが借用中/),
-      expect.stringMatching(/置き場所：3階 書架B.*棚にある/),
+      expect.stringMatching(/置き場所：3階 書架B.*借りられる/),
       expect.stringMatching(/置き場所：5階 書架C.*誰かが借用中/),
     ]);
   });
@@ -339,7 +339,7 @@ describe('BookListPage の同じ本のまとまり', () => {
     expect(queryCopies()).toBeNull();
   });
 
-  it('SB-43: まとまりの行の印は、棚にある本があれば「棚にある」、全て貸出中なら「誰かが借用中」', async () => {
+  it('SB-43: まとまりの行の印は、棚にある本があれば「借りられる」、全て貸出中なら「誰かが借用中」', async () => {
     respondWith([
       ...COPIES,
       makeBook({ id: 5, title: '人月の神話', authors: 'Frederick P. Brooks', status: 'borrowed' }),
@@ -348,10 +348,10 @@ describe('BookListPage の同じ本のまとまり', () => {
     renderPage();
     const mixed = await findGroupButton();
     const allBorrowed = await screen.findByRole('button', { name: /人月の神話/ });
-    expect(within(mixed).getByText('棚にある')).toBeTruthy();
+    expect(within(mixed).getByText('借りられる')).toBeTruthy();
     expect(within(mixed).queryByText('誰かが借用中')).toBeNull();
     expect(within(allBorrowed).getByText('誰かが借用中')).toBeTruthy();
-    expect(within(allBorrowed).queryByText('棚にある')).toBeNull();
+    expect(within(allBorrowed).queryByText('借りられる')).toBeNull();
   });
 
   it('SB-44: まとまりの行の「持ち出し禁止」は全て持ち出し禁止のときだけ。開いた行には1冊ごとに出す', async () => {
@@ -392,7 +392,7 @@ describe('BookListPage の同じ本のまとまり', () => {
     await userEvent.type(getSearchBox(), 'リーダブル');
     expect(screen.queryByRole('link', { name: /達人プログラマー/ })).toBeNull();
     expect(screen.getAllByRole('button', { name: /リーダブルコード/ })).toHaveLength(1);
-    expect(within(await findGroupButton()).getByText('3冊')).toBeTruthy();
+    expect(within(await findGroupButton()).getByText('全3冊')).toBeTruthy();
   });
 });
 
@@ -418,13 +418,13 @@ describe('BookListPage の置き場所ごとの行', () => {
   const rowAt = (rows: HTMLElement[], location: string) =>
     rows.find((row) => row.textContent?.includes(`置き場所：${location}`))!;
 
-  it('SB-52: 同じ置き場所の本は1行にまとめ、「棚にある」と「残り2冊」を出し、棚にある本へリンクする', async () => {
+  it('SB-52: 同じ置き場所の本は1行にまとめ、「借りられる」と「残り2冊」を出し、棚にある本へリンクする', async () => {
     respondWith(BOOKS);
     renderPage();
     const rows = await openCopies();
     expect(rows).toHaveLength(3);
     const row = rowAt(rows, '4階 書架B');
-    expect(within(row).getByText('棚にある')).toBeTruthy();
+    expect(within(row).getByText('借りられる')).toBeTruthy();
     expect(within(row).getByText('残り2冊')).toBeTruthy();
     expect(within(row).getByRole('link').getAttribute('href')).toBe('/books/13');
   });
@@ -442,7 +442,7 @@ describe('BookListPage の置き場所ごとの行', () => {
     respondWith(BOOKS);
     renderPage();
     const row = rowAt(await openCopies(), '3階 書架B');
-    expect(within(row).getByText('棚にある')).toBeTruthy();
+    expect(within(row).getByText('借りられる')).toBeTruthy();
     expect(within(row).getByText('残り1冊')).toBeTruthy();
     expect(within(row).getByRole('link').getAttribute('href')).toBe('/books/12');
   });

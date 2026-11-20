@@ -26,13 +26,13 @@ describe('StatusChip（持ち出し禁止）', () => {
     expect(chip.className).toBe('status-chip status-chip--borrowed');
   });
 
-  it('RL-03: restricted を渡さない、または false のときは、今までどおり「棚にある」を表示する', () => {
+  it('RL-03: restricted を渡さない、または false のときは、今までどおり「借りられる」を表示する', () => {
     const omitted = renderChip({ status: 'available' });
-    expect(omitted.textContent).toBe('棚にある');
+    expect(omitted.textContent).toBe('借りられる');
     expect(omitted.className).toBe('status-chip status-chip--available');
     cleanup();
     const no = renderChip({ status: 'available', restricted: false });
-    expect(no.textContent).toBe('棚にある');
+    expect(no.textContent).toBe('借りられる');
     expect(no.className).toBe('status-chip status-chip--available');
   });
 

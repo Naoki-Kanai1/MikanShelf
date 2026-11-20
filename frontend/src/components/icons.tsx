@@ -60,7 +60,7 @@ export function RequestIcon() {
   );
 }
 
-// 状態「棚にある」
+// 状態「借りられる」
 export function CheckIcon() {
   return (
     <Icon>
@@ -112,6 +112,15 @@ export function ExpandIcon() {
   return (
     <Icon>
       <path d="M6 9l6 6 6-6" />
+    </Icon>
+  );
+}
+
+// 検索の入力欄の右端にある、絞り込みの条件を開くボタンの印（漏斗）
+export function FilterIcon() {
+  return (
+    <Icon>
+      <path d="M4 5h16l-6 7.5V19l-4-2v-4.5z" />
     </Icon>
   );
 }

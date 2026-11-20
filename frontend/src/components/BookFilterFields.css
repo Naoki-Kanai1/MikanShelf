@@ -1,0 +1,102 @@
+/*
+ * 本一覧の絞り込みの選択肢（場所・ステータス）。色と文字は theme.css（.app-shell の中）の変数を使う。
+ * stacked: モーダルの中。1つの選択肢を1行（高さ 48px）に並べる
+ * inline : 広い画面の検索ボックスの下。「場所：☐ ☐ ☐」「ステータス：○ ○ ○ ○」と項目ごとに横に並べ、入りきらなければ折り返す
+ */
+.book-filter-fields__group {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.book-filter-fields__legend {
+  padding: 0;
+  color: var(--color-on-surface-variant);
+  font: var(--type-label-large);
+}
+
+.book-filter-fields__option {
+  display: flex;
+  align-items: center;
+  color: var(--color-on-surface);
+  cursor: pointer;
+}
+
+.book-filter-fields__option input {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+
+.book-filter-fields__message {
+  margin: 0;
+  color: var(--color-on-surface-variant);
+  font: var(--type-body-medium);
+}
+
+/* ---- stacked（モーダル） ---- */
+
+.book-filter-fields--stacked .book-filter-fields__group {
+  margin-bottom: 16px;
+}
+
+.book-filter-fields--stacked .book-filter-fields__legend {
+  margin-bottom: 4px;
+}
+
+/* 押しやすいよう、1つの選択肢の高さは 48px */
+.book-filter-fields--stacked .book-filter-fields__option {
+  gap: 16px;
+  min-height: 48px;
+  font: var(--type-body-large);
+}
+
+.book-filter-fields--stacked .book-filter-fields__message {
+  padding: 12px 0;
+}
+
+/* ---- inline（広い画面の検索ボックスの下） ---- */
+
+.book-filter-fields--inline {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* 項目の名前（「場所：」）を左に、選択肢を右に並べる。legend は float にすると横に並べられる */
+.book-filter-fields--inline .book-filter-fields__group {
+  display: flex;
+  align-items: center;
+}
+
+.book-filter-fields--inline .book-filter-fields__legend {
+  float: left;
+  flex: none;
+  /* 「ステータス：」が入り、選択肢との間が空く幅にそろえ、選択肢の始まりを縦にそろえる */
+  width: 7em;
+  line-height: 40px;
+}
+
+.book-filter-fields--inline .book-filter-fields__legend::after {
+  content: '：';
+}
+
+.book-filter-fields--inline .book-filter-fields__options {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 20px;
+}
+
+.book-filter-fields--inline .book-filter-fields__option {
+  gap: 8px;
+  min-height: 40px;
+  font: var(--type-body-medium);
+  white-space: nowrap;
+}

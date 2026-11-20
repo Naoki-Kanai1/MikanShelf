@@ -4,7 +4,7 @@ import { normalizeForSearch } from './filterBooks';
 // 代表の1冊を選ぶのに使う項目
 type Representable = { status: 'available' | 'borrowed'; is_restricted: 0 | 1 };
 
-type Groupable = Representable & { title: string; authors: string };
+export type Groupable = Representable & { title: string; authors: string };
 
 /**
  * 何冊かの本から、代表（行を押したときに開く本）を1冊選ぶ。
