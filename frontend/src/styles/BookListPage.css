@@ -190,12 +190,15 @@
   transform: rotate(180deg);
 }
 
-/* 開いたときの1冊ずつの行。まとまりの行より一段下げて、背景で区別する */
+/*
+ * 開いたときの1冊ずつの行。まとまりの行より一段下げて、背景で区別する。
+ * 状態の印の灰（surface-variant）と混ざらないよう、背景は印より明るい surface-container-low にする
+ */
 .book-copies {
   margin: 0;
   padding: 0;
   list-style: none;
-  background: var(--color-surface-container-high);
+  background: var(--color-surface-container-low);
 }
 
 .book-copies__item + .book-copies__item {
@@ -208,7 +211,7 @@
 }
 
 .book-row--copy:hover {
-  background: var(--color-surface-container-highest);
+  background: var(--color-surface-container);
 }
 
 .book-row__location {

@@ -130,7 +130,7 @@ export default function BookDetail({ bookId }: Props) {
                 </span>
                 <div>
                   <div className="info-label">状態</div>
-                  <StatusChip status={book.status} />
+                  <StatusChip status={book.status} restricted={isRestricted} />
                 </div>
               </div>
 

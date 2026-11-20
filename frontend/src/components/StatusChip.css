@@ -1,7 +1,17 @@
-/* 本の貸出状態の印（棚にある／貸出中）。色は theme.css の変数を使う */
+/*
+ * 本の貸出状態の印（棚にある／誰かが借用中／持ち出し禁止）。色は theme.css の変数を使う。
+ * 状態の色の決まり: 借りられる＝緑（success）、あなたが借りている＝primary、誰かが借りている＝灰（surface-variant）、
+ * 持ち出し禁止＝淡い赤＋禁止のアイコン、返却済み＝灰で文字も薄め（outline）、延滞（将来）＝赤（error）
+ */
+/*
+ * どの状態でも同じ大きさにそろえるため、いちばん長い「持ち出し禁止」（6文字）が収まる幅を最小の幅にし、中身は中央に寄せる。
+ * 幅 = 文字 12px × 6 + アイコン 14px + 間 6px + 左右の余白 10px × 2
+ */
 .status-chip {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  min-width: calc(12px * 6 + 14px + 6px + 10px * 2);
   gap: 6px;
   height: 24px;
   box-sizing: border-box;
@@ -16,9 +26,10 @@
   height: 14px;
 }
 
+/* 棚にある（借りられる）。緑 */
 .status-chip--available {
-  background: var(--color-tertiary-container);
-  color: var(--color-on-tertiary-container);
+  background: var(--color-success-container);
+  color: var(--color-on-success-container);
 }
 
 /* 持ち出し禁止。赤系だが目立ちすぎないよう、淡い背景に濃い赤の文字で、枠は付けない */
@@ -27,8 +38,8 @@
   color: var(--color-on-error-container-variant);
 }
 
+/* 誰かが借用中。灰色の塗りだけで、枠は付けない */
 .status-chip--borrowed {
-  border: 1px solid var(--color-outline);
-  background: var(--color-surface-container-highest);
-  color: var(--color-on-secondary-container);
+  background: var(--color-surface-variant);
+  color: var(--color-on-surface-variant);
 }
