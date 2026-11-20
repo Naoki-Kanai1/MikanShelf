@@ -69,12 +69,11 @@ export function CheckIcon() {
   );
 }
 
-// 状態「貸出中」
+// 状態「誰かが借用中」。いまは棚に無い（借りられない）ことを、バツの印で表す
 export function BorrowedIcon() {
   return (
     <Icon>
-      <path d="M10 4H5v16h5" />
-      <path d="M10 12h10M16 8l4 4-4 4" />
+      <path d="M6 6l12 12M18 6 6 18" />
     </Icon>
   );
 }

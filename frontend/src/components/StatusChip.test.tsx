@@ -21,9 +21,9 @@ describe('StatusChip', () => {
     expect(chip.classList.contains('status-chip--borrowed')).toBe(false);
   });
 
-  it('BL-13: borrowed のときは「貸出中」を表示し、borrowed のクラスが付く', () => {
+  it('BL-13: borrowed のときは「誰かが借用中」を表示し、borrowed のクラスが付く', () => {
     const chip = renderChip({ status: 'borrowed' });
-    expect(chip.textContent).toBe('貸出中');
+    expect(chip.textContent).toBe('誰かが借用中');
     expect(chip.classList.contains('status-chip--borrowed')).toBe(true);
     expect(chip.classList.contains('status-chip--available')).toBe(false);
   });

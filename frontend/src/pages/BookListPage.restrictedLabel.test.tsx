@@ -64,7 +64,7 @@ describe('BookListPage（持ち出し禁止の印）', () => {
     expect(row.textContent).not.toContain('棚にある');
   });
 
-  it('RL-06: 持ち出し禁止でない本の行では「棚にある」「貸出中」を出し、「持ち出し禁止」は無い', async () => {
+  it('RL-06: 持ち出し禁止でない本の行では「棚にある」「誰かが借用中」を出し、「持ち出し禁止」は無い', async () => {
     renderWith([
       makeBook({ id: 2, title: '棚の本', status: 'available' }),
       makeBook({ id: 3, title: '貸出中の本', status: 'borrowed' }),
@@ -72,7 +72,7 @@ describe('BookListPage（持ち出し禁止の印）', () => {
     const shelf = await findChips('棚の本');
     const lent = await findChips('貸出中の本');
     expect(shelf.chips.map((c) => c.textContent)).toEqual(['棚にある']);
-    expect(lent.chips.map((c) => c.textContent)).toEqual(['貸出中']);
+    expect(lent.chips.map((c) => c.textContent)).toEqual(['誰かが借用中']);
     expect(shelf.row.textContent).not.toContain('持ち出し禁止');
     expect(lent.row.textContent).not.toContain('持ち出し禁止');
   });

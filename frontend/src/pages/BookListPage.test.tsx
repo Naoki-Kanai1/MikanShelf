@@ -111,7 +111,7 @@ describe('BookListPage', () => {
     expect(await screen.findByText('本詳細画面（テスト用）')).toBeTruthy();
   });
 
-  it('BL-06: 状態が available の本は「棚にある」、borrowed の本は「貸出中」を表示する', async () => {
+  it('BL-06: 状態が available の本は「棚にある」、borrowed の本は「誰かが借用中」を表示する', async () => {
     respondWith([
       makeBook({ id: 1, title: '棚の本', status: 'available' }),
       makeBook({ id: 2, title: '貸出中の本', status: 'borrowed' }),
@@ -120,8 +120,8 @@ describe('BookListPage', () => {
     const available = await findRow('棚の本');
     const borrowed = await findRow('貸出中の本');
     expect(within(available).getByText('棚にある')).toBeTruthy();
-    expect(within(available).queryByText('貸出中')).toBeNull();
-    expect(within(borrowed).getByText('貸出中')).toBeTruthy();
+    expect(within(available).queryByText('誰かが借用中')).toBeNull();
+    expect(within(borrowed).getByText('誰かが借用中')).toBeTruthy();
     expect(within(borrowed).queryByText('棚にある')).toBeNull();
   });
 
@@ -304,9 +304,9 @@ describe('BookListPage の同じ本のまとまり', () => {
     expect(group.getAttribute('aria-expanded')).toBe('true');
     const rows = within(queryCopies()!).getAllByRole('link');
     expect(rows.map((row) => row.textContent)).toEqual([
-      expect.stringMatching(/置き場所：3階 書架A.*貸出中/),
+      expect.stringMatching(/置き場所：3階 書架A.*誰かが借用中/),
       expect.stringMatching(/置き場所：3階 書架B.*棚にある/),
-      expect.stringMatching(/置き場所：5階 書架C.*貸出中/),
+      expect.stringMatching(/置き場所：5階 書架C.*誰かが借用中/),
     ]);
   });
 
@@ -334,7 +334,7 @@ describe('BookListPage の同じ本のまとまり', () => {
     expect(queryCopies()).toBeNull();
   });
 
-  it('SB-43: まとまりの行の印は、棚にある本があれば「棚にある」、全て貸出中なら「貸出中」', async () => {
+  it('SB-43: まとまりの行の印は、棚にある本があれば「棚にある」、全て貸出中なら「誰かが借用中」', async () => {
     respondWith([
       ...COPIES,
       makeBook({ id: 5, title: '人月の神話', authors: 'Frederick P. Brooks', status: 'borrowed' }),
@@ -344,13 +344,13 @@ describe('BookListPage の同じ本のまとまり', () => {
     const mixed = await findGroupButton();
     const allBorrowed = await screen.findByRole('button', { name: /人月の神話/ });
     expect(within(mixed).getByText('棚にある')).toBeTruthy();
-    expect(within(mixed).queryByText('貸出中')).toBeNull();
-    expect(within(allBorrowed).getByText('貸出中')).toBeTruthy();
+    expect(within(mixed).queryByText('誰かが借用中')).toBeNull();
+    expect(within(allBorrowed).getByText('誰かが借用中')).toBeTruthy();
     expect(within(allBorrowed).queryByText('棚にある')).toBeNull();
   });
 
   it('SB-44: まとまりの行の「持ち出し禁止」は全て持ち出し禁止のときだけ。開いた行には1冊ごとに出す', async () => {
-    // 持ち出し禁止の本は借りられないので、棚にある状態にする（貸出中のときは「貸出中」を出す決まり）
+    // 持ち出し禁止の本は借りられないので、棚にある状態にする（貸出中のときは「誰かが借用中」を出す決まり）
     respondWith([
       ...COPIES.map((book) => (book.id === 4 ? { ...book, status: 'available' as const } : book)),
       makeBook({ id: 5, title: '禁止の本', authors: 'X', is_restricted: 1 }),
@@ -424,11 +424,11 @@ describe('BookListPage の置き場所ごとの行', () => {
     expect(within(row).getByRole('link').getAttribute('href')).toBe('/books/13');
   });
 
-  it('SB-53: 同じ置き場所の本が全て貸出中なら「貸出中」と「残り0冊」を出す', async () => {
+  it('SB-53: 同じ置き場所の本が全て貸出中なら「誰かが借用中」と「残り0冊」を出す', async () => {
     respondWith(BOOKS);
     renderPage();
     const row = rowAt(await openCopies(), '5階 書架A');
-    expect(within(row).getByText('貸出中')).toBeTruthy();
+    expect(within(row).getByText('誰かが借用中')).toBeTruthy();
     expect(within(row).getByText('残り0冊')).toBeTruthy();
     expect(within(row).getByRole('link').getAttribute('href')).toBe('/books/15');
   });
@@ -442,7 +442,7 @@ describe('BookListPage の置き場所ごとの行', () => {
     expect(within(row).getByRole('link').getAttribute('href')).toBe('/books/12');
   });
 
-  it('SB-57: 置き場所に1冊だけで貸出中なら「貸出中」と「残り0冊」を出す', async () => {
+  it('SB-57: 置き場所に1冊だけで貸出中なら「誰かが借用中」と「残り0冊」を出す', async () => {
     respondWith([
       makeBook({ id: 31, ...ISSUE, location: '3階 書架B', status: 'borrowed' }),
       makeBook({ id: 32, ...ISSUE, location: '4階 書架B', status: 'available' }),
@@ -453,7 +453,7 @@ describe('BookListPage の置き場所ごとの行', () => {
       screen.getByRole('list', { name: 'イシューからはじめよの2冊' }),
     ).getAllByRole('listitem');
     const row = rowAt(rows, '3階 書架B');
-    expect(within(row).getByText('貸出中')).toBeTruthy();
+    expect(within(row).getByText('誰かが借用中')).toBeTruthy();
     expect(within(row).getByText('残り0冊')).toBeTruthy();
   });
 

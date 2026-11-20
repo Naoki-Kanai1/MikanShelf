@@ -27,12 +27,20 @@
   --color-surface: #fff8f4;
   --color-on-surface: #211a14;
   --color-on-surface-variant: #51443a;
+  --color-surface-container-low: #fff1e8;
   --color-surface-container: #faebe0;
   --color-surface-container-high: #f4e5db;
   --color-surface-container-highest: #efe0d5;
+  --color-surface-variant: #f2dfd1;
   --color-inverse-surface: #382e27;
   --color-outline: #837469;
   --color-outline-variant: #d5c3b5;
+  /*
+   * 成功の色（独自に足す。Material Design 3 の役割には無い）。
+   * 状態の印の「棚にある」（借りられる）などに使う。tertiary は黄緑で「借りられる」に見えにくいため、別に緑を持つ
+   */
+  --color-success-container: #c4eec4;
+  --color-on-success-container: #002107;
 
   /* 文字（Noto Sans JP）。値は「太さ 大きさ/行の高さ」 */
   /* 並びは本詳細画面（BookDetail.css の body）と同じにしている */

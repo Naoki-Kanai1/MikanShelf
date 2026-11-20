@@ -20,9 +20,9 @@ describe('StatusChip（持ち出し禁止）', () => {
     expect(chip.className).toBe('status-chip status-chip--restricted');
   });
 
-  it('RL-02: 持ち出し禁止でも貸出中のデータなら、実際の状態の「貸出中」を表示する', () => {
+  it('RL-02: 持ち出し禁止でも貸出中のデータなら、実際の状態の「誰かが借用中」を表示する', () => {
     const chip = renderChip({ status: 'borrowed', restricted: true });
-    expect(chip.textContent).toBe('貸出中');
+    expect(chip.textContent).toBe('誰かが借用中');
     expect(chip.className).toBe('status-chip status-chip--borrowed');
   });
 

@@ -1,15 +1,24 @@
-/* 貸出の状態の印（貸出中／返却済み）。共通の見た目は StatusChip.css の .status-chip */
+/* 貸出の状態の印（あなたが借りています／返却済み）。共通の見た目は StatusChip.css の .status-chip */
 
-/* 貸出中は本の「貸出中」と同じ見た目 */
-.loan-status-chip--borrowed {
-  border: 1px solid var(--color-outline);
-  background: var(--color-surface-container-highest);
-  color: var(--color-on-secondary-container);
+/*
+ * 2つの印の大きさを、長いほうの「あなたが借りています」にそろえる。
+ * 幅 = 文字 12px × 10（アイコンなし）+ 左右の余白 10px × 2
+ */
+.loan-status-chip {
+  min-width: calc(12px * 10 + 10px * 2);
 }
 
-/* 返却済みは枠だけで背景なし */
+/*
+ * あなたが借りています。チームの主色（primary）の系統。
+ * primary の濃い塗りだと「借りる」ボタンと同じに見えるため、淡い primary-container の塗りに濃い文字にする。枠は付けない
+ */
+.loan-status-chip--borrowed {
+  background: var(--color-primary-container);
+  color: var(--color-on-primary-container);
+}
+
+/* 返却済み。灰色の塗りに薄めの文字（outline）で、終わった貸出だと分かるように控えめにする。枠は付けない */
 .loan-status-chip--returned {
-  border: 1px solid var(--color-outline);
-  background: transparent;
-  color: var(--color-on-surface-variant);
+  background: var(--color-surface-variant);
+  color: var(--color-outline);
 }
