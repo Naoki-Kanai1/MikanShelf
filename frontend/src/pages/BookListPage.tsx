@@ -130,6 +130,8 @@ export default function BookListPage() {
   // 狭い画面（〜599px）で使う、絞り込みのモーダル
   const filterDialogRef = useRef<HTMLDialogElement>(null);
   const [filterOpen, setFilterOpen] = useState(false);
+  // スクロールしても画面の上の端に残す、検索ボックスと選択肢の帯（BookListPage.css の .book-search）
+  const searchBandRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetch('/api/books')
@@ -153,6 +155,23 @@ export default function BookListPage() {
     window.addEventListener('scroll', remember);
     return () => window.removeEventListener('scroll', remember);
   }, [loaded, scrollYRef]);
+
+  // キーボードで行を選んでいったとき、選んだ行が上に残る帯の下に隠れないよう、帯の高さの分だけスクロールで止まる位置を下げる。
+  // 帯の高さは画面の幅や置き場所の数（選択肢の折り返し）で変わるので、変わるたびに合わせる。
+  // ResizeObserver の無い環境（テストの jsdom）では何もしない
+  useEffect(() => {
+    const band = searchBandRef.current;
+    if (!band || typeof ResizeObserver !== 'function') return;
+    const root = document.documentElement;
+    const observer = new ResizeObserver(() => {
+      root.style.scrollPaddingTop = `${band.offsetHeight}px`;
+    });
+    observer.observe(band);
+    return () => {
+      observer.disconnect();
+      root.style.removeProperty('scroll-padding-top');
+    };
+  }, []);
 
   // モーダルを開いたまま画面が広くなったら（広い画面では検索ボックスの下に選択肢を出すので）閉じる。
   // matchMedia の無い環境（テストの jsdom）では何もしない
@@ -190,7 +209,7 @@ export default function BookListPage() {
       <PageHeader title="本一覧" />
       {/* 題名・著者で絞り込む（部分一致）。API は呼び直さず、読み込んだ一覧の中から探す。
           置き場所・状態の条件は、狭い画面では右端のボタンで開くモーダルで、広い画面では検索ボックスの下で選ぶ */}
-      <div className="book-search" role="search">
+      <div className="book-search" role="search" ref={searchBandRef}>
         <div className="book-search__field">
           <label className="book-search__label">
             <SearchIcon />
