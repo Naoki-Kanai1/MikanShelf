@@ -3,7 +3,8 @@
  * 画面の幅による見た目（docs/Responsive_design.md）:
  *   Compact（〜599px）   : 区切り線のある行
  *   Medium（600〜839px）  : 行の形のまま、一覧を角の丸い枠で囲む
- *   Expanded 以上（840px〜）: 絞り込みを画面の名前の横に置き、枠で囲んだ表の形にする（UI_design.svg の「PC：」の画面）
+ *   Expanded 以上（840px〜）: 枠で囲んだ表の形にする（UI_design.svg の「PC：」の画面）
+ * 絞り込みのチップは、どの幅でも画面の名前の下に置く。
  * 行の作りは本一覧画面（BookListPage.css）に合わせている。
  * 画面設計書: docs/ap/LoanListPage/Screen_design.md
  */
@@ -130,28 +131,8 @@
   }
 }
 
-/* ---- Expanded 以上: 絞り込みを画面の名前の横に置き、表の形にする ---- */
+/* ---- Expanded 以上: 表の形にする ---- */
 @media (min-width: 840px) {
-  /* 画面の名前と絞り込みを横に並べ、その下に一覧などを置く */
-  .loan-list-page {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    align-items: center;
-  }
-
-  .loan-list-page > * {
-    grid-column: 1 / -1;
-  }
-
-  .loan-list-page > .page-header {
-    grid-column: 1;
-  }
-
-  .loan-list-page > .loan-filter {
-    grid-column: 2;
-    padding: 0 var(--page-padding-inline) 0 0;
-  }
-
   /*
    * 列: 題名 ／ 借りた日 ／ 状態の印。
    * 列は一覧（.loan-list）で決め、行（li と .loan-row）は subgrid でその列を共有する。
