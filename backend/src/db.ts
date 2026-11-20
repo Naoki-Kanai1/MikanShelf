@@ -131,7 +131,7 @@ const seedUsers: [accountId: string, name: string, email: string][] = [
 const LOC_YOKOHAMA_13F = '横浜 13F 共用'; // IT関連の雑誌。すべて持ち出し禁止
 const LOC_YOKOHAMA_14F = '横浜 14F SD部'; // 技術書。ほとんど貸出可能
 const LOC_TORANOMON_20F = '虎ノ門 20F 共用'; // 技術書。持ち出し禁止と貸出可能が混在
-const LOC_SHINKAWA_777F = '新川 777F 共用'; // 技術書。持ち出し禁止と貸出可能が混在
+const LOC_SHINKAWA_3F = '新川 3F 共用'; // 技術書。持ち出し禁止と貸出可能が混在
 
 // 本（1冊目）。ID はこの順に 1〜20 になる。すべて横浜 14F SD部に置く
 const firstCopies: [title: string, authors: string, location: string, isRestricted: 0 | 1][] = [
@@ -159,10 +159,11 @@ const firstCopies: [title: string, authors: string, location: string, isRestrict
 
 // 同じ題名の本（2冊目以降）。「棚にある冊数」を確かめるためのもの。著者は1冊目と同じ
 // - 初期状態で貸出中の本（seedLoans で返した日が null の本）は、合わせて3冊以上にする。
-//   ただしチーム・ジャーニーは、全フロアの残りが0になる例として、2冊とも貸出中にする
+//   ただしチーム・ジャーニー（14F の2冊）と Webを支える技術（14F の2冊と新川の1冊）は、
+//   題名の全部の冊が貸出中になる例として、全部を貸出中にする
 // - 状態のパターン（1か所にしかない本、全部持ち出し禁止の置き場所など）は tests/seedLocations/cases.md を参照
 // - ほかの本も合わせて1〜5冊（平均で3冊くらい）にする
-// - 横浜 14F SD部・虎ノ門 20F 共用・新川 777F 共用に振り分ける。14F はほとんど貸出可能、
+// - 横浜 14F SD部・虎ノ門 20F 共用・新川 3F 共用に振り分ける。14F はほとんど貸出可能、
 //   虎ノ門と新川は持ち出し禁止と貸出可能を混ぜる（同じ置き場所に同じ題名の両方がある本も作る）
 // - 既存の DB に入った本と食い違わないよう、同じ題名の中の順番は変えずに、増やすときは後ろに足す
 const extraCopies: [title: string, location: string, isRestricted: 0 | 1][] = [
@@ -170,42 +171,42 @@ const extraCopies: [title: string, location: string, isRestricted: 0 | 1][] = [
   ['リーダブルコード', LOC_TORANOMON_20F, 0],
   ['オブジェクト指向UIデザイン', LOC_TORANOMON_20F, 0],
   ['テスト駆動開発', LOC_TORANOMON_20F, 1],
-  ['リーダブルコード', LOC_SHINKAWA_777F, 1],
-  ['オブジェクト指向UIデザイン', LOC_SHINKAWA_777F, 0],
+  ['リーダブルコード', LOC_SHINKAWA_3F, 1],
+  ['オブジェクト指向UIデザイン', LOC_SHINKAWA_3F, 0],
   ['テスト駆動開発', LOC_TORANOMON_20F, 0],
   ['SQLアンチパターン', LOC_YOKOHAMA_14F, 0],
-  ['SQLアンチパターン', LOC_SHINKAWA_777F, 1],
+  ['SQLアンチパターン', LOC_SHINKAWA_3F, 1],
   ['達人プログラマー', LOC_YOKOHAMA_14F, 0],
   ['達人プログラマー', LOC_TORANOMON_20F, 1],
   ['誰のためのデザイン？', LOC_YOKOHAMA_14F, 0],
-  ['誰のためのデザイン？', LOC_SHINKAWA_777F, 0],
+  ['誰のためのデザイン？', LOC_SHINKAWA_3F, 0],
   ['ノンデザイナーズ・デザインブック', LOC_YOKOHAMA_14F, 0],
   ['ノンデザイナーズ・デザインブック', LOC_TORANOMON_20F, 0],
   ['リファクタリング', LOC_YOKOHAMA_14F, 0],
-  ['リファクタリング', LOC_SHINKAWA_777F, 1],
-  ['リファクタリング', LOC_SHINKAWA_777F, 0],
+  ['リファクタリング', LOC_SHINKAWA_3F, 1],
+  ['リファクタリング', LOC_SHINKAWA_3F, 0],
   ['ドメイン駆動設計', LOC_TORANOMON_20F, 1],
   ['ドメイン駆動設計', LOC_TORANOMON_20F, 0],
   ['Clean Code', LOC_YOKOHAMA_14F, 0],
   ['Clean Code', LOC_TORANOMON_20F, 0],
-  ['Clean Code', LOC_SHINKAWA_777F, 1],
+  ['Clean Code', LOC_SHINKAWA_3F, 1],
   ['エンジニアリング組織論への招待', LOC_YOKOHAMA_14F, 0],
-  ['エンジニアリング組織論への招待', LOC_SHINKAWA_777F, 0],
+  ['エンジニアリング組織論への招待', LOC_SHINKAWA_3F, 0],
   ['チーム・ジャーニー', LOC_YOKOHAMA_14F, 0],
   ['アジャイルサムライ', LOC_YOKOHAMA_14F, 0],
-  ['アジャイルサムライ', LOC_SHINKAWA_777F, 1],
+  ['アジャイルサムライ', LOC_SHINKAWA_3F, 1],
   ['プログラミング言語Go', LOC_YOKOHAMA_14F, 0],
   ['プログラミング言語Go', LOC_TORANOMON_20F, 1],
   ['Webを支える技術', LOC_YOKOHAMA_14F, 0],
-  ['Webを支える技術', LOC_SHINKAWA_777F, 0],
+  ['Webを支える技術', LOC_SHINKAWA_3F, 0],
   ['イシューからはじめよ', LOC_YOKOHAMA_14F, 0],
   ['イシューからはじめよ', LOC_TORANOMON_20F, 1],
   ['イシューからはじめよ', LOC_TORANOMON_20F, 0],
-  ['イシューからはじめよ', LOC_SHINKAWA_777F, 0],
-  ['ユーザーインタフェースデザインの教科書', LOC_SHINKAWA_777F, 0],
+  ['イシューからはじめよ', LOC_SHINKAWA_3F, 0],
+  ['ユーザーインタフェースデザインの教科書', LOC_SHINKAWA_3F, 0],
   ['データ指向アプリケーションデザイン', LOC_YOKOHAMA_14F, 1],
   ['ソフトウェアアーキテクチャの基礎', LOC_YOKOHAMA_14F, 0],
-  ['ソフトウェアアーキテクチャの基礎', LOC_SHINKAWA_777F, 1],
+  ['ソフトウェアアーキテクチャの基礎', LOC_SHINKAWA_3F, 1],
 ];
 
 // 雑誌（横浜 13F 共用）。1タイトル1冊で、すべて持ち出し禁止。著者の欄には出版社を入れる
@@ -329,6 +330,15 @@ export function migrateOldLocations(
 }
 migrateOldLocations(db, seedBooks);
 
+// 置き場所「新川 777F 共用」を「新川 3F 共用」に変えたので、前の名前で書き換わった DB も新しい名前にする。
+// 何度呼んでも結果は変わらない
+export function renameShinkawaLocation(database: Database.Database): void {
+  database
+    .prepare('UPDATE books SET location = ? WHERE location = ?')
+    .run(LOC_SHINKAWA_3F, '新川 777F 共用');
+}
+renameShinkawaLocation(db);
+
 // 初回起動より後に seedBooks へ足した本（同じ題名の2冊目以降など）を、既存の DB にも入れる。
 // 題名ごとに、DB の冊数が seedBooks の冊数より少なければ、足りない分だけ入れる（何度起動しても増え続けない）
 {
@@ -380,10 +390,14 @@ const seedLoans: [
   [
     'emp0011',
     '誰のためのデザイン？',
-    LOC_SHINKAWA_777F,
+    LOC_SHINKAWA_3F,
     '2026-10-15 04:30:00',
     '2026-11-05 05:50:00',
   ],
+  // 複数の置き場所にまたがる題名で、全部の冊が貸出中になる例
+  ['emp0013', 'Webを支える技術', LOC_YOKOHAMA_14F, '2026-11-15 01:00:00', null],
+  ['emp0014', 'Webを支える技術', LOC_YOKOHAMA_14F, '2026-11-16 02:00:00', null],
+  ['emp0015', 'Webを支える技術', LOC_SHINKAWA_3F, '2026-11-17 03:00:00', null],
 ];
 
 // 予約（順番待ち）のサンプル。すべて waiting（順番待ち中）

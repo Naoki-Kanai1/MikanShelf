@@ -3,12 +3,12 @@
 // DB は vitest.config.ts の設定でメモリ上の使い捨てのもの（初期データ入り）になる。
 // DB を書き換えるテストは、ほかのテストに影響しないよう、最後に ROLLBACK で元に戻す
 import { describe, expect, it } from 'vitest';
-import { db, migrateOldLocations, seedBooks } from './db';
+import { db, migrateOldLocations, renameShinkawaLocation, seedBooks } from './db';
 
 const LOC_13F = '横浜 13F 共用';
 const LOC_14F = '横浜 14F SD部';
 const LOC_TORANOMON = '虎ノ門 20F 共用';
-const LOC_SHINKAWA = '新川 777F 共用';
+const LOC_SHINKAWA = '新川 3F 共用';
 
 type Book = { id: number; title: string; location: string; is_restricted: 0 | 1 };
 
@@ -249,7 +249,8 @@ describe('置き換え後のデータの状態のパターン', () => {
 
   it('SL-24: P12 題名全体で、貸出可能な本が全部貸出中（全フロアの残り0）', () => {
     expect(lendableOnShelf('チーム・ジャーニー')).toBe(0);
-    // 0 になるのはこの題名だけ（持ち出し禁止の本しかない題名は除く）
+    expect(lendableOnShelf('Webを支える技術')).toBe(0);
+    // 0 になるのはこの2つの題名だけ（持ち出し禁止の本しかない題名は除く）
     const titles = [
       ...new Set(
         groups()
@@ -257,7 +258,9 @@ describe('置き換え後のデータの状態のパターン', () => {
           .map((g) => g.title),
       ),
     ];
-    expect(titles.filter((t) => lendableOnShelf(t) === 0)).toEqual(['チーム・ジャーニー']);
+    expect(titles.filter((t) => lendableOnShelf(t) === 0).sort()).toEqual(
+      ['チーム・ジャーニー', 'Webを支える技術'].sort(),
+    );
   });
 
   it('SL-25: P13 14F 以外の本に、貸出中・返却済みの記録がある', () => {
@@ -279,6 +282,36 @@ describe('置き換え後のデータの状態のパターン', () => {
     const at13F = groups().filter((g) => g.location === LOC_13F);
     expect(at13F.length).toBeGreaterThan(0);
     expect(at13F.every((g) => g.restricted === g.total)).toBe(true);
+  });
+  // 題名の全部の冊が貸出中か（持ち出し禁止の本があれば貸し出せないので、全部が貸出中にはならない）
+  const allCopiesBorrowed = (title: string) =>
+    locationsOf(title).every((g) => g.borrowed === g.total);
+
+  it('SL-29: 題名の全部の冊が貸出中（1か所の題名と、2か所にまたがる題名）', () => {
+    expect(allCopiesBorrowed('チーム・ジャーニー')).toBe(true);
+    expect(locationsOf('チーム・ジャーニー')).toHaveLength(1);
+    expect(allCopiesBorrowed('Webを支える技術')).toBe(true);
+    expect(locationsOf('Webを支える技術')).toHaveLength(2);
+  });
+
+  it('SL-30: 全部の冊が貸出中の題名は、チーム・ジャーニーとWebを支える技術だけ', () => {
+    const titles = [...new Set(groups().map((g) => g.title))];
+    expect(titles.filter(allCopiesBorrowed).sort()).toEqual(
+      ['チーム・ジャーニー', 'Webを支える技術'].sort(),
+    );
+  });
+
+  it('SL-32: Webを支える技術の置き場所ごとの状態', () => {
+    expect(group('Webを支える技術', LOC_14F)).toMatchObject({
+      total: 2,
+      restricted: 0,
+      borrowed: 2,
+    });
+    expect(group('Webを支える技術', LOC_SHINKAWA)).toMatchObject({
+      total: 1,
+      restricted: 0,
+      borrowed: 1,
+    });
   });
 });
 
@@ -379,6 +412,24 @@ describe('migrateOldLocations', () => {
       migrateOldLocations(db, seedBooks);
       expect(bookById(a.id).location).toBe('3階書架A');
       expect(bookById(b.id).location).toBe('13階 書架A');
+    });
+  });
+});
+
+describe('renameShinkawaLocation', () => {
+  it('SL-31: 「新川 777F 共用」の本が「新川 3F 共用」になり、ほかの置き場所は変わらない', () => {
+    withRollback(() => {
+      const a = nthCopy('リファクタリング', 3);
+      const b = nthCopy('Clean Code', 2);
+      db.prepare(`UPDATE books SET location = '新川 777F 共用' WHERE id = ?`).run(a.id);
+      const before = allBooks().filter((x) => x.id !== a.id);
+      renameShinkawaLocation(db);
+      expect(bookById(a.id).location).toBe(LOC_SHINKAWA);
+      expect(allBooks().filter((x) => x.id !== a.id)).toEqual(before);
+      expect(bookById(b.id).location).toBe(b.location);
+      // 2回呼んでも変わらない
+      renameShinkawaLocation(db);
+      expect(bookById(a.id).location).toBe(LOC_SHINKAWA);
     });
   });
 });
