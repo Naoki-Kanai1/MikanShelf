@@ -7,6 +7,7 @@ import PageHeader from '../components/PageHeader';
 import StatusChip from '../components/StatusChip';
 import { useBookListState } from '../state/BookListStateContext';
 import '../styles/BookListPage.css';
+import '../styles/PageMessage.css';
 import { filterBookList } from '../utils/filterBookList';
 import {
   collectLocations,
@@ -258,15 +259,15 @@ export default function BookListPage() {
       />
 
       {error ? (
-        <p className="book-list-page__message" role="alert">
+        <p className="page-message" role="alert">
           本の一覧を読み込めませんでした。時間をおいて、もう一度開いてください。
         </p>
       ) : books === null ? (
-        <p className="book-list-page__message">読み込み中…</p>
+        <p className="page-message">読み込み中…</p>
       ) : books.length === 0 ? (
-        <p className="book-list-page__message">登録されている本はまだありません。</p>
+        <p className="page-message">登録されている本はまだありません。</p>
       ) : groups.length === 0 ? (
-        <p className="book-list-page__message">条件に合う本は見つかりませんでした。</p>
+        <p className="page-message">条件に合う本は見つかりませんでした。</p>
       ) : (
         <ul className="book-list">
           {groups.map((group) => (

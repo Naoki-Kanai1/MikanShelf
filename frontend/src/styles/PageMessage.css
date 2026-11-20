@@ -1,0 +1,15 @@
+/*
+ * 読み込み中・エラー・0件のときなどに、画面に出す文。どの画面でも同じ見た目にする。
+ * 詳細画面では本文の余白の内側に置く（BookDetail.css の .content > .page-message）。
+ */
+.page-message {
+  margin: 0;
+  padding: 16px var(--page-padding-inline);
+  color: var(--color-on-surface-variant);
+  font: var(--type-body-medium);
+}
+
+/* 借りる・返すなどの操作に失敗したことを知らせる文。目に付くよう赤で出す */
+.page-message--error {
+  color: var(--color-error);
+}

@@ -1,11 +1,20 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import CompletionDialog from './components/CompletionDialog';
+import {
+  BookIcon,
+  CalendarIcon,
+  CheckIcon,
+  ChevronRightIcon,
+  LocationIcon,
+  OpenBookIcon,
+} from './components/icons';
 import LoanStatusChip from './components/LoanStatusChip';
 import PageHeader from './components/PageHeader';
 import { formatDate } from './utils/formatDate';
 import './BookDetail.css';
 import './LoanDetail.css';
+import './styles/PageMessage.css';
 
 type Loan = {
   id: number;
@@ -137,7 +146,7 @@ export default function LoanDetail({ loanId }: Props) {
 
               <div className="info-row">
                 <span className="info-icon">
-                  <ShelfIcon />
+                  <BookIcon />
                 </span>
                 <div>
                   <div className="info-label">全フロアの残り冊数</div>
@@ -158,7 +167,7 @@ export default function LoanDetail({ loanId }: Props) {
               {loan.returned_at && (
                 <div className="info-row">
                   <span className="info-icon">
-                    <CheckIcon size={24} />
+                    <CheckIcon />
                   </span>
                   <div>
                     <div className="info-label">返した日</div>
@@ -184,7 +193,12 @@ export default function LoanDetail({ loanId }: Props) {
             )}
           </>
         )}
-        {error && <p className="error">{error}</p>}
+        {!loan && !error && <p className="page-message">読み込み中…</p>}
+        {error && (
+          <p className="page-message page-message--error" role="alert">
+            {error}
+          </p>
+        )}
       </div>
 
       {/* 返したあとの完了ダイアログ */}
@@ -194,71 +208,5 @@ export default function LoanDetail({ loanId }: Props) {
         onClose={handleCompletionClose}
       />
     </div>
-  );
-}
-
-// ---- アイコン ----
-
-const iconProps = {
-  width: 24,
-  height: 24,
-  viewBox: '0 0 24 24',
-  fill: 'none',
-  stroke: 'currentColor',
-  strokeWidth: 2,
-  strokeLinecap: 'round',
-  strokeLinejoin: 'round',
-  'aria-hidden': true,
-} as const;
-
-function ChevronRightIcon() {
-  return (
-    <svg {...iconProps} width={20} height={20}>
-      <path d="M9 6l6 6-6 6" />
-    </svg>
-  );
-}
-
-// 状態「開いた本」
-function OpenBookIcon() {
-  return (
-    <svg {...iconProps}>
-      <path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z" />
-      <path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z" />
-    </svg>
-  );
-}
-
-function CalendarIcon() {
-  return (
-    <svg {...iconProps}>
-      <rect x="4" y="5" width="16" height="16" rx="2" />
-      <path d="M4 10h16M8 3v4M16 3v4" />
-    </svg>
-  );
-}
-
-function LocationIcon() {
-  return (
-    <svg {...iconProps}>
-      <path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z" />
-      <circle cx="12" cy="9.5" r="2.5" />
-    </svg>
-  );
-}
-
-function CheckIcon({ size = 18 }: { size?: number }) {
-  return (
-    <svg {...iconProps} width={size} height={size}>
-      <path d="M5 12.5l4.5 4.5L19 7.5" />
-    </svg>
-  );
-}
-
-function ShelfIcon() {
-  return (
-    <svg {...iconProps}>
-      <path d="M3 21h18M5 21V5h3v16M10 21V3h3v18M15.5 7.5l2.9-.8 2.6 14.3" />
-    </svg>
   );
 }

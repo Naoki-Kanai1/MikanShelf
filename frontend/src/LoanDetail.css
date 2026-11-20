@@ -10,14 +10,21 @@
   align-items: center;
   gap: 4px;
   margin-bottom: 32px;
-  color: var(--color-text);
-  font-size: 14px;
-  font-weight: 500;
+  color: var(--color-on-surface);
+  font: var(--type-label-large);
   text-decoration: none;
 }
 
-.loan-book-link svg {
+.loan-book-link .icon {
+  width: 20px;
+  height: 20px;
   color: var(--color-primary);
+}
+
+.loan-book-link:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
 .loan-book-link:hover {
@@ -31,7 +38,6 @@
   margin: 24px 0 0;
   padding: 16px;
   border-radius: 12px;
-  background: var(--color-nav-bg);
-  font-size: 14px;
-  line-height: 1.5;
+  background: var(--color-surface-container);
+  font: var(--type-body-medium);
 }

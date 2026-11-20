@@ -5,6 +5,7 @@ import LoanStatusChip from '../components/LoanStatusChip';
 import PageHeader from '../components/PageHeader';
 import { formatDate } from '../utils/formatDate';
 import '../styles/LoanListPage.css';
+import '../styles/PageMessage.css';
 
 // GET /api/loans が返す貸出1件分のデータ（backend/src/index.ts の Loan と同じ形）
 type Loan = {
@@ -75,13 +76,13 @@ export default function LoanListPage() {
       </div>
 
       {error ? (
-        <p className="loan-list-page__message" role="alert">
+        <p className="page-message" role="alert">
           貸出の一覧を読み込めませんでした。時間をおいて、もう一度開いてください。
         </p>
       ) : visibleLoans === null ? (
-        <p className="loan-list-page__message">読み込み中…</p>
+        <p className="page-message">読み込み中…</p>
       ) : visibleLoans.length === 0 ? (
-        <p className="loan-list-page__message">{emptyMessage}</p>
+        <p className="page-message">{emptyMessage}</p>
       ) : (
         <ul className="loan-list">
           {visibleLoans.map((loan) => (

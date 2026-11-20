@@ -3,9 +3,8 @@
  * 値は docs/UI_design.svg（末尾の「配色と文字」と、各画面で使われている色）から取っている。
  * 画面ごとの CSS では色コードを直接書かず、ここの変数を使う。
  *
- * 本詳細画面（BookDetail.css）は別の色の変数を :root に持っていて、同じ名前で値が違うものがある
- * （--color-primary など）。色をそろえるまでは互いに影響しないよう、ここの変数は
- * :root ではなく .app-shell の中だけで有効にしている。
+ * 本詳細・貸出詳細画面（BookDetail.css・LoanDetail.css）や完了ダイアログも、ここの変数を使う。
+ * ここの変数は :root ではなく .app-shell の中だけで有効にしている（全画面が .app-shell の中にある）。
  */
 .app-shell {
   /* 配色（Material Design 3 の役割） */
@@ -41,15 +40,22 @@
    */
   --color-success-container: #c4eec4;
   --color-on-success-container: #002107;
+  /* 完了ダイアログのチェックマークなど、白い背景の上に置く緑 */
+  --color-success: #2e7d32;
+  /*
+   * 押せないボタンの色（独自に足す）。「借りる」ボタンが押せないとき（貸出中・持ち出し禁止・読み込み中）に使う
+   */
+  --color-disabled: #d6d1ce;
+  --color-on-disabled: #7a726d;
 
   /* 文字（Noto Sans JP）。値は「太さ 大きさ/行の高さ」 */
-  /* 並びは本詳細画面（BookDetail.css の body）と同じにしている */
   --font-family: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', sans-serif;
   --type-headline-medium: 400 28px/36px var(--font-family);
   --type-headline-small: 400 24px/32px var(--font-family);
   --type-title-large: 400 22px/28px var(--font-family);
   --type-body-large: 400 16px/24px var(--font-family);
   --type-body-medium: 400 14px/20px var(--font-family);
+  --type-body-small: 400 12px/16px var(--font-family);
   --type-label-large: 500 14px/20px var(--font-family);
   --type-label-medium: 500 12px/16px var(--font-family);
 }
