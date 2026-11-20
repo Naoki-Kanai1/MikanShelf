@@ -94,6 +94,11 @@
   cursor: pointer;
 }
 
+/* マウスを重ねたときは、文字の色（on-primary）を背景に薄く重ねる。押せないときは変えない */
+.primary-button:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-on-primary) 16%, var(--color-primary));
+}
+
 .primary-button:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
