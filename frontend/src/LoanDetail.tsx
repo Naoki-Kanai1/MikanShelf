@@ -21,6 +21,12 @@ type Loan = {
   on_shelf_count: number;
 };
 
+// 貸出の状態ごとの、画面のタイトル
+const LOAN_DETAIL_TITLES: Record<Loan['status'], string> = {
+  borrowed: '借りている本の詳細',
+  returned: '返却済みの本の詳細',
+};
+
 type Props = {
   loanId: number;
 };
@@ -90,9 +96,13 @@ export default function LoanDetail({ loanId }: Props) {
 
   const isBorrowed = loan?.status === 'borrowed';
 
+  // 画面のタイトルは貸出の状態で変える。
+  // 読み込み中と読み込めなかったときは状態が分からないため、タイトルを空にする
+  const pageTitle = loan ? LOAN_DETAIL_TITLES[loan.status] : '';
+
   return (
     <div className="screen loan-detail">
-      <PageHeader title="貸出の詳細" backTo="/loans" />
+      <PageHeader title={pageTitle} backTo="/loans" />
 
       <div className="content">
         {loan && (
