@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import BookListPage from './BookListPage';
+import { BookListStateProvider } from '../state/BookListStateProvider';
 
 type Book = {
   id: number;
@@ -43,13 +44,17 @@ const respondWith = (books: Book[]) => mockFetch(async () => Response.json(books
 
 // 本一覧画面を開く。行を押したときの移動先として、本詳細画面の代わりの目印を置く
 function renderPage() {
+  // jsdom には画面のスクロールが無いので、本一覧画面がスクロール位置を戻す処理は作り物にする
+  vi.stubGlobal('scrollTo', vi.fn());
   return render(
-    <MemoryRouter initialEntries={['/books']}>
-      <Routes>
-        <Route path="/books" element={<BookListPage />} />
-        <Route path="/books/:bookId" element={<p>本詳細画面（テスト用）</p>} />
-      </Routes>
-    </MemoryRouter>,
+    <BookListStateProvider>
+      <MemoryRouter initialEntries={['/books']}>
+        <Routes>
+          <Route path="/books" element={<BookListPage />} />
+          <Route path="/books/:bookId" element={<p>本詳細画面（テスト用）</p>} />
+        </Routes>
+      </MemoryRouter>
+    </BookListStateProvider>,
   );
 }
 

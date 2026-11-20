@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { Link } from 'react-router';
 import { ExpandIcon, SearchIcon } from '../components/icons';
 import PageHeader from '../components/PageHeader';
 import StatusChip from '../components/StatusChip';
+import { useBookListState } from '../state/BookListStateContext';
 import '../styles/BookListPage.css';
 import { filterBooks } from '../utils/filterBooks';
 import { groupBooks, groupByLocation, type BookGroup } from '../utils/groupBooks';
@@ -107,10 +108,9 @@ export default function BookListPage() {
   // null は「まだ読み込み中」を表す
   const [books, setBooks] = useState<Book[] | null>(null);
   const [error, setError] = useState(false);
-  // 絞り込みの入力欄に入っている文字
-  const [keyword, setKeyword] = useState('');
-  // 開いているまとまり（BookGroup の key）
-  const [expandedKeys, setExpandedKeys] = useState<ReadonlySet<string>>(new Set());
+  // 絞り込みの文字・開いているまとまり・スクロール位置は、画面を離れても残す（state/BookListStateContext.ts）
+  const { state, dispatch, scrollYRef } = useBookListState();
+  const loaded = books !== null;
 
   useEffect(() => {
     fetch('/api/books')
@@ -122,16 +122,21 @@ export default function BookListPage() {
       .catch(() => setError(true));
   }, []);
 
-  // 絞り込んでから、同じ本をまとめる
-  const groups = books === null ? [] : groupBooks(filterBooks(books, keyword));
+  // 一覧を読み込み終えたら、前に見ていたスクロール位置へ戻し、そのあとはスクロールのたびに位置を覚える。
+  // 読み込み中は画面が短く、ブラウザがスクロール位置を詰めることがあるので、そのあいだは位置を覚えない。
+  // 開いていたまとまりも同じ描画で出るので、高さは離れる前と同じになる
+  useLayoutEffect(() => {
+    if (!loaded) return;
+    window.scrollTo(0, scrollYRef.current);
+    const remember = () => {
+      scrollYRef.current = window.scrollY;
+    };
+    window.addEventListener('scroll', remember);
+    return () => window.removeEventListener('scroll', remember);
+  }, [loaded, scrollYRef]);
 
-  const toggle = (key: string) =>
-    setExpandedKeys((prev) => {
-      const next = new Set(prev);
-      if (next.has(key)) next.delete(key);
-      else next.add(key);
-      return next;
-    });
+  // 絞り込んでから、同じ本をまとめる
+  const groups = books === null ? [] : groupBooks(filterBooks(books, state.keyword));
 
   return (
     <div className="book-list-page">
@@ -145,8 +150,8 @@ export default function BookListPage() {
             className="book-search__input"
             placeholder="題名・著者で絞り込む"
             aria-label="題名・著者で絞り込む"
-            value={keyword}
-            onChange={(e) => setKeyword(e.target.value)}
+            value={state.keyword}
+            onChange={(e) => dispatch({ type: 'setKeyword', keyword: e.target.value })}
           />
         </label>
       </div>
@@ -170,8 +175,8 @@ export default function BookListPage() {
               ) : (
                 <BookGroupRow
                   group={group}
-                  expanded={expandedKeys.has(group.key)}
-                  onToggle={() => toggle(group.key)}
+                  expanded={state.expandedKeys.includes(group.key)}
+                  onToggle={() => dispatch({ type: 'toggleExpanded', key: group.key })}
                 />
               )}
             </li>

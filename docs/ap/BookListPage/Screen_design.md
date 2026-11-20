@@ -82,6 +82,21 @@
 | 絞り込みに文字を入れる | 題名か著者に、その文字を含む本だけを表示する（下の「絞り込みの決まり」） |
 | まとまりの行を押す     | 1冊ずつの行を開く・閉じる（下の「同じ本が何冊もあるとき」）              |
 
+### 状態の保持
+
+本詳細画面などへ移動してから本一覧画面へ戻ってきたとき、離れる前の見え方のまま続きを見られるようにします。
+
+| 残すもの             | 戻ってきたときの表示                                       |
+| -------------------- | ---------------------------------------------------------- |
+| 絞り込みに入れた文字 | 入力欄に同じ文字が入り、その文字で絞り込んだ一覧を表示する |
+| 開いていたまとまり   | 開いたまま表示する                                         |
+| 縦のスクロール位置   | 一覧を読み込み終えたあと、離れる前の位置へ戻す             |
+
+- ←ボタン・ブラウザの「戻る」・メニューの「本一覧」のどれで戻っても残ります。
+- 残すのはアプリの中を移動しているあいだだけです。ブラウザで読み込み直したり、タブを閉じたりすると、初めの状態（入力欄は空、まとまりは閉じる、いちばん上）に戻ります。
+- 一覧（`GET /api/books`）は、戻ってくるたびに読み込み直します（貸出の状況を新しくするため）。読み込み中は画面が短いので、スクロール位置は覚え直しません。
+- 状態は `frontend/src/state/bookListState.ts`（状態の形と変え方）と `frontend/src/state/BookListStateProvider.tsx`（状態を持つ Provider。`App.tsx` でルートより上に置く）、`frontend/src/state/BookListStateContext.ts`（状態を使う hook `useBookListState`）にあります。今後、置き場所や貸出の状態での絞り込みを足すときは、`BookListState` に条件を足せば、同じように画面を移動しても残ります。
+
 ### 絞り込みの決まり
 
 - 題名・著者のどちらかに、入力した文字が含まれていれば表示します（部分一致）。
@@ -192,19 +207,22 @@ Noto Sans JP は Google Fonts から読み込みます（`frontend/index.html`�
 
 ## 7. 実装の構成
 
-| ファイル                                              | 役割                                                           |
-| ----------------------------------------------------- | -------------------------------------------------------------- |
-| `frontend/src/pages/BookListPage.tsx`                 | 本一覧画面                                                     |
-| `frontend/src/styles/BookListPage.css`                | 本一覧画面の見た目                                             |
-| `frontend/src/utils/filterBooks.ts`                   | 題名・著者での絞り込み                                         |
-| `frontend/src/utils/groupBooks.ts`                    | 同じ題名・著者の本のまとまり、置き場所ごとの行                 |
-| `frontend/src/components/StatusChip.tsx` / `.css`     | 状態の印（棚にある／貸出中／持ち出し禁止）。本詳細画面でも使う |
-| `frontend/src/components/AppShell.tsx` / `.css`       | メニューと画面の中身を並べる共通の枠。全画面で使う             |
-| `frontend/src/components/NavigationBar.tsx` / `.css`  | 画面の下のメニュー（幅 599px まで）                            |
-| `frontend/src/components/NavigationRail.tsx` / `.css` | 画面の左のメニュー（幅 600px から）                            |
-| `frontend/src/components/navItems.tsx`                | メニューの項目（2 つのメニューで共通）                         |
-| `frontend/src/components/icons.tsx`                   | メニューや印に使うアイコン                                     |
-| `frontend/src/styles/theme.css`                       | 色と文字の変数                                                 |
+| ファイル                                              | 役割                                                                 |
+| ----------------------------------------------------- | -------------------------------------------------------------------- |
+| `frontend/src/pages/BookListPage.tsx`                 | 本一覧画面                                                           |
+| `frontend/src/styles/BookListPage.css`                | 本一覧画面の見た目                                                   |
+| `frontend/src/utils/filterBooks.ts`                   | 題名・著者での絞り込み                                               |
+| `frontend/src/utils/groupBooks.ts`                    | 同じ題名・著者の本のまとまり、置き場所ごとの行                       |
+| `frontend/src/state/bookListState.ts`                 | 画面を離れても残す状態（絞り込みの文字・開いたまとまり）の形と変え方 |
+| `frontend/src/state/BookListStateProvider.tsx`        | 本一覧画面の状態とスクロール位置を持つ Provider                      |
+| `frontend/src/state/BookListStateContext.ts`          | 本一覧画面の状態を使う hook（`useBookListState`）                    |
+| `frontend/src/components/StatusChip.tsx` / `.css`     | 状態の印（棚にある／貸出中／持ち出し禁止）。本詳細画面でも使う       |
+| `frontend/src/components/AppShell.tsx` / `.css`       | メニューと画面の中身を並べる共通の枠。全画面で使う                   |
+| `frontend/src/components/NavigationBar.tsx` / `.css`  | 画面の下のメニュー（幅 599px まで）                                  |
+| `frontend/src/components/NavigationRail.tsx` / `.css` | 画面の左のメニュー（幅 600px から）                                  |
+| `frontend/src/components/navItems.tsx`                | メニューの項目（2 つのメニューで共通）                               |
+| `frontend/src/components/icons.tsx`                   | メニューや印に使うアイコン                                           |
+| `frontend/src/styles/theme.css`                       | 色と文字の変数                                                       |
 
 共通の枠（`AppShell`）は、全画面で使っています（`frontend/src/App.tsx`）。画面の幅による切り替えの決まりは `docs/Responsive_design.md` にまとめています。
 

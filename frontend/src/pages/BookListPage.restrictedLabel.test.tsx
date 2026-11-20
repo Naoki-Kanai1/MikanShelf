@@ -4,6 +4,7 @@ import { cleanup, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import BookListPage from './BookListPage';
+import { BookListStateProvider } from '../state/BookListStateProvider';
 
 type Book = {
   id: number;
@@ -34,14 +35,18 @@ function makeBook(overrides: Partial<Book> & Pick<Book, 'id'>): Book {
 
 // fetch を作り物に差し替えて、本一覧画面を開く（本物のサーバーには通信しない）
 function renderWith(books: Book[]) {
+  // jsdom には画面のスクロールが無いので、本一覧画面がスクロール位置を戻す処理は作り物にする
+  vi.stubGlobal('scrollTo', vi.fn());
   vi.stubGlobal(
     'fetch',
     vi.fn(async () => Response.json(books)),
   );
   return render(
-    <MemoryRouter>
-      <BookListPage />
-    </MemoryRouter>,
+    <BookListStateProvider>
+      <MemoryRouter>
+        <BookListPage />
+      </MemoryRouter>
+    </BookListStateProvider>,
   );
 }
 
