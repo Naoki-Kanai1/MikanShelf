@@ -42,17 +42,17 @@ afterEach(() => {
 });
 
 describe('BookDetail の状態の欄', () => {
-  it('SC-04: 持ち出し禁止で棚にある本は「持ち出し禁止」を出し、「棚にある」は出さない', async () => {
+  it('SC-04: 持ち出し禁止で棚にある本は「持ち出し禁止」を出し、「借りられる」は出さない', async () => {
     renderWith(makeBook({ is_restricted: 1, status: 'available' }));
     const chip = await findStatusChip();
     expect(chip.textContent).toBe('持ち出し禁止');
     expect(chip.classList.contains('status-chip--restricted')).toBe(true);
-    expect(screen.queryByText('棚にある')).toBeNull();
+    expect(screen.queryByText('借りられる')).toBeNull();
   });
 
-  it('SC-05: 持ち出し禁止でなく棚にある本は「棚にある」を出す', async () => {
+  it('SC-05: 持ち出し禁止でなく棚にある本は「借りられる」を出す', async () => {
     renderWith(makeBook({ is_restricted: 0, status: 'available' }));
-    expect((await findStatusChip()).textContent).toBe('棚にある');
+    expect((await findStatusChip()).textContent).toBe('借りられる');
   });
 
   it('SC-06: 持ち出し禁止でなく借りられている本は「誰かが借用中」を出す', async () => {

@@ -37,7 +37,7 @@
   --color-outline-variant: #d5c3b5;
   /*
    * 成功の色（独自に足す。Material Design 3 の役割には無い）。
-   * 状態の印の「棚にある」（借りられる）などに使う。tertiary は黄緑で「借りられる」に見えにくいため、別に緑を持つ
+   * 状態の印の「借りられる」（借りられる）などに使う。tertiary は黄緑で「借りられる」に見えにくいため、別に緑を持つ
    */
   --color-success-container: #c4eec4;
   --color-on-success-container: #002107;

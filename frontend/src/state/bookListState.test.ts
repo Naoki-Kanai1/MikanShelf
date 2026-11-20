@@ -13,7 +13,7 @@ describe('bookListReducer', () => {
       type: 'setKeyword',
       keyword: 'リーダブル',
     });
-    expect(next).toEqual({ keyword: 'リーダブル', expandedKeys: [] });
+    expect(next).toEqual({ ...initialBookListState, keyword: 'リーダブル' });
   });
 
   it('KS-02: setKeyword に空の文字を渡すと、検索の文字が空になる', () => {
@@ -55,7 +55,7 @@ describe('bookListReducer', () => {
     const next = bookListReducer(withState({ keyword: 'コード', expandedKeys: ['a', 'b'] }), {
       type: 'reset',
     });
-    expect(next).toEqual({ keyword: '', expandedKeys: [] });
+    expect(next).toEqual(initialBookListState);
   });
 
   it('KS-08: もとの状態を書き換えず、新しい状態を返す', () => {

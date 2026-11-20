@@ -94,12 +94,12 @@ describe('BookListPage（状態の印）', () => {
     expect(chipTexts(link)).toEqual(['持ち出し禁止']);
   });
 
-  it('BP-12: 持ち出し禁止の本と棚にある本がある置き場所は「棚にある」', async () => {
+  it('BP-12: 持ち出し禁止の本と棚にある本がある置き場所は「借りられる」', async () => {
     const link = await openLocationRow([
       makeBook({ id: 1, is_restricted: 1 }),
       makeBook({ id: 2 }),
     ]);
-    expect(chipTexts(link)).toEqual(['棚にある']);
+    expect(chipTexts(link)).toEqual(['借りられる']);
   });
 
   it('BP-13: 持ち出し禁止の本と貸出中の本だけのまとまりの行は「持ち出し禁止」', async () => {
@@ -121,8 +121,8 @@ describe('BookListPage（状態の印）', () => {
     expect(chipTexts(link)).toEqual(['誰かが借用中']);
   });
 
-  it('BP-15: 貸出中の本と棚にある本がある置き場所は「棚にある」', async () => {
+  it('BP-15: 貸出中の本と棚にある本がある置き場所は「借りられる」', async () => {
     const link = await openLocationRow([makeBook({ id: 1, ...borrowed }), makeBook({ id: 2 })]);
-    expect(chipTexts(link)).toEqual(['棚にある']);
+    expect(chipTexts(link)).toEqual(['借りられる']);
   });
 });

@@ -14,9 +14,9 @@ const renderChip = (props: ComponentProps<typeof StatusChip>) =>
   render(<StatusChip {...props} />).container.firstElementChild as HTMLElement;
 
 describe('StatusChip', () => {
-  it('BL-12: available のときは「棚にある」を表示し、available のクラスが付く', () => {
+  it('BL-12: available のときは「借りられる」を表示し、available のクラスが付く', () => {
     const chip = renderChip({ status: 'available' });
-    expect(chip.textContent).toBe('棚にある');
+    expect(chip.textContent).toBe('借りられる');
     expect(chip.classList.contains('status-chip--available')).toBe(true);
     expect(chip.classList.contains('status-chip--borrowed')).toBe(false);
   });

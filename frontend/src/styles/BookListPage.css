@@ -16,20 +16,31 @@
   padding: 0 var(--page-padding-inline) 8px;
 }
 
-/* 角の丸い帯。帯のどこを押しても入力欄が選ばれる（label で包んでいる） */
+/* 角の丸い帯。右端に絞り込みのボタンを置く */
 .book-search__field {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 4px;
   height: 56px;
-  padding: 0 16px;
+  padding: 0 4px 0 16px;
   border-radius: 28px;
   background: var(--color-surface-container-high);
   color: var(--color-on-surface-variant);
+}
+
+/* 虫めがねと入力欄。ここのどこを押しても入力欄が選ばれる（label で包んでいる） */
+.book-search__label {
+  flex: 1;
+  min-width: 0;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  gap: 16px;
   cursor: text;
 }
 
-.book-search__field:focus-within {
+/* 入力欄を選んでいるときだけ帯に枠を付ける（絞り込みのボタンは自分の枠を出す） */
+.book-search__field:has(.book-search__input:focus) {
   outline: 2px solid var(--color-primary);
   outline-offset: -2px;
 }
@@ -53,6 +64,119 @@
 
 .book-search__input::placeholder {
   color: var(--color-on-surface-variant);
+}
+
+/* 入力欄の右端の、絞り込みの条件を開くボタン（48px の丸） */
+.book-search__filter {
+  position: relative;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-on-surface-variant);
+  cursor: pointer;
+}
+
+.book-search__filter:hover {
+  background: rgba(81, 68, 58, 0.08);
+}
+
+.book-search__filter:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+}
+
+/* 条件で絞り込んでいるときは、色を付けて分かるようにする */
+.book-search__filter[data-active] {
+  background: var(--color-primary-container);
+  color: var(--color-on-primary-container);
+}
+
+/* 選んでいる条件の数 */
+.book-search__filter-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  min-width: 16px;
+  height: 16px;
+  box-sizing: border-box;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  font: var(--type-label-medium);
+  font-size: 11px;
+  line-height: 16px;
+  text-align: center;
+}
+
+/* 本の一覧を読み込むまでは押せない */
+.book-search__filter:disabled {
+  opacity: 0.38;
+  cursor: default;
+}
+
+.book-search__filter:disabled:hover {
+  background: transparent;
+}
+
+/* ---- 場所・ステータスの選択肢（広い画面で、検索ボックスの下に直接並べる。components/BookFilterFields） ---- */
+
+/* 狭い画面（〜599px）では隠し、検索ボックスの右端のボタン（モーダル）を使う */
+.book-filter-inline {
+  display: none;
+}
+
+/* 「すべて解除」。ステータスの行の右端に置く。条件を選んでいるときだけ押せる */
+.book-filter-inline__clear {
+  margin-left: auto;
+  min-height: 40px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 20px;
+  background: none;
+  color: var(--color-primary);
+  font: var(--type-label-large);
+  cursor: pointer;
+}
+
+.book-filter-inline__clear:hover:not(:disabled) {
+  background: rgba(139, 80, 0, 0.08);
+}
+
+.book-filter-inline__clear:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.book-filter-inline__clear:disabled {
+  color: var(--color-on-surface);
+  opacity: 0.38;
+  cursor: default;
+}
+
+@media (min-width: 600px) {
+  /* 広い画面では選択肢を直接並べるので、検索ボックスの右端のボタンは使わない */
+  .book-search__filter {
+    display: none;
+  }
+
+  .book-search__field {
+    padding-right: 16px;
+  }
+
+  /* 選択肢の左端を、検索ボックスの虫めがねにそろえる */
+  .book-filter-inline {
+    display: block;
+    margin-top: 8px;
+    padding: 0 16px;
+  }
 }
 
 /* ---- 読み込み中・エラー・0件のときの文 ---- */
@@ -224,12 +348,18 @@
   text-wrap: pretty;
 }
 
-/* 同じ置き場所に何冊もあるときの「残りn冊」。状態の印のすぐ右に、太字で出す（押せる札には見せない） */
+/* 開いた行の「残りn冊／m冊」。状態の印のすぐ右に、残りを太字で出す（押せる札には見せない） */
 .book-row__remaining {
   color: var(--color-on-surface);
   font: var(--type-label-large);
   font-weight: 700;
   white-space: nowrap;
+}
+
+/* 「／m冊」（この行の冊数）は、残りより目立たせない */
+.book-row__remaining-total {
+  color: var(--color-on-surface-variant);
+  font-weight: 400;
 }
 
 /* ---- Medium 以上: 一覧を角の丸い枠で囲む ---- */
