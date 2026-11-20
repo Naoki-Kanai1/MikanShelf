@@ -60,14 +60,7 @@
   height: 18px;
 }
 
-/* ---- 読み込み中・エラー・0件のときの文 ---- */
-
-.loan-list-page__message {
-  margin: 0;
-  padding: 16px var(--page-padding-inline);
-  color: var(--color-on-surface-variant);
-  font: var(--type-body-medium);
-}
+/* 読み込み中・エラー・0件のときの文は、共通の .page-message（PageMessage.css） */
 
 /* ---- 一覧 ---- */
 

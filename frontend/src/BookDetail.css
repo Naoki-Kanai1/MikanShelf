@@ -1,26 +1,8 @@
 /*
- * 本詳細・貸出詳細画面の色。共通の枠（.app-shell）の中では theme.css が同じ名前の変数
- * （--color-primary など）を別の値で定義しているため、ここでは .screen に置いて上書きし、
- * これまでの見た目を保つ。色を theme.css にそろえたら、この定義は消す。
+ * 本詳細・貸出詳細画面で共通の見た目。
+ * 色と文字は theme.css の変数を使う（一覧画面と同じ決まり）。
+ * 背景と文字の色は、共通の枠（.app-shell）から受け継ぐ。
  */
-.screen {
-  --color-bg: #fff8f3;
-  --color-text: #221a15;
-  --color-text-sub: #52443c;
-  --color-outline: #d7c3b8;
-  --color-primary: #86521a;
-  --color-on-primary: #ffffff;
-  --color-disabled: #d6d1ce;
-  --color-on-disabled: #7a726d;
-  --color-nav-bg: #f8e9df;
-  --color-nav-active: #fdd9bd;
-}
-
-/* 幅・高さ・下のメニューは共通の枠（AppShell）が持つ */
-.screen {
-  background: var(--color-bg);
-  color: var(--color-text);
-}
 
 /* ---- 本文 ---- */
 .content {
@@ -34,8 +16,14 @@
   max-width: var(--detail-max-width);
 }
 
+/* 読み込み中・エラーの文（PageMessage.css の .page-message）は、本文の余白の内側に置く */
+.content > .page-message {
+  padding-inline: 0;
+}
+
 .book-title {
   margin: 16px 0 12px;
+  /* 題名だけは theme.css に合う大きさが無いため、大きさをここで決める */
   font-size: 30px;
   font-weight: 500;
   /* 枠（.app-shell）から受け継ぐ行の高さ 24px のままだと、2行になったときに文字が重なる */
@@ -45,13 +33,13 @@
 
 .book-authors {
   margin: 0 0 32px;
-  font-size: 16px;
-  color: var(--color-text-sub);
+  color: var(--color-on-surface-variant);
+  font: var(--type-body-large);
 }
 
 /* ---- 情報カード ---- */
 .info-card {
-  border: 1px solid var(--color-outline);
+  border: 1px solid var(--color-outline-variant);
   border-radius: 12px;
   overflow: hidden;
 }
@@ -68,24 +56,27 @@
 }
 
 .info-row + .info-row {
-  border-top: 1px solid var(--color-outline);
+  border-top: 1px solid var(--color-outline-variant);
 }
 
 .info-icon {
   display: flex;
-  color: var(--color-text-sub);
+  color: var(--color-on-surface-variant);
+}
+
+.info-icon .icon {
+  width: 24px;
+  height: 24px;
 }
 
 .info-label {
   margin-bottom: 2px;
-  font-size: 12px;
-  line-height: 16px;
-  color: var(--color-text-sub);
+  color: var(--color-on-surface-variant);
+  font: var(--type-body-small);
 }
 
 .info-value {
-  font-size: 16px;
-  line-height: 24px;
+  font: var(--type-body-large);
 }
 
 /* ---- 画面のメインのボタン（借りる・返す） ----
@@ -99,19 +90,17 @@
   border-radius: 24px;
   background: var(--color-primary);
   color: var(--color-on-primary);
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 20px;
+  font: var(--type-label-large);
   cursor: pointer;
+}
+
+.primary-button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 .primary-button:disabled {
   background: var(--color-disabled);
   color: var(--color-on-disabled);
   cursor: default;
-}
-
-.error {
-  margin-top: 16px;
-  color: #ba1a1a;
 }
