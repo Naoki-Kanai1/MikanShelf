@@ -47,7 +47,6 @@ type GroupRowProps = {
 function BookGroupRow({ group, expanded, onToggle }: GroupRowProps) {
   const { representative, books } = group;
   const copiesId = `book-copies-${representative.id}`;
-  const allRestricted = books.every((book) => book.is_restricted === 1);
   return (
     <>
       <button
@@ -60,8 +59,12 @@ function BookGroupRow({ group, expanded, onToggle }: GroupRowProps) {
         <span className="book-row__title">{representative.title}</span>
         <span className="book-row__authors">{representative.authors}</span>
         <span className="book-row__trailing">
-          {/* 全て持ち出し禁止のときだけ、状態の印の代わりに「持ち出し禁止」を出す */}
-          <StatusChip status={representative.status} restricted={allRestricted} />
+          {/* 代表の状態を出す。棚にある（借りられる）本が1冊でもあれば「棚にある」、
+              無ければ持ち出し禁止の本があれば「持ち出し禁止」、全て貸出中のときだけ「誰かが借用中」 */}
+          <StatusChip
+            status={representative.status}
+            restricted={representative.is_restricted === 1}
+          />
           {/* 冊数と開く・閉じるの印は、1つの札にまとめて並べる */}
           <span className="book-row__toggle">
             <span className="book-row__count">{books.length}冊</span>
@@ -77,15 +80,15 @@ function BookGroupRow({ group, expanded, onToggle }: GroupRowProps) {
         >
           {groupByLocation(books).map((place) => {
             const { representative: book, availableCount } = place;
-            const allRestricted = place.books.every((b) => b.is_restricted === 1);
             return (
               <li key={place.location} className="book-copies__item">
-                {/* 押すと、この置き場所の棚にある本（無ければ最初の1冊）の本詳細画面へ移動する */}
+                {/* 押すと、この置き場所の本のうち「棚にある（借りられる）→ 持ち出し禁止 → 誰かが借用中」の順で最初の1冊の本詳細画面へ移動する */}
                 <Link to={`/books/${book.id}`} className="book-row book-row--copy">
                   <span className="book-row__location">置き場所：{place.location}</span>
                   <span className="book-row__trailing">
-                    {/* その置き場所の本が全て持ち出し禁止のときだけ、状態の印の代わりに「持ち出し禁止」を出す */}
-                    <StatusChip status={book.status} restricted={allRestricted} />
+                    {/* 開く本の状態を出す（詳細画面の状態と同じになる）。棚にある（借りられる）本が1冊でもあれば「棚にある」、
+                        無ければ持ち出し禁止の本があれば「持ち出し禁止」、全て貸出中のときだけ「誰かが借用中」 */}
+                    <StatusChip status={book.status} restricted={book.is_restricted === 1} />
                     {/* 棚にある冊数。0冊のときも「残り0冊」と出す */}
                     <span className="book-row__remaining">残り{availableCount}冊</span>
                   </span>
