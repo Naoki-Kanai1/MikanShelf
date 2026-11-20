@@ -159,9 +159,28 @@
     padding: 0 var(--page-padding-inline) 0 0;
   }
 
-  /* 列: 題名 ／ 借りた日 ／ 状態の印 */
+  /*
+   * 列: 題名 ／ 借りた日 ／ 状態の印。
+   * 列は一覧（.loan-list）で決め、行（li と .loan-row）は subgrid でその列を共有する。
+   * こうすると、状態の印の列は全ての行の中でいちばん幅の広い印に合わせて決まる（max-content）ので、
+   * 印の文字や幅が変わっても列を直さずに済み、見切れない。列は全ての行で同じなので、縦にもそろう
+   */
+  .loan-list {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 200px max-content;
+    column-gap: 24px;
+  }
+
+  .loan-list__item {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+  }
+
   .loan-row {
-    grid-template-columns: minmax(0, 1fr) 200px 112px;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    /* 一覧と同じ列の間隔にする（スマホ用の 16px を上書きする） */
     column-gap: 24px;
     min-height: 72px;
     box-sizing: border-box;
@@ -173,9 +192,10 @@
     margin-top: 0;
   }
 
+  /* 列の幅いっぱいに広げ、どの行の印も同じ幅にそろえる（文字は印の中で中央に寄る） */
   .loan-row__status {
     grid-column: 3;
     grid-row: 1;
-    justify-self: start;
+    justify-self: stretch;
   }
 }

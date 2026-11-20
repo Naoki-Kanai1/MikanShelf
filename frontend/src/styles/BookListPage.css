@@ -118,6 +118,8 @@
   color: var(--color-on-surface-variant);
   font: var(--type-body-medium);
   overflow-wrap: anywhere;
+  /* 折り返したとき、最後の行が1文字だけ（「…SD」「部」など）にならないようにする */
+  text-wrap: pretty;
 }
 
 /*
@@ -218,6 +220,8 @@
   grid-column: 1;
   font: var(--type-body-medium);
   overflow-wrap: anywhere;
+  /* 折り返したとき、最後の行が1文字だけ（「…SD」「部」など）にならないようにする */
+  text-wrap: pretty;
 }
 
 /* 同じ置き場所に何冊もあるときの「残りn冊」。状態の印のすぐ右に、太字で出す（押せる札には見せない） */
